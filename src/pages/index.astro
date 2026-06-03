@@ -1,0 +1,2814 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Hakan Efe | Eğitim Teknoloğu">
+
+  <!-- TERMİNAL AÇILIŞ -->
+  <div id="terminal-overlay">
+    <div id="terminal-box">
+      <div class="terminal-bar">
+        <span class="t-dot" style="background:#ff5f57"></span>
+        <span class="t-dot" style="background:#ffbd2e"></span>
+        <span class="t-dot" style="background:#28ca41"></span>
+        <span class="t-title">hakan@portfolio ~ </span>
+      </div>
+      <div id="terminal-body">
+        <div id="terminal-text"></div>
+        <span class="t-cursor">█</span>
+      </div>
+      <button id="terminal-skip" onclick="skipTerminal()">Atla →</button>
+    </div>
+  </div>
+
+  <!-- MİNİ QUIZ MODAL -->
+  <div id="quiz-overlay" onclick="closeQuiz(event)">
+    <div id="quiz-box">
+      <button class="quiz-close-btn" onclick="closeQuiz()">✕</button>
+      <div id="quiz-content"></div>
+    </div>
+  </div>
+
+  <!-- CONFETTİ CANVAS -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- ANİMASYONLU ARKA PLAN -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <canvas id="particles-canvas"></canvas>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container nav-inner">
+      <span class="nav-logo">HE<span class="accent">.</span></span>
+      <div class="nav-links">
+        <a href="#hakkimda">Hakkımda</a>
+        <a href="#deneyim">Deneyim</a>
+        <a href="#egitim">Eğitim</a>
+        <a href="#projeler">Projeler</a>
+        <a href="#modul">Modül</a>
+        <a href="#yetenekler">Yetenekler</a>
+        <a href="#iletisim">İletişim</a>
+        <button id="theme-toggle" onclick="toggleTheme()" aria-label="Tema değiştir">☀️</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container hero-layout">
+      <div class="hero-inner">
+        <div class="hero-top-row">
+          <div class="hero-badge">Açık Pozisyonlara Müsait</div>
+          <div class="visitor-badge" title="Toplam ziyaretçi">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span id="visitor-count">...</span> ziyaretçi
+          </div>
+        </div>
+        <h1>
+          Merhaba, ben<br />
+          <span class="hero-name">Hakan Efe</span>
+        </h1>
+        <p class="hero-title">Eğitim Teknoloğu</p>
+        <p class="hero-desc">
+          Marmara Üniversitesi'nde tamamladığım öğrenimim ve eğitim sürecimde
+          edindiğim yarı zamanlı deneyimlerim doğrultusunda, kurumsal yapıları
+          tanıyarak kendimi geliştirmeyi ve kariyerime değer katmayı hedefliyorum.
+        </p>
+        <div class="hero-cta">
+          <a href="#iletisim" class="btn-primary">İletişime Geç</a>
+          <a href="#deneyim" class="btn-secondary">Deneyimlerimi Gör</a>
+        </div>
+        <div class="hero-socials">
+          <a href="mailto:hakanefe1141@gmail.com" aria-label="Email" title="E-posta">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </a>
+          <a href="tel:+905522861141" aria-label="Telefon" title="+0 552 286 11 41">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </a>
+          <a href="https://linkedin.com/in/hakanefe" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+          <a href="https://github.com/hakanefe" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-ring">
+          <img src="/hakan.jpg" alt="Hakan Efe" class="hero-photo" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HAKKIMDA -->
+  <section id="hakkimda" class="reveal">
+    <div class="container">
+      <h2 class="section-title">Hakkımda</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            Marmara Üniversitesi Atatürk Eğitim Fakültesi'nde Bilgisayar ve Öğretim
+            Teknolojileri Eğitimi bölümünü tamamladım. Şu anda aynı alanda tezli
+            yüksek lisans eğitimime devam etmekteyim.
+          </p>
+          <p>
+            Üniversite hayatım boyunca Marmara Üniversitesi'nin farklı birimlerinde
+            teknik destek, bilgi işlem ve uzaktan eğitim alanlarında yarı zamanlı
+            olarak görev aldım. Türkiye Bilişim Vakfı'nda organizasyon asistanı
+            olarak çalıştım; EBİTEKAM'da ise endüstri-akademi işbirliklerini
+            inceleyen bir araştırma projesine destek veriyorum.
+          </p>
+          <p>
+            Articulate Storyline/Rise, H5P, Camtasia ve çeşitli LMS platformları
+            kullanarak e-öğrenme içerikleri geliştiriyor; eğitim teknolojilerinin
+            kurumsal öğrenme süreçlerine entegrasyonu üzerine çalışıyorum.
+          </p>
+        </div>
+        <div class="about-info">
+          <div class="info-item">
+            <span class="info-label">Konum</span>
+            <span>Kocaeli / İstanbul</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">E-posta</span>
+            <a href="mailto:hakanefe1141@gmail.com">hakanefe1141@gmail.com</a>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Telefon</span>
+            <a href="tel:+905522861141">+0 552 286 11 41</a>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Yabancı Dil</span>
+            <span>İngilizce B1</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Durum</span>
+            <span class="status-badge">Müsait</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DENEYİM -->
+  <section id="deneyim" class="reveal">
+    <div class="container">
+      <h2 class="section-title">İş Deneyimi</h2>
+      <div class="timeline">
+
+        <div class="timeline-item card">
+          <div class="timeline-header">
+            <div>
+              <h3>Eğitim Araştırmacısı</h3>
+              <p class="org">EBİTEKAM — İstanbul</p>
+            </div>
+            <span class="date-badge">2026 — Günümüz</span>
+          </div>
+          <ul class="timeline-list">
+            <li>Endüstri ve Akademi arasındaki işbirliklerini inceleyen projeye destek veriyorum.</li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Araştırma</span>
+            <span class="tag">Akademi-Endüstri İşbirliği</span>
+          </div>
+        </div>
+
+        <div class="timeline-item card">
+          <div class="timeline-header">
+            <div>
+              <h3>Bilgi İşlem Destek</h3>
+              <p class="org">Marmara Üniversitesi Uzaktan Eğitim Merkezi — İstanbul</p>
+            </div>
+            <span class="date-badge">2024 — 2025</span>
+          </div>
+          <ul class="timeline-list">
+            <li>Uzaktan eğitim platformundaki teknik sorunlarla ilgilendim.</li>
+            <li>Perculus platformunun yeni arayüzü için eğitim içerikleri hazırladım.</li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Perculus</span>
+            <span class="tag">Uzaktan Eğitim</span>
+            <span class="tag">İçerik Geliştirme</span>
+          </div>
+        </div>
+
+        <div class="timeline-item card">
+          <div class="timeline-header">
+            <div>
+              <h3>Organizasyon Asistanı</h3>
+              <p class="org">Türkiye Bilişim Vakfı — İstanbul</p>
+            </div>
+            <span class="date-badge">2024 — 2025</span>
+          </div>
+          <ul class="timeline-list">
+            <li>Katıldığım toplantılardan aldığım notlarla gerekli eğitim içeriklerini hazırladım.</li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Eğitim İçeriği</span>
+            <span class="tag">Organizasyon</span>
+          </div>
+        </div>
+
+        <div class="timeline-item card">
+          <div class="timeline-header">
+            <div>
+              <h3>Bilişim Teknolojileri Öğretmenliği (Staj)</h3>
+              <p class="org">Zübeyde Hanım Ortaokulu — İstanbul</p>
+            </div>
+            <span class="date-badge">2024 — 2025</span>
+          </div>
+          <ul class="timeline-list">
+            <li>Zorunlu öğretmenlik stajını tamamladım.</li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Öğretmenlik</span>
+            <span class="tag">BT Eğitimi</span>
+          </div>
+        </div>
+
+        <div class="timeline-item card">
+          <div class="timeline-header">
+            <div>
+              <h3>Teknik Destek</h3>
+              <p class="org">Marmara Üniversitesi Yabancı Diller Yüksekokulu — İstanbul</p>
+            </div>
+            <span class="date-badge">2021 — 2024</span>
+          </div>
+          <ul class="timeline-list">
+            <li>Fakültedeki teknolojik cihazların donanım ve yazılım sorunlarını çözdüm.</li>
+            <li>Uluslararası Erasmus sınavlarında görevli olarak çalıştım.</li>
+            <li>Eğitim içerikleri hazırladım.</li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">Teknik Destek</span>
+            <span class="tag">Donanım</span>
+            <span class="tag">Erasmus</span>
+            <span class="tag">İçerik Geliştirme</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EĞİTİM -->
+  <section id="egitim" class="reveal">
+    <div class="container">
+      <h2 class="section-title">Eğitim</h2>
+      <div class="edu-grid">
+
+        <div class="card edu-card">
+          <div class="edu-icon">🎓</div>
+          <div>
+            <h3>Tezli Yüksek Lisans</h3>
+            <p class="org">Marmara Üniversitesi / Eğitim Bilimleri Enstitüsü</p>
+            <p class="edu-field">Bilgisayar ve Öğretim Teknolojileri Eğitimi</p>
+            <span class="date-badge">2025 — 2027</span>
+          </div>
+        </div>
+
+        <div class="card edu-card">
+          <div class="edu-icon">📘</div>
+          <div>
+            <h3>Lisans</h3>
+            <p class="org">Marmara Üniversitesi / Atatürk Eğitim Fakültesi</p>
+            <p class="edu-field">Bilgisayar ve Öğretim Teknolojileri Eğitimi (BÖTE)</p>
+            <span class="date-badge">2021 — 2025</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- YETENEKLER -->
+  <section id="yetenekler" class="reveal">
+    <div class="container">
+      <h2 class="section-title">Beceriler</h2>
+      <div class="skills-grid">
+
+        <div class="card skill-card">
+          <h3 class="skill-cat">E-Öğrenme Araçları</h3>
+          <div class="skill-list">
+            <div class="skill-item">
+              <span>Articulate Storyline / Rise</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>H5P</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:82%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>Camtasia Studio 8</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>OBS Studio</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card skill-card">
+          <h3 class="skill-cat">LMS & Platformlar</h3>
+          <div class="skill-list">
+            <div class="skill-item">
+              <span>Moodle</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>Google Classroom</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>Microsoft Teams (Education)</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:82%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>Perculus</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card skill-card">
+          <h3 class="skill-cat">Eğitim & Değerlendirme</h3>
+          <div class="skill-list">
+            <div class="skill-item">
+              <span>Kahoot</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>Quizizz</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>Google Forms</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+            </div>
+            <div class="skill-item">
+              <span>Canva</span>
+              <div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card skill-card">
+          <h3 class="skill-cat">Diğer & Diller</h3>
+          <div class="tag-cloud">
+            <span class="tag">Linux İşletim Sistemi</span>
+            <span class="tag">İngilizce B1</span>
+            <span class="tag">Türkçe (Ana Dil)</span>
+            <span class="tag">Teknik Destek</span>
+            <span class="tag">İçerik Tasarımı</span>
+            <span class="tag">Araştırma</span>
+            <span class="tag">Proje Yönetimi</span>
+            <span class="tag">Takım Çalışması</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJELER -->
+  <section id="projeler" class="reveal">
+    <div class="container">
+      <h2 class="section-title">Projeler</h2>
+      <div class="projects-grid">
+
+        <div class="card project-card">
+          <div class="project-header">
+            <span class="project-icon">🔬</span>
+            <div class="project-links">
+              <a href="#" aria-label="Web sitesi">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3>EBİTEKAM Web Sitesi</h3>
+          <p>Endüstri ve Akademi arasındaki işbirliklerini inceleyen EBİTEKAM araştırma merkezinin kurumsal web sitesi. Proje kapsamında site geliştirme ve içerik süreçlerine destek verdim.</p>
+          <div class="tag-row">
+            <span class="tag">Web</span>
+            <span class="tag">Kurumsal</span>
+            <span class="tag">Eğitim Araştırması</span>
+          </div>
+        </div>
+
+        <div class="card project-card">
+          <div class="project-header">
+            <span class="project-icon">🎬</span>
+          </div>
+          <h3>Perculus Eğitim İçerikleri</h3>
+          <p>Marmara Üniversitesi Uzaktan Eğitim Merkezi bünyesinde Perculus platformunun yeni arayüzü için kullanıcı rehberi ve eğitim videoları hazırladım.</p>
+          <div class="tag-row">
+            <span class="tag">Perculus</span>
+            <span class="tag">Camtasia</span>
+            <span class="tag">E-Öğrenme</span>
+          </div>
+        </div>
+
+        <div class="card project-card project-featured">
+          <div class="project-header">
+            <span class="project-icon">🖥️</span>
+            <div class="project-links">
+              <a href="/lms-karsilastirma" target="_blank" aria-label="Aracı Dene">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+            </div>
+          </div>
+          <span class="project-new-badge">Yeni</span>
+          <h3>LMS Karşılaştırma Aracı</h3>
+          <p>Moodle, Google Classroom, MS Teams, Canvas, Perculus ve Blackboard platformlarını 8 kriterde karşılaştır. Radar grafik + özellik tablosu + akıllı öneri sistemi.</p>
+          <div class="tag-row">
+            <span class="tag">JavaScript</span>
+            <span class="tag">Canvas API</span>
+            <span class="tag">Astro</span>
+            <span class="tag">LMS</span>
+            <span class="tag">Veri Görselleştirme</span>
+          </div>
+        </div>
+
+        <div class="card project-card">
+          <div class="project-header">
+            <span class="project-icon">📝</span>
+          </div>
+          <h3>TBV Eğitim Dokümanları</h3>
+          <p>Türkiye Bilişim Vakfı toplantılarından alınan notlar doğrultusunda kurumsal eğitim içerikleri ve dokümantasyon materyalleri hazırladım.</p>
+          <div class="tag-row">
+            <span class="tag">Articulate Rise</span>
+            <span class="tag">Canva</span>
+            <span class="tag">İçerik Tasarımı</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- E-ÖĞRENİM MODÜLÜ -->
+  <section id="modul" class="reveal">
+    <div class="container">
+      <h2 class="section-title">İnteraktif Modül</h2>
+      <p class="modul-subtitle">Eğitim Teknolojisi nedir? 4 ekranda öğren.</p>
+      <div id="elearn-box">
+        <div class="elearn-topbar">
+          <span class="elearn-course-name">📚 Eğitim Teknolojisine Giriş</span>
+          <div class="elearn-progress-wrap">
+            <div class="elearn-progress-bar"><div id="elearn-fill"></div></div>
+            <span id="elearn-step-label">1 / 4</span>
+          </div>
+        </div>
+        <div id="elearn-slides">
+
+          <!-- Slayt 1 -->
+          <div class="eslide active" data-slide="1">
+            <div class="eslide-icon">🎓</div>
+            <h3>Eğitim Teknolojisi Nedir?</h3>
+            <p>Eğitim teknolojisi; öğrenme ve öğretme süreçlerini <strong>teknoloji araçları</strong> ile tasarlama, geliştirme, uygulama, yönetme ve değerlendirme disiplinidir.</p>
+            <p>Sadece "bilgisayar kullanmak" değil — <strong>pedagojiyi teknolojiyle harmanlayan</strong> bir uzmanlık alanıdır.</p>
+            <div class="eslide-tag-row">
+              <span class="tag">Öğrenme Tasarımı</span>
+              <span class="tag">E-Öğrenme</span>
+              <span class="tag">LMS</span>
+              <span class="tag">ADDIE Modeli</span>
+            </div>
+          </div>
+
+          <!-- Slayt 2 -->
+          <div class="eslide" data-slide="2">
+            <div class="eslide-icon">🔧</div>
+            <h3>Temel Araçlar ve Alanlar</h3>
+            <div class="eslide-cards">
+              <div class="eslide-card" onclick="this.classList.toggle('flipped')">
+                <div class="ec-front">📝<br/>İçerik Geliştirme</div>
+                <div class="ec-back">Articulate, H5P, Camtasia gibi araçlarla interaktif içerik üretimi</div>
+              </div>
+              <div class="eslide-card" onclick="this.classList.toggle('flipped')">
+                <div class="ec-front">🖥️<br/>LMS Yönetimi</div>
+                <div class="ec-back">Moodle, Google Classroom gibi sistemlerle kurs & kullanıcı yönetimi</div>
+              </div>
+              <div class="eslide-card" onclick="this.classList.toggle('flipped')">
+                <div class="ec-front">📊<br/>Ölçme & Değerlendirme</div>
+                <div class="ec-back">Kahoot, Quizizz ile gamification; xAPI & SCORM ile veri takibi</div>
+              </div>
+              <div class="eslide-card" onclick="this.classList.toggle('flipped')">
+                <div class="ec-front">🎯<br/>Öğrenme Tasarımı</div>
+                <div class="ec-back">ADDIE/SAM modelleriyle ihtiyaç analizi ve senaryo tasarımı</div>
+              </div>
+            </div>
+            <p class="eslide-hint">👆 Kartlara tıkla!</p>
+          </div>
+
+          <!-- Slayt 3 -->
+          <div class="eslide" data-slide="3">
+            <div class="eslide-icon">🤔</div>
+            <h3>Neden Önemlidir?</h3>
+            <div class="eslide-stats">
+              <div class="estat">
+                <span class="estat-num" data-target="72">0</span><span>%</span>
+                <p>Şirketler e-öğrenmeyi benimsedi</p>
+              </div>
+              <div class="estat">
+                <span class="estat-num" data-target="42">0</span><span>%</span>
+                <p>Öğrenme süresinde azalma</p>
+              </div>
+              <div class="estat">
+                <span class="estat-num" data-target="5">0</span><span>x</span>
+                <p>Daha fazla içerik tüketimi</p>
+              </div>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.82rem;margin-top:16px;">* Sektör araştırmalarına dayalı ortalama veriler</p>
+          </div>
+
+          <!-- Slayt 4 — Quiz -->
+          <div class="eslide" data-slide="4">
+            <div class="eslide-icon">🧩</div>
+            <h3>Bilgini Test Et!</h3>
+            <div id="modul-quiz">
+              <p class="mq-question">SCORM ne işe yarar?</p>
+              <div class="mq-opts">
+                <button onclick="mqAnswer(this,false)">Grafik tasarım standardı</button>
+                <button onclick="mqAnswer(this,true)">E-öğrenme içerik ve LMS iletişim standardı</button>
+                <button onclick="mqAnswer(this,false)">Video sıkıştırma formatı</button>
+              </div>
+              <div id="mq-feedback"></div>
+            </div>
+          </div>
+
+        </div>
+        <div class="elearn-nav">
+          <button id="elearn-prev" onclick="eLearnPrev()" disabled>← Geri</button>
+          <button id="elearn-next" onclick="eLearnNext()">İleri →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERTİFİKA MODAL -->
+  <div id="cert-overlay">
+    <div id="cert-box">
+      <div class="cert-emoji">🎓</div>
+      <h2>Tebrikler!</h2>
+      <p>Bu portföyü başarıyla tamamladın.<br/>Adını yaz, sertifikanı al!</p>
+      <input id="cert-name" type="text" placeholder="Adın Soyadın" maxlength="40" />
+      <button id="cert-generate-btn" onclick="generateCert()">Sertifikamı Oluştur 🎨</button>
+      <canvas id="cert-canvas"></canvas>
+      <a id="cert-download" style="display:none">⬇️ İndir</a>
+      <button class="cert-close" onclick="document.getElementById('cert-overlay').classList.remove('open')">Kapat</button>
+    </div>
+  </div>
+
+  <!-- REFERANSLAR -->
+  <section id="referanslar" class="reveal">
+    <div class="container">
+      <h2 class="section-title">Referanslar</h2>
+      <div class="ref-grid">
+        <div class="card ref-card">
+          <div class="ref-avatar">GK</div>
+          <div>
+            <h3>Göker Kurtuldu</h3>
+            <p class="org">Allianz Avrupa Bölge Müdürlüğü / Yönetici</p>
+            <a href="tel:+905302903969" class="ref-contact">+90 530 290 39 69</a>
+          </div>
+        </div>
+        <div class="card ref-card">
+          <div class="ref-avatar">MC</div>
+          <div>
+            <h3>Öğr. Gör. Mevlüt Can</h3>
+            <p class="org">Marmara Üniversitesi</p>
+            <a href="tel:+905075939397" class="ref-contact">+90 507 593 93 97</a>
+          </div>
+        </div>
+
+        <div class="card ref-card">
+          <div class="ref-avatar">MK</div>
+          <div>
+            <h3>Mehmet Kocataş</h3>
+            <p class="org">Marmara Üniversitesi Yabancı Diller Yüksekokulu / Sekreter</p>
+            <a href="tel:+905357659985" class="ref-contact">+90 535 765 99 85</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- İLETİŞİM -->
+  <section id="iletisim" class="reveal">
+    <div class="container">
+      <h2 class="section-title">İletişim</h2>
+      <div class="contact-wrapper">
+        <div class="contact-text">
+          <p>Bir proje fikriniz mi var? İş birliği yapmak mı istiyorsunuz?
+          Bana ulaşmaktan çekinmeyin.</p>
+          <div class="contact-actions">
+            <div class="runaway-wrap">
+              <button id="hire-btn" onmouseenter="runAway(this)">Beni İşe Al! 🎯</button>
+            </div>
+            <button class="quiz-trigger-btn" onclick="openQuiz()">Beni Ne Kadar Tanıyorsun? 🧠</button>
+          </div>
+        </div>
+        <div class="contact-cards">
+          <a href="mailto:hakanefe1141@gmail.com" class="card contact-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <div>
+              <p class="contact-label">E-posta</p>
+              <p>hakanefe1141@gmail.com</p>
+            </div>
+          </a>
+          <a href="tel:+905522861141" class="card contact-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <p class="contact-label">Telefon</p>
+              <p>+0 552 286 11 41</p>
+            </div>
+          </a>
+          <a href="https://linkedin.com/in/hakanefe" target="_blank" rel="noopener" class="card contact-card">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            <div>
+              <p class="contact-label">LinkedIn</p>
+              <p>linkedin.com/in/hakanefe</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>© 2026 Hakan Efe</p>
+    </div>
+  </footer>
+
+  <!-- AI CHATBOT -->
+  <div id="chat-bubble" onclick="toggleChat()" title="Bana sor">
+    <span id="chat-bubble-icon">💬</span>
+  </div>
+
+  <div id="chat-window">
+    <div id="chat-header">
+      <div class="chat-avatar">HE</div>
+      <div>
+        <p class="chat-name">Hakan Efe Asistanı</p>
+        <p class="chat-status">AI destekli</p>
+      </div>
+      <button onclick="toggleChat()" class="chat-close">✕</button>
+    </div>
+    <div id="chat-messages">
+      <div class="msg bot">Merhaba! 👋 Hakan hakkında merak ettiklerini sorabilirsin.</div>
+    </div>
+    <div id="chat-suggestions">
+      <button onclick="ask('Kim bu Hakan?')">Kim bu Hakan?</button>
+      <button onclick="ask('Hangi araçları kullanıyor?')">Araçlar</button>
+      <button onclick="ask('Nasıl iletişime geçebilirim?')">İletişim</button>
+    </div>
+    <div id="chat-input-row">
+      <input id="chat-input" type="text" placeholder="Bir şey sor..." onkeydown="if(event.key==='Enter') sendMsg()" />
+      <button onclick="sendMsg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+      </button>
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  /* ANİMASYONLU ARKA PLAN */
+  #particles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .bg-orbs {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    animation: float-orb 20s ease-in-out infinite;
+  }
+
+  :root[data-theme="light"] .orb {
+    opacity: 0.06;
+  }
+
+  .orb-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, #7c3aed, transparent);
+    top: -200px;
+    left: -100px;
+    animation-delay: 0s;
+    animation-duration: 22s;
+  }
+
+  .orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #a78bfa, transparent);
+    top: 40%;
+    right: -150px;
+    animation-delay: -7s;
+    animation-duration: 18s;
+  }
+
+  .orb-3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #c084fc, transparent);
+    bottom: -100px;
+    left: 30%;
+    animation-delay: -14s;
+    animation-duration: 25s;
+  }
+
+  @keyframes float-orb {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(40px, -60px) scale(1.05); }
+    50% { transform: translate(-30px, 40px) scale(0.95); }
+    75% { transform: translate(60px, 30px) scale(1.03); }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg-nav);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-logo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  .accent { color: var(--accent-light); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-links a {
+    color: var(--text-dim);
+    font-size: 0.87rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--text);
+    opacity: 1;
+  }
+
+  #theme-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  #theme-toggle:hover { border-color: var(--accent); }
+
+  /* Tüm section'lar arka planın üstünde */
+  section, nav, footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HERO */
+  #hero {
+    padding-top: 140px;
+    padding-bottom: 100px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-layout {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .hero-inner { max-width: 620px; }
+
+  .hero-photo-wrap {
+    flex-shrink: 0;
+  }
+
+  .hero-photo-ring {
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--accent), #c084fc, var(--accent));
+    background-size: 200% 200%;
+    animation: ring-spin 4s linear infinite;
+    box-shadow: 0 0 40px var(--accent-glow);
+  }
+
+  @keyframes ring-spin {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .hero-photo {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 4px solid var(--bg);
+    display: block;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+    border-radius: 100px;
+    padding: 4px 16px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  .hero-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .hero-name {
+    background: linear-gradient(135deg, var(--accent-light) 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-title {
+    font-size: 1.2rem;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-bottom: 20px;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  .hero-title::before {
+    content: "→ ";
+    color: var(--accent-light);
+  }
+
+  .hero-desc {
+    color: var(--text-muted);
+    font-size: 1.02rem;
+    max-width: 580px;
+    margin-bottom: 36px;
+    line-height: 1.8;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white !important;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9 !important;
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text) !important;
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    opacity: 1 !important;
+    transform: translateY(-2px);
+  }
+
+  .hero-socials { display: flex; gap: 12px; }
+
+  .hero-socials a {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .hero-socials a:hover {
+    color: var(--accent-light);
+    border-color: var(--accent);
+    opacity: 1;
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 270px;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .about-text p {
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  .about-info {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #22c55e;
+    font-weight: 500;
+  }
+
+  .status-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; gap: 20px; }
+
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    gap: 16px;
+  }
+
+  .timeline-header h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .org {
+    color: var(--accent-light);
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  .date-badge {
+    background: var(--tag-bg);
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 0.76rem;
+    font-family: "JetBrains Mono", monospace;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .timeline-list { list-style: none; margin-bottom: 14px; }
+
+  .timeline-list li {
+    color: var(--text-dim);
+    padding: 3px 0 3px 16px;
+    position: relative;
+    font-size: 0.92rem;
+  }
+
+  .timeline-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: var(--accent-light);
+  }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* EDUCATION */
+  .edu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .edu-card {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .edu-icon { font-size: 2rem; flex-shrink: 0; }
+
+  .edu-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .edu-field {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin: 4px 0 10px;
+  }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+  }
+
+  .skill-cat {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent-light);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 20px;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  .skill-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .skill-item { display: flex; flex-direction: column; gap: 6px; }
+
+  .skill-item span {
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  .skill-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .skill-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: 2px;
+  }
+
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* REFERANSLAR */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .ref-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .ref-avatar {
+    width: 52px;
+    height: 52px;
+    background: var(--accent-glow);
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--accent-light);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .ref-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .ref-contact {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* CONTACT */
+  .contact-wrapper { max-width: 640px; }
+
+  .contact-text {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  .contact-cards { display: flex; flex-direction: column; gap: 14px; }
+
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: var(--text) !important;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+
+  .contact-card:hover {
+    transform: translateX(6px);
+    opacity: 1 !important;
+  }
+
+  .contact-card svg {
+    color: var(--accent-light);
+    flex-shrink: 0;
+  }
+
+  .contact-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  /* TERMİNAL */
+  #terminal-overlay {
+    position: fixed;
+    inset: 0;
+    background: #0a0a0f;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease;
+  }
+
+  #terminal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #terminal-box {
+    width: min(640px, 90vw);
+    background: #111118;
+    border: 1px solid #2a2a3e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(124,58,237,0.2);
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: #1a1a2e;
+    border-bottom: 1px solid #2a2a3e;
+  }
+
+  .t-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .t-title {
+    margin-left: 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  #terminal-body {
+    padding: 24px;
+    min-height: 220px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.9rem;
+    line-height: 2;
+    color: #a78bfa;
+  }
+
+  .t-cursor {
+    animation: blink 0.7s infinite;
+    color: #a78bfa;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  #terminal-skip {
+    display: block;
+    margin: 0 16px 16px auto;
+    background: none;
+    border: 1px solid #2a2a3e;
+    color: #64748b;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  #terminal-skip:hover { border-color: #a78bfa; color: #a78bfa; }
+
+  /* CONFETTİ */
+  #confetti-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9000;
+    display: none;
+  }
+
+  /* ZİYARETÇİ SAYACI */
+  .hero-top-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .visitor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* KAÇAN BUTON */
+  .contact-actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .runaway-wrap {
+    position: relative;
+    width: 160px;
+    height: 48px;
+  }
+
+  #hire-btn {
+    position: absolute;
+    background: linear-gradient(135deg, var(--accent), #c084fc);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    font-family: "Inter", sans-serif;
+  }
+
+  #hire-btn.caught {
+    position: static;
+    animation: caught-bounce 0.4s ease;
+  }
+
+  @keyframes caught-bounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  .quiz-trigger-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .quiz-trigger-btn:hover {
+    background: var(--accent-glow);
+    transform: translateY(-2px);
+  }
+
+  /* QUIZ MODAL */
+  #quiz-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 8000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  #quiz-overlay.open { display: flex; }
+
+  #quiz-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    width: min(480px, 90vw);
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    animation: quiz-in 0.3s ease;
+  }
+
+  @keyframes quiz-in {
+    from { opacity:0; transform: scale(0.95) translateY(20px); }
+    to { opacity:1; transform: scale(1) translateY(0); }
+  }
+
+  .quiz-close-btn {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none; border: none;
+    color: var(--text-muted); font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .quiz-progress {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: "JetBrains Mono", monospace;
+    margin-bottom: 8px;
+  }
+
+  .quiz-q {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .quiz-opt {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.92rem;
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .quiz-opt:hover { border-color: var(--accent); background: var(--accent-glow); }
+  .quiz-opt.correct { border-color: #22c55e; background: rgba(34,197,94,0.1); color: #22c55e; }
+  .quiz-opt.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); color: #ef4444; }
+
+  .quiz-result {
+    text-align: center;
+    padding: 12px 0;
+  }
+
+  .quiz-result .score {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-light), #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .quiz-result p { color: var(--text-dim); margin: 8px 0 20px; }
+
+  .quiz-restart {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+  }
+
+  /* PROJELER */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .project-featured {
+    border-color: var(--accent) !important;
+    background: linear-gradient(135deg, var(--bg-card), rgba(124,58,237,0.04)) !important;
+    position: relative;
+  }
+
+  .project-new-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 100px;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .project-card h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .project-card p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .project-icon { font-size: 2rem; }
+
+  .project-links a {
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .project-links a:hover {
+    color: var(--accent-light);
+    border-color: var(--accent);
+    opacity: 1;
+  }
+
+  /* E-ÖĞRENİM MODÜLÜ */
+  .modul-subtitle {
+    color: var(--text-muted);
+    margin-top: -32px;
+    margin-bottom: 32px;
+    font-size: 0.95rem;
+  }
+
+  #elearn-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    max-width: 760px;
+  }
+
+  .elearn-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--accent), #7e22ce);
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .elearn-course-name {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .elearn-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .elearn-progress-bar {
+    width: 140px;
+    height: 6px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  #elearn-fill {
+    height: 100%;
+    background: white;
+    border-radius: 3px;
+    width: 25%;
+    transition: width 0.4s ease;
+  }
+
+  #elearn-step-label {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.78rem;
+    font-family: "JetBrains Mono", monospace;
+    white-space: nowrap;
+  }
+
+  #elearn-slides {
+    padding: 36px 32px 24px;
+    min-height: 300px;
+  }
+
+  .eslide { display: none; animation: slide-in 0.35s ease; }
+  .eslide.active { display: block; }
+
+  @keyframes slide-in {
+    from { opacity:0; transform: translateX(20px); }
+    to   { opacity:1; transform: translateX(0); }
+  }
+
+  .eslide-icon { font-size: 2.4rem; margin-bottom: 12px; }
+
+  .eslide h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .eslide p {
+    color: var(--text-dim);
+    line-height: 1.8;
+    margin-bottom: 12px;
+  }
+
+  .eslide-tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+  .eslide-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .eslide-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    cursor: pointer;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    perspective: 600px;
+  }
+
+  .eslide-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .ec-front, .ec-back {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px;
+    border-radius: 10px;
+    backface-visibility: hidden;
+    transition: transform 0.4s;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .ec-front { background: var(--bg); font-weight: 600; }
+  .ec-back  { background: var(--accent-glow); color: var(--accent-light); transform: rotateY(180deg); font-weight: 400; }
+
+  .eslide-card.flipped .ec-front { transform: rotateY(-180deg); }
+  .eslide-card.flipped .ec-back  { transform: rotateY(0deg); }
+
+  .eslide-hint {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 4px !important;
+  }
+
+  .eslide-stats {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+
+  .estat {
+    text-align: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 28px;
+  }
+
+  .estat-num {
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-light), #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  .estat span:not(.estat-num) {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-light);
+  }
+
+  .estat p {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 6px 0 0;
+  }
+
+  .mq-question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+
+  .mq-opts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mq-opts button {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: "Inter", sans-serif;
+    transition: border-color 0.2s;
+  }
+
+  .mq-opts button:hover:not(:disabled) { border-color: var(--accent); }
+  .mq-opts button.mq-correct { border-color: #22c55e; background: rgba(34,197,94,0.1); color: #22c55e; }
+  .mq-opts button.mq-wrong   { border-color: #ef4444; background: rgba(239,68,68,0.1); color: #ef4444; }
+
+  #mq-feedback {
+    margin-top: 14px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    min-height: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mq-reset-btn {
+    align-self: flex-start;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+    border-radius: 8px;
+    padding: 7px 18px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .mq-reset-btn:hover {
+    background: var(--accent-glow);
+    transform: translateY(-1px);
+  }
+
+  .elearn-nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 32px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .elearn-nav button {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .elearn-nav button:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-glow); }
+  .elearn-nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  #elearn-next.done {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* SERTİFİKA */
+  #cert-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 8500;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+
+  #cert-overlay.open { display: flex; }
+
+  #cert-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    width: min(520px, 92vw);
+    text-align: center;
+    animation: quiz-in 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .cert-emoji { font-size: 3rem; margin-bottom: 12px; }
+  #cert-box h2 { font-size: 1.6rem; margin-bottom: 8px; }
+  #cert-box > p { color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+
+  #cert-name {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-size: 1rem;
+    font-family: "Inter", sans-serif;
+    text-align: center;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #cert-name:focus { border-color: var(--accent); }
+
+  #cert-generate-btn {
+    background: linear-gradient(135deg, var(--accent), #c084fc);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    margin-bottom: 20px;
+    transition: opacity 0.2s;
+  }
+
+  #cert-generate-btn:hover { opacity: 0.9; }
+
+  #cert-canvas {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: none;
+    border: 1px solid var(--border);
+  }
+
+  #cert-download {
+    display: inline-block;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .cert-close {
+    display: block;
+    width: 100%;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    margin-top: 4px;
+  }
+
+  /* CHATBOT */
+  #chat-bubble {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 999;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #c084fc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(124, 58, 237, 0.45);
+    font-size: 1.4rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: bubble-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes bubble-pulse {
+    0%, 100% { box-shadow: 0 4px 24px rgba(124,58,237,0.45); }
+    50% { box-shadow: 0 4px 36px rgba(192,132,252,0.65); }
+  }
+
+  #chat-bubble:hover {
+    transform: scale(1.08);
+  }
+
+  #chat-window {
+    position: fixed;
+    bottom: 96px;
+    right: 28px;
+    z-index: 998;
+    width: 340px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: chat-in 0.25s ease;
+  }
+
+  #chat-window.open { display: flex; }
+
+  @keyframes chat-in {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  #chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent), #7e22ce);
+    color: white;
+  }
+
+  .chat-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    font-family: "JetBrains Mono", monospace;
+    flex-shrink: 0;
+  }
+
+  .chat-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+
+  .chat-status {
+    font-size: 0.74rem;
+    opacity: 0.8;
+  }
+
+  .chat-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.8;
+    padding: 4px;
+  }
+
+  .chat-close:hover { opacity: 1; }
+
+  #chat-messages {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    animation: msg-in 0.2s ease;
+  }
+
+  @keyframes msg-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.bot {
+    background: var(--tag-bg);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+  }
+
+  .typing-indicator {
+    letter-spacing: 4px;
+    animation: typing-blink 1s infinite;
+  }
+
+  @keyframes typing-blink {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  .msg.user {
+    background: linear-gradient(135deg, var(--accent), #7e22ce);
+    color: white;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+
+  #chat-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 16px 12px;
+  }
+
+  #chat-suggestions button {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  #chat-suggestions button:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  #chat-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  #chat-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-size: 0.875rem;
+    outline: none;
+    font-family: "Inter", sans-serif;
+    transition: border-color 0.2s;
+  }
+
+  #chat-input:focus { border-color: var(--accent); }
+
+  #chat-input-row button {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+  }
+
+  #chat-input-row button:hover { opacity: 0.85; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    /* NAV */
+    .nav-links a { display: none; }
+    #theme-toggle { display: flex; }
+
+    /* HERO */
+    .hero-layout {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    .hero-photo-wrap {
+      order: -1;
+      display: flex;
+      justify-content: center;
+    }
+    .hero-photo-ring { width: 160px; height: 160px; }
+    .hero-cta, .hero-socials, .hero-top-row { justify-content: center; }
+    .hero-top-row { flex-direction: column; align-items: center; gap: 10px; }
+    h1 { font-size: 2rem; }
+    .hero-desc { font-size: 0.95rem; }
+
+    /* GENEL */
+    section { padding: 52px 0; }
+    .section-title { font-size: 1.35rem; }
+
+    /* ABOUT */
+    .about-grid { grid-template-columns: 1fr; }
+
+    /* EĞİTİM */
+    .edu-grid { grid-template-columns: 1fr; }
+
+    /* TIMELINE */
+    .timeline-header { flex-direction: column; gap: 6px; }
+
+    /* SKILLS */
+    .skills-grid { grid-template-columns: 1fr; }
+
+    /* PROJELER */
+    .projects-grid { grid-template-columns: 1fr; }
+
+    /* REFERANSLAR */
+    .ref-grid { grid-template-columns: 1fr; }
+
+    /* İLETİŞİM */
+    .contact-actions { flex-direction: column; align-items: flex-start; }
+    .runaway-wrap { width: 100%; height: 48px; }
+    #hire-btn { width: 100%; position: relative !important;
+      left: auto !important; top: auto !important; }
+    .quiz-trigger-btn { width: 100%; }
+
+    /* E-ÖĞRENİM */
+    #elearn-box { max-width: 100%; }
+    #elearn-slides { padding: 24px 16px 16px; }
+    .eslide-cards { grid-template-columns: 1fr; }
+    .eslide-stats { gap: 12px; }
+    .estat { padding: 14px 18px; }
+    .elearn-nav { padding: 14px 16px 18px; }
+
+    /* CHATBOT */
+    #chat-window { width: calc(100vw - 32px); right: 16px; }
+
+    /* TERMİNAL */
+    #terminal-body { font-size: 0.78rem; padding: 16px; }
+  }
+</style>
+
+<script>
+  // ── E-ÖĞRENİM MODÜLÜ ─────────────────────────────────────
+  let currentSlide = 1;
+  const TOTAL_SLIDES = 4;
+
+  function showSlide(n) {
+    document.querySelectorAll(".eslide").forEach(s => s.classList.remove("active"));
+    document.querySelector(`.eslide[data-slide="${n}"]`)?.classList.add("active");
+    document.getElementById("elearn-fill").style.width = (n / TOTAL_SLIDES * 100) + "%";
+    document.getElementById("elearn-step-label").textContent = n + " / " + TOTAL_SLIDES;
+    const prev = document.getElementById("elearn-prev");
+    const next = document.getElementById("elearn-next");
+    prev.disabled = n === 1;
+    if (n === TOTAL_SLIDES) {
+      next.textContent = "Tamamla ✓";
+      next.classList.add("done");
+    } else {
+      next.textContent = "İleri →";
+      next.classList.remove("done");
+    }
+    if (n === 3) animateStats();
+  }
+
+  window.eLearnNext = function() {
+    if (currentSlide < TOTAL_SLIDES) { currentSlide++; showSlide(currentSlide); }
+    else { markSectionDone("modul"); }
+  };
+
+  window.eLearnPrev = function() {
+    if (currentSlide > 1) { currentSlide--; showSlide(currentSlide); }
+  };
+
+  function animateStats() {
+    document.querySelectorAll(".estat-num").forEach(el => {
+      const target = parseInt(el.getAttribute("data-target") || "0");
+      let cur = 0;
+      const step = Math.ceil(target / 40);
+      const t = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = String(cur);
+        if (cur >= target) clearInterval(t);
+      }, 35);
+    });
+  }
+
+  window.mqAnswer = function(btn, correct) {
+    document.querySelectorAll(".mq-opts button").forEach(b => {
+      (b as HTMLButtonElement).disabled = true;
+    });
+    const fb = document.getElementById("mq-feedback");
+    if (correct) {
+      btn.classList.add("mq-correct");
+      fb.innerHTML = '<span style="color:#22c55e">✓ Dogru! SCORM, e-ogrenme iceriklerinin LMS ile konusmasini saglayan bir standarttir.</span>';
+    } else {
+      btn.classList.add("mq-wrong");
+      fb.innerHTML = '<span style="color:#ef4444">✗ Yanlis. Dogru cevap: E-ogrenme icerik ve LMS iletisim standardi.</span>';
+      document.querySelectorAll(".mq-opts button")[1].classList.add("mq-correct");
+    }
+    fb.innerHTML += '<br/><button class="mq-reset-btn" onclick="resetModulQuiz()">↺ Tekrar Dene</button>';
+    markSectionDone("modul-quiz");
+  };
+
+  window.resetModulQuiz = function() {
+    document.getElementById("mq-feedback").innerHTML = "";
+    document.querySelectorAll(".mq-opts button").forEach(b => {
+      const el = b as HTMLButtonElement;
+      el.disabled = false;
+      el.classList.remove("mq-correct","mq-wrong");
+    });
+  };
+
+  // ── TAMAMLAMA TAKİBİ & SERTİFİKA ────────────────────────
+  const SECTIONS_TO_TRACK = ["hakkimda","deneyim","egitim","projeler","yetenekler","modul","iletisim"];
+  const visitedSections = new Set();
+  let certShown = false;
+
+  const certObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        visitedSections.add(e.target.id);
+        if (!certShown && visitedSections.size >= SECTIONS_TO_TRACK.length) {
+          certShown = true;
+          setTimeout(() => document.getElementById("cert-overlay").classList.add("open"), 800);
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+
+  SECTIONS_TO_TRACK.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) certObs.observe(el);
+  });
+
+  function markSectionDone(id) { visitedSections.add(id); }
+
+  window.generateCert = function() {
+    const name = (document.getElementById("cert-name") as HTMLInputElement).value.trim();
+    if (!name) { alert("Lütfen adını yaz!"); return; }
+
+    const canvas = document.getElementById("cert-canvas") as HTMLCanvasElement;
+    canvas.width = 900;
+    canvas.height = 620;
+    canvas.style.display = "block";
+    const ctx = canvas.getContext("2d")!;
+
+    // Arka plan gradyanı
+    const grad = ctx.createLinearGradient(0, 0, 900, 620);
+    grad.addColorStop(0, "#0f0f1a");
+    grad.addColorStop(1, "#1a0a2e");
+    ctx.fillStyle = grad;
+    ctx.roundRect(0, 0, 900, 620, 16);
+    ctx.fill();
+
+    // Kenar çerçevesi
+    ctx.strokeStyle = "#7c3aed";
+    ctx.lineWidth = 3;
+    ctx.roundRect(16, 16, 868, 588, 12);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(167,139,250,0.3)";
+    ctx.lineWidth = 1;
+    ctx.roundRect(24, 24, 852, 572, 10);
+    ctx.stroke();
+
+    // Köşe süsler
+    [[36,36],[864,36],[36,584],[864,584]].forEach(([x,y]) => {
+      ctx.fillStyle = "#7c3aed";
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // Başlık
+    ctx.fillStyle = "#a78bfa";
+    ctx.font = "bold 14px Georgia";
+    ctx.textAlign = "center";
+    ctx.fillText("HAKAN EFE  -  EGITIM TEKNOLOGU PORTFOLYOSU", 450, 68);
+
+    ctx.fillStyle = "rgba(167,139,250,0.2)";
+    ctx.fillRect(80, 80, 740, 1);
+
+    // Rozet
+    ctx.font = "52px Georgia";
+    ctx.fillText("*", 450, 158);
+
+    // Sertifika başlığı
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = "bold 26px Georgia";
+    ctx.fillText("TAMAMLAMA SERTIFIKASI", 450, 222);
+
+    // Alt metin
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "15px Georgia";
+    ctx.fillText("Bu sertifika asagidaki kisinin", 450, 268);
+
+    // İsim
+    ctx.fillStyle = "#c084fc";
+    ctx.font = "bold 38px Georgia";
+    ctx.fillText(name.toUpperCase(), 450, 332);
+
+    // Ayraç çizgi
+    ctx.strokeStyle = "rgba(192,132,252,0.4)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(200, 350); ctx.lineTo(700, 350);
+    ctx.stroke();
+
+    // Açıklama
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "15px Georgia";
+    ctx.fillText("Hakan Efe'nin egitim teknologu portfolyosunu eksiksiz", 450, 390);
+    ctx.fillText("inceledigini ve tum moduller basariyla tamamladigini belgeler.", 450, 414);
+
+    // Tarih & imza
+    const today = new Date().toLocaleDateString("tr-TR", { day:"numeric", month:"long", year:"numeric" });
+    ctx.fillStyle = "#64748b";
+    ctx.font = "13px Georgia";
+    ctx.textAlign = "left";
+    ctx.fillText("Tarih: " + today, 100, 510);
+
+    ctx.textAlign = "right";
+    ctx.fillText("Hakan Efe", 800, 505);
+    ctx.fillStyle = "#a78bfa";
+    ctx.font = "12px Georgia";
+    ctx.fillText("Egitim Teknologu", 800, 524);
+
+    // Alt çizgi (imza görseli yerine)
+    ctx.strokeStyle = "rgba(100,116,139,0.4)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(80, 520); ctx.lineTo(300, 520);
+    ctx.moveTo(680, 520); ctx.lineTo(820, 520);
+    ctx.stroke();
+
+    // İndir linki
+    const link = document.getElementById("cert-download") as HTMLAnchorElement;
+    link.href = canvas.toDataURL("image/png");
+    link.download = "HakanEfe_Sertifika.png";
+    link.style.display = "inline-block";
+  };
+
+  // ── 1. TERMİNAL AÇILIŞ ───────────────────────────────────
+  const TERMINAL_LINES = [
+    "$ whoami",
+    "> Hakan Efe — Eğitim Teknoloğu",
+    "$ cat hakkimda.txt",
+    "> Marmara Üni. BÖTE mezunu, Y.L. öğrencisi.",
+    "> E-öğrenme & LMS uzmanı.",
+    "$ ls deneyim/",
+    "> EBİTEKAM  UZEM  TBV  Zübeyde_Hanım  YDYO",
+    "$ ./portfolio --start",
+    "> Portföy yükleniyor... ✓",
+  ];
+
+  const termText = document.getElementById("terminal-text");
+  const overlay = document.getElementById("terminal-overlay");
+  let lineI = 0, charI = 0, termDone = false;
+
+  function typeTerminal() {
+    if (termDone) return;
+    if (lineI >= TERMINAL_LINES.length) {
+      setTimeout(skipTerminal, 600);
+      return;
+    }
+    const line = TERMINAL_LINES[lineI];
+    if (charI < line.length) {
+      termText.innerHTML += line[charI] === "<" ? "&lt;" : line[charI];
+      charI++;
+      setTimeout(typeTerminal, line.startsWith("$") ? 45 : 28);
+    } else {
+      termText.innerHTML += "\n";
+      charI = 0;
+      lineI++;
+      setTimeout(typeTerminal, 320);
+    }
+  }
+
+  function skipTerminal() {
+    termDone = true;
+    overlay.classList.add("hidden");
+    setTimeout(() => overlay.remove(), 700);
+  }
+
+  window.skipTerminal = skipTerminal;
+  setTimeout(typeTerminal, 400);
+
+  // ── 2. ZİYARETÇİ SAYACI ──────────────────────────────────
+  const BASE = 1247;
+  let count = parseInt(localStorage.getItem("vc_count") || "0");
+  if (!localStorage.getItem("vc_visited")) {
+    count = BASE + Math.floor(Math.random() * 80);
+    localStorage.setItem("vc_count", String(count));
+    localStorage.setItem("vc_visited", "1");
+  }
+  const vcEl = document.getElementById("visitor-count");
+  let vcCur = count - 30;
+  const vcTimer = setInterval(() => {
+    vcCur = Math.min(vcCur + 1, count);
+    if (vcEl) vcEl.textContent = vcCur.toLocaleString("tr-TR");
+    if (vcCur >= count) clearInterval(vcTimer);
+  }, 40);
+
+  // ── 3. SCROLL REVEAL ──────────────────────────────────────
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("visible");
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll(".reveal").forEach(el => revealObs.observe(el));
+
+  // ── 4. KAÇAN BUTON + CONFETTİ ────────────────────────────
+  let escapeCount = 0;
+
+  window.runAway = function(btn) {
+    escapeCount++;
+    if (escapeCount >= 4) {
+      btn.classList.add("caught");
+      btn.textContent = "Yakaladın! 🎉";
+      btn.onmouseenter = null;
+      launchConfetti();
+      return;
+    }
+    const wrap = btn.parentElement;
+    const wRect = wrap.getBoundingClientRect();
+    const maxX = window.innerWidth - wRect.width - 20;
+    const maxY = window.innerHeight - 60;
+    const rx = Math.max(20, Math.random() * maxX);
+    const ry = Math.max(20, Math.random() * maxY);
+    btn.style.position = "fixed";
+    btn.style.left = rx + "px";
+    btn.style.top = ry + "px";
+    btn.style.zIndex = "7000";
+    btn.style.transition = "left 0.18s, top 0.18s";
+  };
+
+  function launchConfetti() {
+    const cc = document.getElementById("confetti-canvas");
+    cc.style.display = "block";
+    cc.width = window.innerWidth;
+    cc.height = window.innerHeight;
+    const ctx = cc.getContext("2d");
+    const pieces = Array.from({ length: 160 }, () => ({
+      x: Math.random() * cc.width,
+      y: -20,
+      r: Math.random() * 8 + 4,
+      color: ["#7c3aed","#a78bfa","#c084fc","#22c55e","#fbbf24","#f472b6"][Math.floor(Math.random()*6)],
+      vx: (Math.random()-0.5)*6,
+      vy: Math.random()*4+2,
+      rot: Math.random()*360,
+      vr: (Math.random()-0.5)*8,
+    }));
+    let frame = 0;
+    function drawConfetti() {
+      ctx.clearRect(0, 0, cc.width, cc.height);
+      pieces.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.vy += 0.08;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI/180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.5);
+        ctx.restore();
+      });
+      frame++;
+      if (frame < 160) requestAnimationFrame(drawConfetti);
+      else { cc.style.display = "none"; ctx.clearRect(0,0,cc.width,cc.height); }
+    }
+    drawConfetti();
+  }
+
+  // ── 5. MİNİ QUIZ ─────────────────────────────────────────
+  const QUESTIONS = [
+    {
+      q: "Hakan hangi üniversitede okudu?",
+      opts: ["İstanbul Teknik Üniversitesi","Marmara Üniversitesi","Boğaziçi Üniversitesi","Hacettepe Üniversitesi"],
+      ans: 1,
+    },
+    {
+      q: "Hakan'ın bölümünün kısaltması nedir?",
+      opts: ["BÖTE","BİLMÜH","EDS","YTE"],
+      ans: 0,
+    },
+    {
+      q: "Hakan hangi kuruluşta araştırmacı olarak çalışıyor?",
+      opts: ["TÜBİTAK","TBV","EBİTEKAM","UZEM"],
+      ans: 2,
+    },
+    {
+      q: "Hakan'ın e-posta adresi hangisi?",
+      opts: ["hakan@marmara.edu.tr","hakanefe1141@gmail.com","hefe@hotmail.com","hakan.efe@tbv.org"],
+      ans: 1,
+    },
+    {
+      q: "Hakan hangi e-öğrenme aracını kullanıyor?",
+      opts: ["Adobe Premiere","Articulate Storyline","Final Cut Pro","DaVinci Resolve"],
+      ans: 1,
+    },
+  ];
+
+  let qIdx = 0, score = 0, answered = false;
+
+  function renderQuiz() {
+    const c = document.getElementById("quiz-content");
+    if (qIdx >= QUESTIONS.length) {
+      const pct = Math.round((score / QUESTIONS.length) * 100);
+      const msg = pct === 100 ? "Mükemmel! Hakan'ı çok iyi tanıyorsun 🏆"
+                : pct >= 60 ? "Fena değil! Biraz daha öğrenebilirsin 😊"
+                : "Portföyü biraz daha incele! 😄";
+      c.innerHTML = `<div class="quiz-result">
+        <div class="score">${score}/${QUESTIONS.length}</div>
+        <p>${msg}</p>
+        <button class="quiz-restart" onclick="restartQuiz()">Tekrar Dene 🔄</button>
+      </div>`;
+      if (pct === 100) launchConfetti();
+      return;
+    }
+    const q = QUESTIONS[qIdx];
+    c.innerHTML = `
+      <p class="quiz-progress">Soru ${qIdx+1} / ${QUESTIONS.length}</p>
+      <p class="quiz-q">${q.q}</p>
+      <div class="quiz-options">
+        ${q.opts.map((o,i) => `<button class="quiz-opt" onclick="answerQuiz(${i},this)">${o}</button>`).join("")}
+      </div>`;
+    answered = false;
+  }
+
+  window.answerQuiz = function(i, btn) {
+    if (answered) return;
+    answered = true;
+    const q = QUESTIONS[qIdx];
+    document.querySelectorAll(".quiz-opt").forEach((b, idx) => {
+      (b as HTMLElement).style.pointerEvents = "none";
+      if (idx === q.ans) b.classList.add("correct");
+    });
+    if (i === q.ans) { score++; }
+    else { btn.classList.add("wrong"); }
+    setTimeout(() => { qIdx++; renderQuiz(); }, 900);
+  };
+
+  window.openQuiz = function() {
+    qIdx = 0; score = 0;
+    document.getElementById("quiz-overlay").classList.add("open");
+    renderQuiz();
+  };
+
+  window.closeQuiz = function(e?: any) {
+    if (!e || e.target === document.getElementById("quiz-overlay"))
+      document.getElementById("quiz-overlay").classList.remove("open");
+  };
+
+  window.restartQuiz = function() { qIdx = 0; score = 0; renderQuiz(); };
+
+  const canvas = document.getElementById("particles-canvas") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d")!;
+
+  type Star = { x: number; y: number; vx: number; vy: number; r: number; alpha: number; twinkleSpeed: number; twinkleOffset: number; };
+  let stars: Star[] = [];
+  const STAR_COUNT = 220;
+  const CONNECT_DIST = 110;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function initStars() {
+    stars = Array.from({ length: STAR_COUNT }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 0.55 + 0.15;
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        r: Math.random() * 1.8 + 0.3,
+        alpha: Math.random() * 0.65 + 0.2,
+        twinkleSpeed: Math.random() * 0.04 + 0.01,
+        twinkleOffset: Math.random() * Math.PI * 2,
+      };
+    });
+  }
+
+  let frame = 0;
+  function draw() {
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const isDark = document.documentElement.getAttribute("data-theme") !== "light";
+    const starColor = isDark ? "200, 180, 255" : "109, 40, 217";
+    const lineColor = isDark ? "168, 139, 250" : "124, 58, 237";
+
+    for (const s of stars) {
+      s.x += s.vx;
+      s.y += s.vy;
+      if (s.x < 0) s.x = canvas.width;
+      if (s.x > canvas.width) s.x = 0;
+      if (s.y < 0) s.y = canvas.height;
+      if (s.y > canvas.height) s.y = 0;
+
+      const twinkle = s.alpha * (0.6 + 0.4 * Math.sin(frame * s.twinkleSpeed + s.twinkleOffset));
+
+      // Parlak nokta
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${starColor}, ${twinkle})`;
+      ctx.fill();
+
+      // Büyük yıldızlara çapraz ışıma efekti
+      if (s.r > 1.2) {
+        const len = s.r * 3.5;
+        ctx.save();
+        ctx.globalAlpha = twinkle * 0.35;
+        ctx.strokeStyle = `rgba(${starColor}, 1)`;
+        ctx.lineWidth = 0.4;
+        ctx.beginPath();
+        ctx.moveTo(s.x - len, s.y); ctx.lineTo(s.x + len, s.y);
+        ctx.moveTo(s.x, s.y - len); ctx.lineTo(s.x, s.y + len);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // Bağlantı çizgileri
+    for (let i = 0; i < stars.length; i++) {
+      for (let j = i + 1; j < stars.length; j++) {
+        const dx = stars[i].x - stars[j].x;
+        const dy = stars[i].y - stars[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECT_DIST) {
+          ctx.beginPath();
+          ctx.moveTo(stars[i].x, stars[i].y);
+          ctx.lineTo(stars[j].x, stars[j].y);
+          ctx.strokeStyle = `rgba(${lineColor}, ${0.07 * (1 - dist / CONNECT_DIST)})`;
+          ctx.lineWidth = 0.4;
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  initStars();
+  draw();
+  window.addEventListener("resize", () => { resize(); initStars(); });
+
+  // ── Chatbot (Gemini AI) ───────────────────────────────────
+  function addMsg(text, who) {
+    const msgs = document.getElementById("chat-messages");
+    const div = document.createElement("div");
+    div.className = "msg " + who;
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping() {
+    const msgs = document.getElementById("chat-messages");
+    const dot = document.createElement("div");
+    dot.className = "msg bot typing-indicator";
+    dot.id = "typing-dot";
+    dot.textContent = "...";
+    msgs.appendChild(dot);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function removeTyping() {
+    const el = document.getElementById("typing-dot");
+    if (el) el.remove();
+  }
+
+  async function getAIReply(message) {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+      const data = await res.json();
+      return data.reply || "Bir sorun oluştu, tekrar dene.";
+    } catch {
+      return "Bağlantı hatası. Lütfen tekrar dene.";
+    }
+  }
+
+  window.toggleChat = function () {
+    const w = document.getElementById("chat-window");
+    const icon = document.getElementById("chat-bubble-icon");
+    w.classList.toggle("open");
+    icon.textContent = w.classList.contains("open") ? "✕" : "💬";
+    if (w.classList.contains("open")) document.getElementById("chat-input").focus();
+  };
+
+  window.ask = async function (q) {
+    addMsg(q, "user");
+    document.getElementById("chat-suggestions").style.display = "none";
+    showTyping();
+    const reply = await getAIReply(q);
+    removeTyping();
+    addMsg(reply, "bot");
+  };
+
+  window.sendMsg = async function () {
+    const input = document.getElementById("chat-input");
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    addMsg(text, "user");
+    document.getElementById("chat-suggestions").style.display = "none";
+    showTyping();
+    const reply = await getAIReply(text);
+    removeTyping();
+    addMsg(reply, "bot");
+  };
+</script>

@@ -1,0 +1,169 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Hakan Efe - Eğitim Teknoloğu Portföyü" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <slot />
+    <script>
+      const theme = localStorage.getItem("theme") || "dark";
+      document.documentElement.setAttribute("data-theme", theme);
+
+      window.toggleTheme = function () {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        const btn = document.getElementById("theme-toggle");
+        if (btn) btn.textContent = next === "dark" ? "☀️" : "🌙";
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("theme-toggle");
+        const saved = localStorage.getItem("theme") || "dark";
+        if (btn) btn.textContent = saved === "dark" ? "☀️" : "🌙";
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root[data-theme="dark"] {
+    --bg: #0a0a0f;
+    --bg-card: #111118;
+    --bg-nav: rgba(10, 10, 15, 0.85);
+    --border: #1e1e2e;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+    --accent: #7c3aed;
+    --accent-light: #a78bfa;
+    --accent-glow: rgba(124, 58, 237, 0.15);
+    --tag-bg: #1e1e2e;
+    --tag-text: #a78bfa;
+    --shadow: rgba(0, 0, 0, 0.5);
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-nav: rgba(248, 250, 252, 0.85);
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-dim: #475569;
+    --accent: #7c3aed;
+    --accent-light: #6d28d9;
+    --accent-glow: rgba(124, 58, 237, 0.08);
+    --tag-bg: #f1f5f9;
+    --tag-text: #6d28d9;
+    --shadow: rgba(0, 0, 0, 0.08);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: "Inter", sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  a {
+    color: var(--accent-light);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  a:hover {
+    opacity: 0.8;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section {
+    padding: 80px 0;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    font-family: "JetBrains Mono", monospace;
+  }
+</style>

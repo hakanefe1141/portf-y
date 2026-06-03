@@ -1,0 +1,638 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="LMS Karşılaştırma Aracı | Hakan Efe" description="Popüler öğrenme yönetim sistemlerini 8 kriterde karşılaştır.">
+
+<div class="tool-page">
+
+  <!-- HEADER -->
+  <header class="tool-header">
+    <a href="/" class="back-link">← Portföye Dön</a>
+    <div class="tool-title-wrap">
+      <span class="tool-badge">Eğitim Teknolojisi Projesi</span>
+      <h1>LMS Karşılaştırma Aracı</h1>
+      <p>Popüler öğrenme yönetim sistemlerini 8 kriterde karşılaştır, ihtiyacına en uygun platformu seç.</p>
+    </div>
+    <p class="tool-by">Hakan Efe tarafından geliştirildi</p>
+  </header>
+
+  <main class="tool-main container">
+
+    <!-- PLATFORM SEÇİMİ -->
+    <section class="platform-select-section">
+      <h2 class="section-label">Platform Seç <span class="hint">(en fazla 4)</span></h2>
+      <div class="platform-grid" id="platform-grid"></div>
+    </section>
+
+    <!-- RADAR + TABLO -->
+    <div class="compare-layout">
+
+      <div class="radar-wrap card">
+        <h3 class="card-title">Radar Grafik</h3>
+        <canvas id="radar-canvas" width="420" height="420"></canvas>
+        <div id="radar-legend" class="radar-legend"></div>
+      </div>
+
+      <div class="table-wrap card">
+        <div class="table-header-row">
+          <h3 class="card-title">Özellik Karşılaştırması</h3>
+          <div class="sort-row">
+            <label>Sırala:</label>
+            <select id="sort-select" onchange="renderTable()">
+              <option value="">— Kriter Seç —</option>
+              <option value="0">Kullanım Kolaylığı</option>
+              <option value="1">İçerik Araçları</option>
+              <option value="2">Değerlendirme</option>
+              <option value="3">Raporlama</option>
+              <option value="4">Entegrasyon</option>
+              <option value="5">Mobil Uyum</option>
+              <option value="6">Türkiye Yaygınlığı</option>
+              <option value="7">Ücretsiz Kullanım</option>
+            </select>
+          </div>
+        </div>
+        <div id="compare-table"></div>
+      </div>
+
+    </div>
+
+    <!-- ÖNERI KARTI -->
+    <div id="recommendation" class="recommendation card" style="display:none"></div>
+
+    <!-- BİLGİ KARTI -->
+    <div class="info-cards">
+      <div class="info-card">
+        <span class="info-icon">📊</span>
+        <h4>Puanlama Hakkında</h4>
+        <p>Puanlar 1–10 arasında, sektör raporları ve kullanıcı deneyimlerine dayalı olarak belirlenmiştir.</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">🎯</span>
+        <h4>Nasıl Kullanılır?</h4>
+        <p>Platformları seçin, radar grafikte güçlü/zayıf yönleri görün, tabloda kritere göre sıralayın.</p>
+      </div>
+      <div class="info-card">
+        <span class="info-icon">🔄</span>
+        <h4>Güncellik</h4>
+        <p>Veriler 2025-2026 dönemi itibarıyla günceldir. Platform özellikleri değişebilir.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="tool-footer">
+    <p>Hakan Efe · Eğitim Teknoloğu · <a href="mailto:hakanefe1141@gmail.com">hakanefe1141@gmail.com</a></p>
+  </footer>
+
+</div>
+
+</Layout>
+
+<style>
+  :root { --accent:#7c3aed; --accent-light:#a78bfa; }
+
+  .tool-page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  .tool-header {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a0a2e 100%);
+    border-bottom: 1px solid #2a2a3e;
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .back-link {
+    color: var(--accent-light);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #2a2a3e;
+    border-radius: 8px;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .back-link:hover { border-color: var(--accent); opacity: 1; }
+
+  .tool-title-wrap { flex: 1; }
+
+  .tool-badge {
+    display: inline-block;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+    border-radius: 100px;
+    padding: 3px 14px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .tool-title-wrap h1 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #e2e8f0;
+  }
+
+  .tool-title-wrap p { color: #64748b; font-size: 0.9rem; }
+
+  .tool-by { color: #475569; font-size: 0.8rem; margin-left: auto; white-space: nowrap; }
+
+  .tool-main { padding: 40px 24px 60px; }
+
+  /* PLATFORM SEÇİMİ */
+  .platform-select-section { margin-bottom: 36px; }
+
+  .section-label {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .hint { color: var(--text-muted, #64748b); font-weight: 400; font-size: 0.85rem; }
+
+  .platform-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .platform-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    background: var(--bg-card, #111118);
+    border: 2px solid var(--border, #1e1e2e);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+
+  .platform-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+  .platform-btn.active {
+    border-color: var(--accent);
+    background: rgba(124,58,237,0.1);
+  }
+
+  .platform-btn .p-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* KARŞILAŞTIRMA DÜZENİ */
+  .compare-layout {
+    display: grid;
+    grid-template-columns: 440px 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: var(--bg-card, #111118);
+    border: 1px solid var(--border, #1e1e2e);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  /* RADAR */
+  .radar-wrap { text-align: center; }
+  #radar-canvas { max-width: 100%; height: auto; }
+
+  .radar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text-muted, #64748b);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* TABLO */
+  .table-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .sort-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-muted, #64748b);
+  }
+
+  .sort-row select {
+    background: var(--bg, #0a0a0f);
+    border: 1px solid var(--border, #1e1e2e);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-family: "Inter", sans-serif;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .criteria-row {
+    display: grid;
+    grid-template-columns: 1fr repeat(var(--cols), 80px);
+    gap: 4px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    align-items: center;
+    font-size: 0.82rem;
+    transition: background 0.15s;
+  }
+
+  .criteria-row:hover { background: rgba(124,58,237,0.05); }
+
+  .criteria-row.header {
+    background: rgba(124,58,237,0.08);
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: var(--accent-light);
+    margin-bottom: 4px;
+  }
+
+  .criteria-name { color: var(--text-dim, #94a3b8); font-weight: 500; }
+
+  .score-cell {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .score-num {
+    font-weight: 700;
+    font-size: 0.88rem;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  .score-bar-mini {
+    width: 40px;
+    height: 4px;
+    background: var(--border, #1e1e2e);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill { height: 100%; border-radius: 2px; }
+
+  /* ÖNERİ */
+  .recommendation {
+    margin-bottom: 24px;
+    border-color: var(--accent) !important;
+    background: rgba(124,58,237,0.06) !important;
+  }
+
+  .rec-title { font-weight: 700; font-size: 1rem; margin-bottom: 8px; color: var(--accent-light); }
+  .rec-body { color: var(--text-dim, #94a3b8); font-size: 0.9rem; line-height: 1.7; }
+
+  /* BİLGİ KARTLARI */
+  .info-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .info-card {
+    background: var(--bg-card, #111118);
+    border: 1px solid var(--border, #1e1e2e);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .info-icon { font-size: 1.5rem; display: block; margin-bottom: 8px; }
+  .info-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+  .info-card p { color: var(--text-muted, #64748b); font-size: 0.82rem; line-height: 1.6; }
+
+  /* FOOTER */
+  .tool-footer {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border, #1e1e2e);
+    color: var(--text-muted, #64748b);
+    font-size: 0.82rem;
+  }
+
+  @media (max-width: 860px) {
+    .compare-layout { grid-template-columns: 1fr; }
+    .info-cards { grid-template-columns: 1fr 1fr; }
+    .tool-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .tool-by { margin-left: 0; }
+    .table-header-row { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (max-width: 520px) {
+    .info-cards { grid-template-columns: 1fr; }
+    .tool-main { padding: 24px 16px 40px; }
+    .tool-header { padding: 20px; }
+    .platform-btn { font-size: 0.8rem; padding: 8px 12px; }
+    .card { padding: 16px; }
+    .criteria-row { font-size: 0.74rem; padding: 6px 6px; }
+    .score-bar-mini { width: 28px; }
+    #radar-canvas { max-width: 320px; }
+  }
+</style>
+
+<script>
+  const PLATFORMS = [
+    {
+      id: "moodle", name: "Moodle", emoji: "🟠",
+      color: "#f97316",
+      scores: [6, 9, 9, 8, 9, 7, 10, 10],
+      desc: "Dünya genelinde en yaygın açık kaynaklı LMS. Türkiye üniversitelerinin vazgeçilmezi.",
+    },
+    {
+      id: "google", name: "Google Classroom", emoji: "🔵",
+      color: "#3b82f6",
+      scores: [9, 7, 8, 6, 8, 9, 8, 10],
+      desc: "Kullanımı kolay, Google ekosistemiyle tam entegre. K-12 için ideal.",
+    },
+    {
+      id: "teams", name: "MS Teams Edu", emoji: "🟣",
+      color: "#8b5cf6",
+      scores: [8, 7, 7, 8, 9, 8, 7, 8],
+      desc: "Microsoft 365 entegrasyonu güçlü. Kurumsal ortamlarda yaygın.",
+    },
+    {
+      id: "canvas", name: "Canvas LMS", emoji: "🔴",
+      color: "#ef4444",
+      scores: [8, 9, 9, 9, 8, 9, 4, 4],
+      desc: "Modern arayüz ve güçlü analitik. ABD'de yaygın, Türkiye'de az bilinen.",
+    },
+    {
+      id: "perculus", name: "Perculus", emoji: "🟢",
+      color: "#22c55e",
+      scores: [8, 7, 7, 7, 6, 7, 9, 6],
+      desc: "Türkiye merkezli, canlı ders odaklı platform. Yerli ve güçlü destek.",
+    },
+    {
+      id: "blackboard", name: "Blackboard", emoji: "⚫",
+      color: "#64748b",
+      scores: [6, 8, 9, 9, 7, 8, 3, 3],
+      desc: "Yükseköğretimde köklü platform. Güçlü değerlendirme araçları.",
+    },
+  ];
+
+  const CRITERIA = [
+    "Kullanım Kolaylığı",
+    "İçerik Araçları",
+    "Değerlendirme",
+    "Raporlama",
+    "Entegrasyon",
+    "Mobil Uyum",
+    "Türkiye Yaygınlığı",
+    "Ücretsiz Kullanım",
+  ];
+
+  let selected = new Set(["moodle", "google", "teams"]);
+
+  // Platform butonları
+  const grid = document.getElementById("platform-grid");
+  PLATFORMS.forEach(p => {
+    const btn = document.createElement("button");
+    btn.className = "platform-btn" + (selected.has(p.id) ? " active" : "");
+    btn.innerHTML = `<span class="p-dot" style="background:${p.color}"></span>${p.emoji} ${p.name}`;
+    btn.onclick = () => togglePlatform(p.id, btn);
+    grid.appendChild(btn);
+  });
+
+  function togglePlatform(id, btn) {
+    if (selected.has(id)) {
+      if (selected.size <= 2) return; // min 2
+      selected.delete(id);
+      btn.classList.remove("active");
+    } else {
+      if (selected.size >= 4) return; // max 4
+      selected.add(id);
+      btn.classList.add("active");
+    }
+    render();
+  }
+
+  // ── RADAR GRAFİK ──────────────────────────────────────────
+  function drawRadar() {
+    const canvas = document.getElementById("radar-canvas");
+    const ctx = canvas.getContext("2d");
+    const W = 420, H = 420;
+    const cx = W / 2, cy = H / 2, R = 160;
+    const n = CRITERIA.length;
+    const isDark = document.documentElement.getAttribute("data-theme") !== "light";
+    const gridColor = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+    const labelColor = isDark ? "#94a3b8" : "#475569";
+
+    ctx.clearRect(0, 0, W, H);
+
+    // arka plan ağ
+    for (let level = 1; level <= 5; level++) {
+      const r = (R * level) / 5;
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // eksen çizgileri
+    for (let i = 0; i < n; i++) {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // etiketler
+    ctx.font = "bold 11px Inter, sans-serif";
+    ctx.fillStyle = labelColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for (let i = 0; i < n; i++) {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      const lx = cx + (R + 28) * Math.cos(angle);
+      const ly = cy + (R + 28) * Math.sin(angle);
+      const label = CRITERIA[i];
+      if (label.length > 10) {
+        const parts = label.split(" ");
+        ctx.fillText(parts[0], lx, ly - 7);
+        ctx.fillText(parts.slice(1).join(" "), lx, ly + 7);
+      } else {
+        ctx.fillText(label, lx, ly);
+      }
+    }
+
+    // platform alanları
+    const activePlatforms = PLATFORMS.filter(p => selected.has(p.id));
+    activePlatforms.forEach(p => {
+      ctx.beginPath();
+      for (let i = 0; i < n; i++) {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        const val = p.scores[i] / 10;
+        const x = cx + R * val * Math.cos(angle);
+        const y = cy + R * val * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = p.color + "28";
+      ctx.fill();
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // nokta
+      for (let i = 0; i < n; i++) {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+        const val = p.scores[i] / 10;
+        ctx.beginPath();
+        ctx.arc(cx + R * val * Math.cos(angle), cy + R * val * Math.sin(angle), 4, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      }
+    });
+
+    // legend
+    const legend = document.getElementById("radar-legend");
+    legend.innerHTML = activePlatforms.map(p =>
+      `<div class="legend-item"><span class="legend-dot" style="background:${p.color}"></span>${p.name}</div>`
+    ).join("");
+  }
+
+  // ── TABLO ────────────────────────────────────────────────
+  function renderTable() {
+    const sortIdx = parseInt((document.getElementById("sort-select") as HTMLSelectElement).value);
+    const activePlatforms = PLATFORMS.filter(p => selected.has(p.id));
+    const cols = activePlatforms.length;
+
+    let rows = CRITERIA.map((c, i) => ({
+      name: c,
+      idx: i,
+      scores: activePlatforms.map(p => p.scores[i]),
+    }));
+
+    if (!isNaN(sortIdx)) {
+      rows.sort((a, b) => b.scores[activePlatforms.findIndex(p => p.id === activePlatforms[sortIdx < cols ? 0 : 0].id)] - a.scores[0]);
+      // basit: seçilen kritere göre sırala
+      rows = CRITERIA.map((c, i) => ({ name: c, idx: i, scores: activePlatforms.map(p => p.scores[i]) }));
+      rows.sort((a, b) => {
+        const aSum = a.scores.reduce((s, x) => s + x, 0);
+        const bSum = b.scores.reduce((s, x) => s + x, 0);
+        return bSum - aSum;
+      });
+    }
+
+    const table = document.getElementById("compare-table");
+    table.style.setProperty("--cols", String(cols));
+
+    const headerRow = `<div class="criteria-row header" style="--cols:${cols}">
+      <span>Kriter</span>
+      ${activePlatforms.map(p => `<div class="score-cell" style="color:${p.color}">${p.emoji} ${p.name.split(" ")[0]}</div>`).join("")}
+    </div>`;
+
+    const dataRows = rows.map(row => {
+      const maxScore = Math.max(...row.scores);
+      const cells = activePlatforms.map((p, i) => {
+        const score = row.scores[i];
+        const isTop = score === maxScore;
+        return `<div class="score-cell">
+          <span class="score-num" style="color:${isTop ? p.color : "var(--text-dim, #94a3b8)"}">${score}</span>
+          <div class="score-bar-mini">
+            <div class="score-bar-fill" style="width:${score * 10}%;background:${p.color}88"></div>
+          </div>
+        </div>`;
+      }).join("");
+      return `<div class="criteria-row" style="--cols:${cols}">
+        <span class="criteria-name">${row.name}</span>${cells}
+      </div>`;
+    }).join("");
+
+    table.innerHTML = headerRow + dataRows;
+  }
+
+  // ── ÖNERİ ────────────────────────────────────────────────
+  function renderRecommendation() {
+    const activePlatforms = PLATFORMS.filter(p => selected.has(p.id));
+    if (activePlatforms.length < 2) {
+      document.getElementById("recommendation").style.display = "none";
+      return;
+    }
+    const totals = activePlatforms.map(p => ({
+      p,
+      total: p.scores.reduce((a, b) => a + b, 0),
+    })).sort((a, b) => b.total - a.total);
+
+    const best = totals[0];
+    const el = document.getElementById("recommendation");
+    el.style.display = "block";
+    el.innerHTML = `<p class="rec-title">🏆 Önerilen Platform: ${best.p.emoji} ${best.p.name}</p>
+      <p class="rec-body">${best.p.desc} Seçilen platformlar arasında toplam <strong>${best.total}/80</strong> puanla öne çıkıyor.</p>`;
+  }
+
+  function render() {
+    drawRadar();
+    renderTable();
+    renderRecommendation();
+  }
+
+  render();
+
+  // Tema değişince radari yeniden çiz
+  const observer = new MutationObserver(() => drawRadar());
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>
