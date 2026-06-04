@@ -51,6 +51,7 @@ import Layout from "../layouts/Layout.astro";
         <a href="#projeler" id="nav-projeler-link">Projeler</a>
         <a href="#modul" id="nav-modul-link">Modül</a>
         <a href="#yetenekler" id="nav-yetenekler-link">Yetenekler</a>
+        <a href="/blog" id="nav-blog-link">Blog</a>
         <a href="#iletisim" id="nav-iletisim-link">İletişim</a>
         <button id="lang-toggle" onclick="toggleLang()" title="Switch language">🇹🇷</button>
         <button id="theme-toggle" onclick="toggleTheme()" aria-label="Tema değiştir">☀️</button>
@@ -641,6 +642,35 @@ import Layout from "../layouts/Layout.astro";
             </div>
           </a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GERİ BİLDİRİM FORMU -->
+  <section id="feedback" class="reveal">
+    <div class="container">
+      <h2 class="section-title">Geri Bildirim</h2>
+      <div class="feedback-wrap">
+        <p class="feedback-desc">Bu portföy hakkında ne düşünüyorsunuz? Görüşlerinizi paylaşın.</p>
+        <form id="feedback-form" onsubmit="submitFeedback(event)">
+          <div class="fb-row">
+            <input type="text" id="fb-name" placeholder="Adınız" required />
+            <input type="email" id="fb-email" placeholder="E-posta (isteğe bağlı)" />
+          </div>
+          <div class="fb-stars" id="fb-stars">
+            <span>Değerlendirme:</span>
+            <div class="stars-row">
+              <button type="button" onclick="setStar(1)">★</button>
+              <button type="button" onclick="setStar(2)">★</button>
+              <button type="button" onclick="setStar(3)">★</button>
+              <button type="button" onclick="setStar(4)">★</button>
+              <button type="button" onclick="setStar(5)">★</button>
+            </div>
+          </div>
+          <textarea id="fb-message" placeholder="Görüşünüz..." rows="4" required></textarea>
+          <button type="submit" class="fb-submit" id="fb-submit-btn">Gönder ✉️</button>
+          <div id="fb-success" class="fb-success" style="display:none">Teşekkürler! Geri bildiriminiz alındı 🎉</div>
+        </form>
       </div>
     </div>
   </section>
@@ -2193,6 +2223,94 @@ import Layout from "../layouts/Layout.astro";
 
   #chat-input-row button:hover { opacity: 0.85; }
 
+  /* GERİ BİLDİRİM */
+  .feedback-wrap {
+    max-width: 640px;
+  }
+
+  .feedback-desc {
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+  }
+
+  #feedback-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .fb-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  #feedback-form input,
+  #feedback-form textarea {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: "Inter", sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  #feedback-form input:focus,
+  #feedback-form textarea:focus { border-color: var(--accent); }
+
+  .fb-stars {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+
+  .stars-row { display: flex; gap: 4px; }
+
+  .stars-row button {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: var(--border);
+    transition: color 0.15s, transform 0.15s;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .stars-row button:hover,
+  .stars-row button.active { color: #fbbf24; transform: scale(1.2); }
+
+  .fb-submit {
+    background: linear-gradient(135deg, var(--accent), #c084fc);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    transition: opacity 0.2s;
+    align-self: flex-start;
+    padding: 12px 28px;
+  }
+
+  .fb-submit:hover { opacity: 0.88; }
+  .fb-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .fb-success {
+    color: #22c55e;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
   /* FOOTER */
   footer {
     border-top: 1px solid var(--border);
@@ -2779,6 +2897,57 @@ import Layout from "../layouts/Layout.astro";
   initStars();
   draw();
   window.addEventListener("resize", () => { resize(); initStars(); });
+
+  // ── GERİ BİLDİRİM FORMU ──────────────────────────────────
+  let selectedStar = 0;
+
+  window.setStar = function(n) {
+    selectedStar = n;
+    document.querySelectorAll(".stars-row button").forEach((b, i) => {
+      b.classList.toggle("active", i < n);
+    });
+  };
+
+  window.submitFeedback = async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById("fb-submit-btn");
+    btn.disabled = true;
+    btn.textContent = "Gönderiliyor...";
+
+    const data = {
+      name: (document.getElementById("fb-name") as HTMLInputElement).value,
+      email: (document.getElementById("fb-email") as HTMLInputElement).value,
+      stars: selectedStar || 5,
+      message: (document.getElementById("fb-message") as HTMLTextAreaElement).value,
+      date: new Date().toISOString(),
+    };
+
+    try {
+      await fetch(
+        "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents/feedback",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fields: {
+              name:    { stringValue: data.name },
+              email:   { stringValue: data.email },
+              stars:   { integerValue: data.stars },
+              message: { stringValue: data.message },
+              date:    { stringValue: data.date },
+            }
+          })
+        }
+      );
+      document.getElementById("fb-success").style.display = "block";
+      (document.getElementById("feedback-form") as HTMLFormElement).reset();
+      selectedStar = 0;
+      document.querySelectorAll(".stars-row button").forEach(b => b.classList.remove("active"));
+    } catch {
+      btn.textContent = "Hata! Tekrar dene.";
+      btn.disabled = false;
+    }
+  };
 
   // ── TR/EN DİL SİSTEMİ ────────────────────────────────────
   const TRANSLATIONS = {
