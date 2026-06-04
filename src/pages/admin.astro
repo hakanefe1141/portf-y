@@ -3,9 +3,14 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Admin Panel | Hakan Efe">
+
+<!-- Firebase Auth SDK (compat) -->
+<script is:inline src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script is:inline src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
 <div class="admin-page">
 
-  <!-- GİRİŞ -->
+  <!-- 1. ŞİFRE EKRANI -->
   <div id="screen-pass">
     <div class="login-box">
       <div class="login-icon">🔐</div>
@@ -13,12 +18,31 @@ import Layout from "../layouts/Layout.astro";
       <p>Bu sayfa sadece Hakan Efe tarafından kullanılabilir.</p>
       <input type="password" id="input-pass" placeholder="Şifre"
         onkeydown="if(event.key==='Enter') checkPass()" />
-      <button onclick="checkPass()">Giriş Yap →</button>
+      <button id="pass-btn" onclick="checkPass()">Giriş Yap →</button>
       <p id="pass-error" class="error-msg" style="display:none">Yanlış şifre!</p>
     </div>
   </div>
 
-  <!-- ADMIN PANELİ -->
+  <!-- 2. SMS DOĞRULAMA EKRANI -->
+  <div id="screen-otp" style="display:none">
+    <div class="login-box">
+      <div class="login-icon">📱</div>
+      <h1>SMS Doğrulama</h1>
+      <p id="otp-desc">+90 552 *** ** 41 numarasına gönderilen kodu gir.</p>
+      <input type="text" id="input-otp" placeholder="_ _ _ _ _ _"
+        maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+        onkeydown="if(event.key==='Enter') verifyOtp()" />
+      <button id="otp-btn" onclick="verifyOtp()">Doğrula →</button>
+      <button class="resend-btn" id="resend-btn" onclick="resendOtp()">↺ Kodu Tekrar Gönder</button>
+      <p id="otp-error" class="error-msg" style="display:none">Hatalı kod, tekrar dene.</p>
+      <p id="otp-timer" class="timer-msg"></p>
+    </div>
+  </div>
+
+  <!-- reCAPTCHA (Firebase için gerekli, görünmez) -->
+  <div id="recaptcha-container"></div>
+
+  <!-- 3. ADMIN PANELİ -->
   <div id="screen-admin" style="display:none">
     <header class="admin-header">
       <div class="admin-logo">⚙️ Admin Panel</div>
@@ -81,7 +105,7 @@ import Layout from "../layouts/Layout.astro";
   .admin-page { min-height:100vh; background:var(--bg); color:var(--text); font-family:"Inter",sans-serif; }
   .container { max-width:860px; margin:0 auto; padding:0 24px; }
 
-  #screen-pass {
+  #screen-pass, #screen-otp {
     min-height:100vh;
     display:flex; align-items:center; justify-content:center;
   }
@@ -105,8 +129,9 @@ import Layout from "../layouts/Layout.astro";
     width:100%; background:var(--bg);
     border:1px solid var(--border); border-radius:10px;
     padding:14px 16px; color:var(--text);
-    font-size:1rem; font-family:"Inter",sans-serif;
+    font-size:1.15rem; font-family:"JetBrains Mono",monospace;
     outline:none; text-align:center;
+    letter-spacing: 0.25em;
     transition:border-color 0.2s;
   }
   .login-box input:focus { border-color:var(--accent); }
@@ -119,8 +144,21 @@ import Layout from "../layouts/Layout.astro";
     transition:opacity 0.2s;
   }
   .login-box button:hover { opacity:0.88; }
+  .login-box button:disabled { opacity:0.5; cursor:not-allowed; }
+
+  .resend-btn {
+    background: none !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.82rem !important;
+    padding: 9px !important;
+  }
+  .resend-btn:hover { border-color: var(--accent) !important; color: var(--accent-light) !important; opacity:1 !important; }
 
   .error-msg { color:#ef4444; font-size:0.85rem; }
+  .timer-msg { color:var(--text-muted); font-size:0.78rem; font-family:"JetBrains Mono",monospace; }
+
+  #recaptcha-container { position:fixed; bottom:0; right:0; z-index:9999; }
 
   .admin-header {
     display:flex; align-items:center; gap:12px;
@@ -128,112 +166,56 @@ import Layout from "../layouts/Layout.astro";
     border-bottom:1px solid var(--border);
     position:sticky; top:0; z-index:100; flex-wrap:wrap;
   }
-
   .admin-logo { font-weight:700; font-size:1rem; flex-shrink:0; }
-
   .admin-tabs { display:flex; gap:4px; flex:1; }
-
   .admin-tab {
     background:none; border:none; border-radius:8px;
     padding:8px 16px; font-size:0.85rem; font-weight:500;
-    cursor:pointer; color:var(--text-muted);
-    font-family:"Inter",sans-serif;
+    cursor:pointer; color:var(--text-muted); font-family:"Inter",sans-serif;
     transition:background 0.2s, color 0.2s;
   }
   .admin-tab:hover { background:var(--bg); color:var(--text); }
-  .admin-tab.active {
-    background:var(--accent-glow); color:var(--accent-light);
-    border:1px solid rgba(124,58,237,0.3);
-  }
-
+  .admin-tab.active { background:var(--accent-glow); color:var(--accent-light); border:1px solid rgba(124,58,237,0.3); }
   .logout-btn {
-    background:rgba(239,68,68,0.08);
-    border:1px solid rgba(239,68,68,0.25);
-    color:#ef4444; border-radius:8px;
-    padding:7px 16px; font-size:0.82rem;
-    cursor:pointer; font-family:"Inter",sans-serif;
-    margin-left:auto;
+    background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25);
+    color:#ef4444; border-radius:8px; padding:7px 16px; font-size:0.82rem;
+    cursor:pointer; font-family:"Inter",sans-serif; margin-left:auto;
   }
-
   .admin-main { padding:32px 24px 60px; }
-
-  .admin-card {
-    background:var(--bg-card); border:1px solid var(--border);
-    border-radius:14px; padding:28px;
-  }
+  .admin-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:28px; }
   .admin-card h2 { font-size:1.1rem; font-weight:700; margin-bottom:20px; }
-
   .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
   .card-header h2 { margin-bottom:0; }
-
-  .refresh-btn {
-    background:none; border:1px solid var(--border);
-    color:var(--text-muted); border-radius:6px;
-    padding:5px 14px; font-size:0.8rem;
-    cursor:pointer; font-family:"Inter",sans-serif;
-  }
-
+  .refresh-btn { background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:6px; padding:5px 14px; font-size:0.8rem; cursor:pointer; font-family:"Inter",sans-serif; }
   #post-form { display:flex; flex-direction:column; gap:12px; }
   #post-form input, #post-form textarea {
-    background:var(--bg); border:1px solid var(--border);
-    border-radius:10px; padding:12px 16px;
-    color:var(--text); font-size:0.9rem;
-    font-family:"Inter",sans-serif; outline:none;
-    resize:vertical; transition:border-color 0.2s;
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; color:var(--text); font-size:0.9rem;
+    font-family:"Inter",sans-serif; outline:none; resize:vertical;
+    letter-spacing: normal;
+    transition:border-color 0.2s;
   }
   #post-form input:focus, #post-form textarea:focus { border-color:var(--accent); }
-
   .form-footer { display:flex; align-items:center; justify-content:space-between; }
   .char-count { font-size:0.75rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
-
-  #publish-btn {
-    background:linear-gradient(135deg,var(--accent),#c084fc);
-    color:white; border:none; border-radius:8px;
-    padding:10px 24px; font-weight:700; font-size:0.9rem;
-    cursor:pointer; font-family:"Inter",sans-serif;
-  }
+  #publish-btn { background:linear-gradient(135deg,var(--accent),#c084fc); color:white; border:none; border-radius:8px; padding:10px 24px; font-weight:700; font-size:0.9rem; cursor:pointer; font-family:"Inter",sans-serif; }
   #publish-btn:disabled { opacity:0.5; cursor:not-allowed; }
-
   .success-toast { color:#22c55e; font-weight:600; font-size:0.9rem; margin-top:8px; }
   .error-toast { color:#ef4444; font-weight:600; font-size:0.9rem; margin-top:8px; }
-
   .loading-p { color:var(--text-muted); font-size:0.9rem; }
-
-  .post-item {
-    display:flex; justify-content:space-between;
-    align-items:flex-start; padding:16px 0;
-    border-bottom:1px solid var(--border); gap:12px;
-  }
+  .post-item { display:flex; justify-content:space-between; align-items:flex-start; padding:16px 0; border-bottom:1px solid var(--border); gap:12px; }
   .post-item:last-child { border-bottom:none; }
   .post-item-title { font-weight:600; font-size:0.9rem; margin-bottom:4px; }
   .post-item-meta { font-size:0.75rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
-
-  .delete-btn {
-    background:rgba(239,68,68,0.08);
-    border:1px solid rgba(239,68,68,0.2);
-    color:#ef4444; border-radius:6px;
-    padding:5px 12px; font-size:0.78rem;
-    cursor:pointer; white-space:nowrap; flex-shrink:0;
-  }
-
-  .feedback-item {
-    background:var(--bg); border:1px solid var(--border);
-    border-radius:12px; padding:18px; margin-bottom:12px;
-  }
-  .fb-item-header {
-    display:flex; align-items:flex-start; justify-content:space-between;
-    margin-bottom:10px; flex-wrap:wrap; gap:8px;
-  }
+  .delete-btn { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); color:#ef4444; border-radius:6px; padding:5px 12px; font-size:0.78rem; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+  .feedback-item { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:12px; }
+  .fb-item-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; flex-wrap:wrap; gap:8px; }
   .fb-item-name { font-weight:600; font-size:0.95rem; }
   .fb-item-email { font-size:0.78rem; color:var(--text-muted); }
   .fb-stars-display { color:#fbbf24; font-size:1rem; }
   .fb-item-date { font-size:0.72rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
-  .fb-item-msg {
-    color:var(--text-dim); font-size:0.88rem; line-height:1.7;
-    font-style:italic; border-left:3px solid var(--accent); padding-left:12px;
-  }
+  .fb-item-msg { color:var(--text-dim); font-size:0.88rem; line-height:1.7; font-style:italic; border-left:3px solid var(--accent); padding-left:12px; }
   .fb-empty { text-align:center; padding:40px; color:var(--text-muted); font-size:0.9rem; }
-
   @media (max-width:640px) {
     .admin-tabs { gap:2px; }
     .admin-tab { padding:7px 10px; font-size:0.78rem; }
@@ -241,31 +223,148 @@ import Layout from "../layouts/Layout.astro";
 </style>
 
 <script is:inline>
-  const ADMIN_PASS = "hakanefe2026";
-  const FB_BASE = "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents";
+  // ─── Firebase Yapılandırması ───────────────────────────────
+  // Firebase Console → Project Settings → General → Your apps → apiKey
+  const FIREBASE_CONFIG = {
+    apiKey:      "BURAYA_API_KEY_GİR",          // ← tek değiştirilecek yer
+    authDomain:  "hakan-efe-portfolyo.firebaseapp.com",
+    projectId:   "hakan-efe-portfolyo",
+  };
 
-  // Oturum kontrolü
+  const ADMIN_PASS  = "hakanefe2026";
+  const ADMIN_PHONE = "+905522861141";
+  const FB_BASE     = "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents";
+
+  // ─── Firebase başlat ──────────────────────────────────────
+  let auth, confirmResult, recaptchaVerifier;
+
+  function initFirebase() {
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    auth.languageCode = "tr";
+  }
+
+  // ─── Oturum kontrolü ──────────────────────────────────────
   if (localStorage.getItem("admin_auth") === "1") showPanel();
 
-  function checkPass() {
+  // ─── 1. Şifre kontrolü ────────────────────────────────────
+  window.checkPass = async function() {
     const pass = document.getElementById("input-pass").value;
-    if (pass === ADMIN_PASS) {
+    const btn  = document.getElementById("pass-btn");
+    const err  = document.getElementById("pass-error");
+
+    if (pass !== ADMIN_PASS) {
+      err.style.display = "block";
+      return;
+    }
+    err.style.display = "none";
+    btn.disabled = true;
+    btn.textContent = "SMS gönderiliyor...";
+
+    try {
+      initFirebase();
+
+      // Invisible reCAPTCHA (Firebase zorunlu kılıyor)
+      if (!recaptchaVerifier) {
+        recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
+          size: "invisible",
+          callback: () => {},
+        });
+      }
+
+      confirmResult = await auth.signInWithPhoneNumber(ADMIN_PHONE, recaptchaVerifier);
+
+      // OTP ekranına geç
+      document.getElementById("screen-pass").style.display = "none";
+      document.getElementById("screen-otp").style.display  = "flex";
+      document.getElementById("input-otp").focus();
+      startTimer(120);
+
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+      btn.textContent = "Giriş Yap →";
+      err.textContent = "SMS gönderilemedi: " + (e.message || e.code);
+      err.style.display = "block";
+
+      // reCAPTCHA'yı sıfırla
+      if (recaptchaVerifier) { recaptchaVerifier.clear(); recaptchaVerifier = null; }
+    }
+  };
+
+  // ─── 2. OTP doğrulama ─────────────────────────────────────
+  window.verifyOtp = async function() {
+    const code = document.getElementById("input-otp").value.trim();
+    const btn  = document.getElementById("otp-btn");
+    const err  = document.getElementById("otp-error");
+
+    if (code.length !== 6) { err.style.display = "block"; return; }
+
+    btn.disabled = true;
+    btn.textContent = "Doğrulanıyor...";
+    err.style.display = "none";
+
+    try {
+      await confirmResult.confirm(code);
       localStorage.setItem("admin_auth", "1");
       showPanel();
-    } else {
-      document.getElementById("pass-error").style.display = "block";
+    } catch(e) {
+      btn.disabled = false;
+      btn.textContent = "Doğrula →";
+      err.style.display = "block";
     }
-  }
-  window.checkPass = checkPass;
+  };
 
+  // ─── 3. Kodu yeniden gönder ───────────────────────────────
+  window.resendOtp = async function() {
+    const btn = document.getElementById("resend-btn");
+    btn.disabled = true;
+    try {
+      if (recaptchaVerifier) { recaptchaVerifier.clear(); recaptchaVerifier = null; }
+      recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
+        size: "invisible", callback: () => {},
+      });
+      confirmResult = await auth.signInWithPhoneNumber(ADMIN_PHONE, recaptchaVerifier);
+      document.getElementById("otp-error").style.display = "none";
+      document.getElementById("input-otp").value = "";
+      startTimer(120);
+    } catch(e) {
+      btn.disabled = false;
+    }
+  };
+
+  // ─── Geri sayım sayacı ────────────────────────────────────
+  let timerInterval;
+  function startTimer(seconds) {
+    clearInterval(timerInterval);
+    const timerEl  = document.getElementById("otp-timer");
+    const resendBtn = document.getElementById("resend-btn");
+    resendBtn.disabled = true;
+    let remaining = seconds;
+    timerEl.textContent = `Kod ${remaining}s içinde sona erer`;
+    timerInterval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        timerEl.textContent = "Kod süresi doldu.";
+        resendBtn.disabled = false;
+      } else {
+        timerEl.textContent = `Kod ${remaining}s içinde sona erer`;
+      }
+    }, 1000);
+  }
+
+  // ─── Admin paneli aç ──────────────────────────────────────
   function showPanel() {
     document.getElementById("screen-pass").style.display = "none";
+    document.getElementById("screen-otp").style.display  = "none";
     document.getElementById("screen-admin").style.display = "block";
     loadPosts();
   }
 
   window.adminLogout = function() {
     localStorage.removeItem("admin_auth");
+    if (auth) auth.signOut().catch(()=>{});
     location.reload();
   };
 
@@ -275,7 +374,7 @@ import Layout from "../layouts/Layout.astro";
     document.getElementById(id).style.display = "block";
     const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback"};
     document.getElementById(map[id]).classList.add("active");
-    if (id === "tab-posts") loadPosts();
+    if (id === "tab-posts")    loadPosts();
     if (id === "tab-feedback") loadFeedback();
   };
 
@@ -283,12 +382,13 @@ import Layout from "../layouts/Layout.astro";
     document.getElementById("char-count").textContent = this.value.length + " karakter";
   });
 
+  // ─── Blog yayınla ─────────────────────────────────────────
   window.publishPost = async function(e) {
     e.preventDefault();
     const btn = document.getElementById("publish-btn");
     btn.disabled = true; btn.textContent = "Yayınlanıyor...";
     document.getElementById("publish-success").style.display = "none";
-    document.getElementById("publish-error").style.display = "none";
+    document.getElementById("publish-error").style.display   = "none";
     try {
       await fetch(FB_BASE + "/blog", {
         method:"POST", headers:{"Content-Type":"application/json"},
@@ -310,22 +410,18 @@ import Layout from "../layouts/Layout.astro";
     }
   };
 
+  // ─── Yazıları yükle ───────────────────────────────────────
   async function loadPosts() {
     const list = document.getElementById("posts-list");
     list.innerHTML = "<p class='loading-p'>Yükleniyor...</p>";
     try {
       const res = await fetch(
         "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents:runQuery",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            structuredQuery: {
-              from: [{ collectionId: "blog" }],
-              orderBy: [{ field: { fieldPath: "date" }, direction: "DESCENDING" }],
-              limit: 30
-            }
-          })
+        { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ structuredQuery: {
+            from:[{collectionId:"blog"}],
+            orderBy:[{field:{fieldPath:"date"},direction:"DESCENDING"}], limit:30
+          }})
         }
       );
       const rows = await res.json();
@@ -353,75 +449,53 @@ import Layout from "../layouts/Layout.astro";
     loadPosts();
   };
 
+  // ─── Yorumları yükle ──────────────────────────────────────
   async function loadFeedback() {
     const list = document.getElementById("feedback-list");
     list.innerHTML = "<p class='loading-p'>Yorumlar yükleniyor...</p>";
     try {
       const res = await fetch(
         "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents:runQuery",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            structuredQuery: {
-              from: [{ collectionId: "feedback" }],
-              orderBy: [{ field: { fieldPath: "date" }, direction: "DESCENDING" }],
-              limit: 50
-            }
-          })
+        { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ structuredQuery: {
+            from:[{collectionId:"feedback"}],
+            orderBy:[{field:{fieldPath:"date"},direction:"DESCENDING"}], limit:50
+          }})
         }
       );
-
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        if (res.status === 403 || res.status === 401) {
-          list.innerHTML = `<div class='fb-empty' style='color:#ef4444'>
-            🔒 Firestore izin hatası (${res.status}).<br/>
-            <small>Terminal'de şunu çalıştır: <code>firebase deploy --only firestore:rules</code></small>
-          </div>`;
-        } else {
-          list.innerHTML = `<div class='fb-empty' style='color:#ef4444'>Hata ${res.status}: ${err?.error?.message || "Bilinmeyen hata"}</div>`;
-        }
+        const err = await res.json().catch(()=>({}));
+        list.innerHTML = res.status===403
+          ? `<div class='fb-empty' style='color:#ef4444'>🔒 İzin hatası — <code>firebase deploy --only firestore:rules</code> çalıştır.</div>`
+          : `<div class='fb-empty' style='color:#ef4444'>Hata ${res.status}</div>`;
         return;
       }
-
       const rows = await res.json();
       const docs = rows.filter(r => r.document).map(r => r.document);
-
-      if (!docs.length) {
-        list.innerHTML = "<div class='fb-empty'>💬 Henüz yorum yok.</div>";
-        return;
-      }
-
+      if (!docs.length) { list.innerHTML = "<div class='fb-empty'>💬 Henüz yorum yok.</div>"; return; }
       list.innerHTML = docs.map(doc => {
         const f = doc.fields;
-        const stars = parseInt(f.stars?.integerValue || f.stars?.doubleValue || "5");
-        const starsHtml = "★".repeat(Math.min(5, stars)) + "☆".repeat(Math.max(0, 5 - stars));
-        const rawDate = f.date?.stringValue || f.date?.timestampValue || "";
-        const date = rawDate
-          ? new Date(rawDate).toLocaleDateString("tr-TR", { day:"numeric", month:"long", year:"numeric" })
-          : "—";
-        const name = f.name?.stringValue || "Anonim";
-        const email = f.email?.stringValue || "";
-        const message = f.message?.stringValue || "";
+        const stars = parseInt(f.stars?.integerValue || "5");
+        const starsHtml = "★".repeat(Math.min(5,stars)) + "☆".repeat(Math.max(0,5-stars));
+        const rawDate = f.date?.stringValue || "";
+        const date = rawDate ? new Date(rawDate).toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"}) : "—";
         return `<div class="feedback-item">
           <div class="fb-item-header">
             <div>
-              <div class="fb-item-name">${name}</div>
-              ${email ? `<div class="fb-item-email">${email}</div>` : ""}
+              <div class="fb-item-name">${f.name?.stringValue||"Anonim"}</div>
+              ${f.email?.stringValue?`<div class="fb-item-email">${f.email.stringValue}</div>`:""}
             </div>
             <div style="text-align:right">
               <div class="fb-stars-display">${starsHtml}</div>
               <div class="fb-item-date">${date}</div>
             </div>
           </div>
-          <div class="fb-item-msg">${message}</div>
+          <div class="fb-item-msg">${f.message?.stringValue||""}</div>
         </div>`;
       }).join("");
-
-    } catch(e) {
-      list.innerHTML = `<p style='color:#ef4444'>Bağlantı hatası: ${e.message}</p>`;
-    }
+    } catch(e) { list.innerHTML = `<p style='color:#ef4444'>Hata: ${e.message}</p>`; }
   }
   window.loadFeedback = loadFeedback;
 </script>
+</content>
+</invoke>
