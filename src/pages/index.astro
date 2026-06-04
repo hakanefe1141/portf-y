@@ -663,20 +663,8 @@ import Layout from "../layouts/Layout.astro";
       <h2 class="section-title">Blog</h2>
 
       <div id="blog-box">
-        <!-- Üst bar (e-öğrenme gibi) -->
-        <div class="blog-topbar">
-          <span class="blog-course-name">✍️ Eğitim Teknolojisi Yazıları</span>
-          <div class="blog-topbar-right">
-            <span id="blog-counter" class="blog-counter">— / —</span>
-            <div class="blog-nav-btns">
-              <button onclick="blogScroll(-1)" class="blog-nav-btn" id="blog-prev">←</button>
-              <button onclick="blogScroll(1)" class="blog-nav-btn" id="blog-next">→</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Kart alanı -->
-        <div class="blog-stage">
+        <div class="blog-carousel">
+          <button onclick="blogScroll(-1)" class="blog-arrow" id="blog-prev" disabled>‹</button>
           <div class="blog-track-wrap">
             <div id="blog-track" class="blog-track">
               <div class="blog-loading">
@@ -685,11 +673,12 @@ import Layout from "../layouts/Layout.astro";
               </div>
             </div>
           </div>
+          <button onclick="blogScroll(1)" class="blog-arrow" id="blog-next">›</button>
         </div>
 
-        <!-- Alt bar: dots -->
-        <div class="blog-bottombar">
+        <div class="blog-nav-footer">
           <div class="blog-dots" id="blog-dots"></div>
+          <span id="blog-counter" class="blog-counter">— / —</span>
         </div>
       </div>
 
@@ -2473,62 +2462,142 @@ import Layout from "../layouts/Layout.astro";
 
   #chat-input-row button:hover { opacity: 0.85; }
 
-  /* ── BLOG KUTUSU ── */
-  #blog-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-  }
+  /* ── BLOG ── */
+  #blog-box { max-width: 720px; }
 
-  .blog-topbar {
+  .blog-carousel {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 14px 24px;
-    background: linear-gradient(135deg, var(--accent), #7e22ce);
-    flex-wrap: wrap;
-    gap: 12px;
+    gap: 14px;
   }
 
-  .blog-course-name { color:white; font-weight:600; font-size:0.9rem; }
-
-  .blog-topbar-right { display:flex; align-items:center; gap:14px; }
-
-  .blog-counter {
-    color: rgba(255,255,255,0.75);
-    font-size: 0.78rem;
-    font-family: "JetBrains Mono", monospace;
-    white-space: nowrap;
-  }
-
-  .blog-nav-btns { display:flex; gap:6px; }
-
-  .blog-nav-btn {
-    width: 32px; height: 32px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 8px; color: white;
-    font-size: 0.95rem; cursor: pointer;
-    transition: background 0.2s;
+  .blog-arrow {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
   }
-  .blog-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.28); }
-  .blog-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .blog-arrow:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+    color: var(--accent-light);
+  }
+  .blog-arrow:disabled { opacity: 0.25; cursor: not-allowed; }
 
-  .blog-stage { padding: 24px; }
-
-  .blog-track-wrap { overflow: hidden; }
+  .blog-track-wrap { flex: 1; overflow: hidden; border-radius: 16px; }
 
   .blog-track {
-    display: flex; gap: 16px;
+    display: flex;
     transition: transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94);
     will-change: transform;
   }
 
+  /* ── Kart ── */
+  .blog-card {
+    min-width: 100%; max-width: 100%;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.25s;
+  }
+  .blog-card:hover { border-color: var(--accent); }
+
+  .blog-card-cover {
+    padding: 28px 32px 24px;
+    display: flex; flex-direction: column; gap: 14px;
+    min-height: 150px;
+    position: relative;
+    overflow: hidden;
+  }
+  .blog-card-cover::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.18);
+    pointer-events: none;
+  }
+  .blog-cover-chips {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    position: relative; z-index: 1;
+  }
+  .blog-tag-pill {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: white;
+    border-radius: 100px;
+    padding: 3px 13px;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.05em;
+    font-family: "JetBrains Mono", monospace;
+    backdrop-filter: blur(4px);
+  }
+  .blog-read-pill {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.7rem;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .blog-cover-title {
+    color: white;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.35;
+    position: relative; z-index: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .blog-card-body {
+    padding: 24px 32px 28px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .blog-excerpt {
+    color: var(--text-dim);
+    font-size: 0.93rem;
+    line-height: 1.85;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .blog-card-meta {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .blog-author-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .blog-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #c084fc);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.62rem; font-weight: 700; color: white;
+    font-family: "JetBrains Mono", monospace;
+    flex-shrink: 0;
+  }
+  .blog-author-info { display: flex; flex-direction: column; gap: 1px; }
+  .blog-author-name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .blog-post-date { font-size: 0.72rem; color: var(--text-muted); font-family: "JetBrains Mono", monospace; }
+
+  /* Loading / empty */
   .blog-loading {
     display: flex; align-items: center; gap: 12px;
-    color: var(--text-muted); font-size: 0.9rem; padding: 40px 0;
+    color: var(--text-muted); font-size: 0.9rem;
+    padding: 64px 32px; min-width: 100%;
   }
   .blog-spinner {
     width: 20px; height: 20px;
@@ -2537,83 +2606,39 @@ import Layout from "../layouts/Layout.astro";
     border-radius: 50%;
     animation: spin 0.75s linear infinite; flex-shrink: 0;
   }
-
-  .blog-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+  .blog-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    padding: 64px 32px; color: var(--text-muted); text-align: center;
     min-width: 100%;
-    max-width: 100%;
-    display: flex; flex-direction: column;
-    flex-shrink: 0; overflow: hidden; position: relative;
-    transition: border-color 0.2s, transform 0.2s;
   }
-  .blog-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .blog-card::before {
-    content: ""; position: absolute; top:0; left:0; right:0; height:3px;
-    background: linear-gradient(90deg, var(--accent), #c084fc);
+  .blog-empty-icon { font-size: 2.5rem; opacity: 0.35; }
+  .blog-empty p { font-size: 0.88rem; line-height: 1.6; }
+
+  /* Nav footer */
+  .blog-nav-footer {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; padding-top: 18px; position: relative;
   }
-
-  .blog-card-body { padding:20px; display:flex; flex-direction:column; gap:10px; flex:1; }
-
-  .blog-card-top { display:flex; align-items:center; justify-content:space-between; }
-
-  .blog-card-tag {
-    background: var(--accent-glow); border: 1px solid rgba(124,58,237,0.25);
-    color: var(--accent-light); border-radius: 100px;
-    padding: 2px 10px; font-size: 0.68rem; font-weight: 600;
+  .blog-dots { display: flex; gap: 6px; }
+  .blog-dot {
+    height: 5px; width: 5px; border-radius: 3px;
+    background: var(--border); cursor: pointer;
+    transition: background 0.2s, width 0.25s;
+  }
+  .blog-dot.active { background: var(--accent); width: 20px; }
+  .blog-counter {
+    position: absolute; right: 0;
+    font-size: 0.7rem; color: var(--text-muted);
     font-family: "JetBrains Mono", monospace;
   }
 
-  .blog-card-read { font-size:0.68rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
-
-  .blog-card-title { font-size:0.97rem; font-weight:700; line-height:1.4; color:var(--text); }
-
-  .blog-card-excerpt {
-    color:var(--text-muted); font-size:0.82rem; line-height:1.7; flex:1;
-    display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;
-  }
-
-  .blog-card-footer {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 20px; border-top:1px solid var(--border);
-    background:rgba(0,0,0,0.03);
-  }
-  :root[data-theme="light"] .blog-card-footer { background:rgba(0,0,0,0.02); }
-
-  .blog-card-author { display:flex; align-items:center; gap:7px; font-size:0.72rem; color:var(--text-muted); }
-
-  .blog-card-avatar {
-    width:22px; height:22px;
-    background:linear-gradient(135deg,var(--accent),#c084fc);
-    border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:0.58rem; font-weight:700; color:white; flex-shrink:0;
-  }
-
-  .blog-card-date { font-size:0.68rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
-
-  .blog-empty {
-    display:flex; flex-direction:column; align-items:center; gap:10px;
-    padding:48px 24px; color:var(--text-muted); text-align:center;
-  }
-  .blog-empty-icon { font-size:2.5rem; opacity:0.4; }
-  .blog-empty p { font-size:0.88rem; line-height:1.6; }
-
-  .blog-bottombar {
-    padding:12px 24px 16px;
-    border-top:1px solid var(--border);
-    background:rgba(0,0,0,0.02);
-  }
-  .blog-dots { display:flex; justify-content:center; gap:6px; }
-  .blog-dot {
-    height:5px; width:5px; border-radius:3px;
-    background:var(--border); cursor:pointer;
-    transition:background 0.2s, width 0.25s;
-  }
-  .blog-dot.active { background:var(--accent); width:18px; }
-
-  @media (max-width:768px) {
-    .blog-stage { padding:16px; }
+  @media (max-width: 640px) {
+    .blog-arrow { width: 36px; height: 36px; font-size: 1.3rem; }
+    .blog-card-cover { padding: 22px 22px 18px; min-height: 130px; }
+    .blog-cover-title { font-size: 1.1rem; }
+    .blog-card-body { padding: 18px 22px 22px; }
+    .blog-counter { position: static; }
+    .blog-nav-footer { justify-content: space-between; }
   }
 
     /* GERİ BİLDİRİM */
@@ -3321,26 +3346,51 @@ import Layout from "../layouts/Layout.astro";
         return;
       }
 
-      track.innerHTML = blogPosts.map((p, i) => {
+      const TAG_GRADIENTS = {
+        default:    "linear-gradient(135deg, #7c3aed, #5b21b6)",
+        lms:        "linear-gradient(135deg, #2563eb, #1d4ed8)",
+        addie:      "linear-gradient(135deg, #059669, #047857)",
+        teknoloji:  "linear-gradient(135deg, #d97706, #b45309)",
+        bloom:      "linear-gradient(135deg, #dc2626, #b91c1c)",
+        scorm:      "linear-gradient(135deg, #0891b2, #0e7490)",
+        yapay:      "linear-gradient(135deg, #7c3aed, #db2777)",
+      };
+      function tagGradient(tag) {
+        const t = (tag || "").toLowerCase();
+        if (t.includes("lms"))                      return TAG_GRADIENTS.lms;
+        if (t.includes("addie") || t.includes("tasarım")) return TAG_GRADIENTS.addie;
+        if (t.includes("teknoloji"))                return TAG_GRADIENTS.teknoloji;
+        if (t.includes("bloom") || t.includes("pedagoji")) return TAG_GRADIENTS.bloom;
+        if (t.includes("scorm") || t.includes("xapi"))     return TAG_GRADIENTS.scorm;
+        if (t.includes("yapay") || t.includes("ai"))       return TAG_GRADIENTS.yapay;
+        return TAG_GRADIENTS.default;
+      }
+
+      track.innerHTML = blogPosts.map((p) => {
         const date = new Date(p.date).toLocaleDateString("tr-TR", { day:"numeric", month:"long", year:"numeric" });
-        const excerpt = p.body.slice(0, 200) + (p.body.length > 200 ? "..." : "");
+        const excerpt = p.body.slice(0, 280) + (p.body.length > 280 ? "..." : "");
         const readMin = Math.max(1, Math.ceil(p.body.split(" ").length / 200));
-        const initials = p.author.split(" ").map(w => w[0]).join("").slice(0,2);
+        const initials = p.author.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+        const gradient = tagGradient(p.tag);
         return `<div class="blog-card">
-          <div class="blog-card-body">
-            <div class="blog-card-top">
-              <span class="blog-card-tag">✦ ${p.tag}</span>
-              <span class="blog-card-read">⏱ ${readMin} dk</span>
+          <div class="blog-card-cover" style="background:${gradient}">
+            <div class="blog-cover-chips">
+              <span class="blog-tag-pill">${p.tag}</span>
+              <span class="blog-read-pill">⏱ ${readMin} dk okuma</span>
             </div>
-            <div class="blog-card-title">${p.title}</div>
-            <div class="blog-card-excerpt">${excerpt}</div>
+            <div class="blog-cover-title">${p.title}</div>
           </div>
-          <div class="blog-card-footer">
-            <div class="blog-card-author">
-              <div class="blog-card-avatar">${initials}</div>
-              <span>${p.author}</span>
+          <div class="blog-card-body">
+            <p class="blog-excerpt">${excerpt}</p>
+            <div class="blog-card-meta">
+              <div class="blog-author-row">
+                <div class="blog-avatar">${initials}</div>
+                <div class="blog-author-info">
+                  <span class="blog-author-name">${p.author}</span>
+                  <span class="blog-post-date">${date}</span>
+                </div>
+              </div>
             </div>
-            <span class="blog-card-date">${date}</span>
           </div>
         </div>`;
       }).join("");
