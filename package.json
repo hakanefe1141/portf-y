@@ -16,5 +16,8 @@
     "@google/generative-ai": "^0.24.1",
     "astro": "^6.4.4",
     "groq-sdk": "^1.2.1"
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.19.1"
   }
 }
