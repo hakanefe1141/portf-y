@@ -251,6 +251,24 @@ import Layout from "../layouts/Layout.astro";
   if (localStorage.getItem("admin_auth") === "1") showPanel();
 
   // ─── 1. Şifre kontrolü ────────────────────────────────────
+  function resetRecaptcha() {
+    try { if (recaptchaVerifier) recaptchaVerifier.clear(); } catch(_) {}
+    recaptchaVerifier = null;
+    // DOM elementini de temizle
+    const el = document.getElementById("recaptcha-container");
+    if (el) el.innerHTML = "";
+  }
+
+  async function sendSms() {
+    resetRecaptcha();
+    recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
+      size: "invisible",
+      callback: () => {},
+    });
+    await recaptchaVerifier.render();
+    return auth.signInWithPhoneNumber(ADMIN_PHONE, recaptchaVerifier);
+  }
+
   window.checkPass = async function() {
     const pass = document.getElementById("input-pass").value;
     const btn  = document.getElementById("pass-btn");
@@ -266,18 +284,8 @@ import Layout from "../layouts/Layout.astro";
 
     try {
       initFirebase();
+      confirmResult = await sendSms();
 
-      // Invisible reCAPTCHA (Firebase zorunlu kılıyor)
-      if (!recaptchaVerifier) {
-        recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
-          size: "invisible",
-          callback: () => {},
-        });
-      }
-
-      confirmResult = await auth.signInWithPhoneNumber(ADMIN_PHONE, recaptchaVerifier);
-
-      // OTP ekranına geç
       document.getElementById("screen-pass").style.display = "none";
       document.getElementById("screen-otp").style.display  = "flex";
       document.getElementById("input-otp").focus();
@@ -289,9 +297,7 @@ import Layout from "../layouts/Layout.astro";
       btn.textContent = "Giriş Yap →";
       err.textContent = "SMS gönderilemedi: " + (e.message || e.code);
       err.style.display = "block";
-
-      // reCAPTCHA'yı sıfırla
-      if (recaptchaVerifier) { recaptchaVerifier.clear(); recaptchaVerifier = null; }
+      resetRecaptcha();
     }
   };
 
@@ -323,11 +329,7 @@ import Layout from "../layouts/Layout.astro";
     const btn = document.getElementById("resend-btn");
     btn.disabled = true;
     try {
-      if (recaptchaVerifier) { recaptchaVerifier.clear(); recaptchaVerifier = null; }
-      recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
-        size: "invisible", callback: () => {},
-      });
-      confirmResult = await auth.signInWithPhoneNumber(ADMIN_PHONE, recaptchaVerifier);
+      confirmResult = await sendSms();
       document.getElementById("otp-error").style.display = "none";
       document.getElementById("input-otp").value = "";
       startTimer(120);
