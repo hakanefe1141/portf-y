@@ -45,13 +45,14 @@ import Layout from "../layouts/Layout.astro";
     <div class="container nav-inner">
       <span class="nav-logo">HE<span class="accent">.</span></span>
       <div class="nav-links">
-        <a href="#hakkimda">Hakkımda</a>
-        <a href="#deneyim">Deneyim</a>
-        <a href="#egitim">Eğitim</a>
-        <a href="#projeler">Projeler</a>
-        <a href="#modul">Modül</a>
-        <a href="#yetenekler">Yetenekler</a>
-        <a href="#iletisim">İletişim</a>
+        <a href="#hakkimda" id="nav-hakkimda-link">Hakkımda</a>
+        <a href="#deneyim" id="nav-deneyim-link">Deneyim</a>
+        <a href="#egitim" id="nav-egitim-link">Eğitim</a>
+        <a href="#projeler" id="nav-projeler-link">Projeler</a>
+        <a href="#modul" id="nav-modul-link">Modül</a>
+        <a href="#yetenekler" id="nav-yetenekler-link">Yetenekler</a>
+        <a href="#iletisim" id="nav-iletisim-link">İletişim</a>
+        <button id="lang-toggle" onclick="toggleLang()" title="Switch language">🇹🇷</button>
         <button id="theme-toggle" onclick="toggleTheme()" aria-label="Tema değiştir">☀️</button>
       </div>
     </div>
@@ -62,25 +63,29 @@ import Layout from "../layouts/Layout.astro";
     <div class="container hero-layout">
       <div class="hero-inner">
         <div class="hero-top-row">
-          <div class="hero-badge">Açık Pozisyonlara Müsait</div>
+          <div class="hero-badge"><span id="hero-badge-text">Açık Pozisyonlara Müsait</span></div>
           <div class="visitor-badge" title="Toplam ziyaretçi">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span id="visitor-count">...</span> ziyaretçi
+            <span id="visitor-count">...</span> <span id="visitor-label">ziyaretçi</span>
           </div>
         </div>
         <h1>
-          Merhaba, ben<br />
+          <span id="hero-greeting-text">Merhaba, ben</span><br />
           <span class="hero-name">Hakan Efe</span>
         </h1>
-        <p class="hero-title">Eğitim Teknoloğu</p>
-        <p class="hero-desc">
+        <p class="hero-title" id="hero-title-text">Eğitim Teknoloğu</p>
+        <p class="hero-desc" id="hero-desc-text">
           Marmara Üniversitesi'nde tamamladığım öğrenimim ve eğitim sürecimde
           edindiğim yarı zamanlı deneyimlerim doğrultusunda, kurumsal yapıları
           tanıyarak kendimi geliştirmeyi ve kariyerime değer katmayı hedefliyorum.
         </p>
         <div class="hero-cta">
-          <a href="#iletisim" class="btn-primary">İletişime Geç</a>
-          <a href="#deneyim" class="btn-secondary">Deneyimlerimi Gör</a>
+          <a href="#iletisim" class="btn-primary"><span id="btn-contact-text">İletişime Geç</span></a>
+          <a href="#deneyim" class="btn-secondary"><span id="btn-exp-text">Deneyimlerimi Gör</span></a>
+          <a href="/HakanEfe_CV.pdf" download class="btn-cv">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span id="btn-cv-text">CV İndir</span>
+          </a>
         </div>
         <div class="hero-socials">
           <a href="mailto:hakanefe1141@gmail.com" aria-label="Email" title="E-posta">
@@ -108,22 +113,22 @@ import Layout from "../layouts/Layout.astro";
   <!-- HAKKIMDA -->
   <section id="hakkimda" class="reveal">
     <div class="container">
-      <h2 class="section-title">Hakkımda</h2>
+      <h2 class="section-title" id="section-about-title">Hakkımda</h2>
       <div class="about-grid">
         <div class="about-text">
-          <p>
+          <p id="about-p1-text">
             Marmara Üniversitesi Atatürk Eğitim Fakültesi'nde Bilgisayar ve Öğretim
             Teknolojileri Eğitimi bölümünü tamamladım. Şu anda aynı alanda tezli
             yüksek lisans eğitimime devam etmekteyim.
           </p>
-          <p>
+          <p id="about-p2-text">
             Üniversite hayatım boyunca Marmara Üniversitesi'nin farklı birimlerinde
             teknik destek, bilgi işlem ve uzaktan eğitim alanlarında yarı zamanlı
             olarak görev aldım. Türkiye Bilişim Vakfı'nda organizasyon asistanı
             olarak çalıştım; EBİTEKAM'da ise endüstri-akademi işbirliklerini
             inceleyen bir araştırma projesine destek veriyorum.
           </p>
-          <p>
+          <p id="about-p3-text">
             Articulate Storyline/Rise, H5P, Camtasia ve çeşitli LMS platformları
             kullanarak e-öğrenme içerikleri geliştiriyor; eğitim teknolojilerinin
             kurumsal öğrenme süreçlerine entegrasyonu üzerine çalışıyorum.
@@ -148,7 +153,7 @@ import Layout from "../layouts/Layout.astro";
           </div>
           <div class="info-item">
             <span class="info-label">Durum</span>
-            <span class="status-badge">Müsait</span>
+            <span class="status-badge" id="status-text">Müsait</span>
           </div>
         </div>
       </div>
@@ -158,7 +163,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- DENEYİM -->
   <section id="deneyim" class="reveal">
     <div class="container">
-      <h2 class="section-title">İş Deneyimi</h2>
+      <h2 class="section-title" id="section-exp-title">İş Deneyimi</h2>
       <div class="timeline">
 
         <div class="timeline-item card">
@@ -259,7 +264,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- EĞİTİM -->
   <section id="egitim" class="reveal">
     <div class="container">
-      <h2 class="section-title">Eğitim</h2>
+      <h2 class="section-title" id="section-edu-title">Eğitim</h2>
       <div class="edu-grid">
 
         <div class="card edu-card">
@@ -289,7 +294,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- YETENEKLER -->
   <section id="yetenekler" class="reveal">
     <div class="container">
-      <h2 class="section-title">Beceriler</h2>
+      <h2 class="section-title" id="section-skills-title">Beceriler</h2>
       <div class="skills-grid">
 
         <div class="card skill-card">
@@ -379,7 +384,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- PROJELER -->
   <section id="projeler" class="reveal">
     <div class="container">
-      <h2 class="section-title">Projeler</h2>
+      <h2 class="section-title" id="section-proj-title">Projeler</h2>
       <div class="projects-grid">
 
         <div class="card project-card">
@@ -567,7 +572,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- REFERANSLAR -->
   <section id="referanslar" class="reveal">
     <div class="container">
-      <h2 class="section-title">Referanslar</h2>
+      <h2 class="section-title" id="section-ref-title">Referanslar</h2>
       <div class="ref-grid">
         <div class="card ref-card">
           <div class="ref-avatar">GK</div>
@@ -601,10 +606,10 @@ import Layout from "../layouts/Layout.astro";
   <!-- İLETİŞİM -->
   <section id="iletisim" class="reveal">
     <div class="container">
-      <h2 class="section-title">İletişim</h2>
+      <h2 class="section-title" id="section-contact-title">İletişim</h2>
       <div class="contact-wrapper">
         <div class="contact-text">
-          <p>Bir proje fikriniz mi var? İş birliği yapmak mı istiyorsunuz?
+          <p id="contact-text-el">Bir proje fikriniz mi var? İş birliği yapmak mı istiyorsunuz?
           Bana ulaşmaktan çekinmeyin.</p>
           <div class="contact-actions">
             <div class="runaway-wrap">
@@ -808,6 +813,17 @@ import Layout from "../layouts/Layout.astro";
 
   #theme-toggle:hover { border-color: var(--accent); }
 
+  #lang-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+  #lang-toggle:hover { border-color: var(--accent); }
+
   /* Tüm section'lar arka planın üstünde */
   section, nav, footer {
     position: relative;
@@ -961,6 +977,27 @@ import Layout from "../layouts/Layout.astro";
 
   .btn-secondary:hover {
     border-color: var(--accent);
+    opacity: 1 !important;
+    transform: translateY(-2px);
+  }
+
+  .btn-cv {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    color: var(--text-muted) !important;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px dashed var(--border);
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  }
+
+  .btn-cv:hover {
+    border-color: var(--accent-light);
+    color: var(--accent-light) !important;
     opacity: 1 !important;
     transform: translateY(-2px);
   }
@@ -2742,6 +2779,115 @@ import Layout from "../layouts/Layout.astro";
   initStars();
   draw();
   window.addEventListener("resize", () => { resize(); initStars(); });
+
+  // ── TR/EN DİL SİSTEMİ ────────────────────────────────────
+  const TRANSLATIONS = {
+    tr: {
+      "nav-hakkimda": "Hakkımda",
+      "nav-deneyim": "Deneyim",
+      "nav-egitim": "Eğitim",
+      "nav-projeler": "Projeler",
+      "nav-modul": "Modül",
+      "nav-yetenekler": "Yetenekler",
+      "nav-iletisim": "İletişim",
+      "hero-badge": "Açık Pozisyonlara Müsait",
+      "hero-greeting": "Merhaba, ben",
+      "hero-title": "Eğitim Teknoloğu",
+      "hero-desc": "Marmara Üniversitesi'nde tamamladığım öğrenimim ve eğitim sürecimde edindiğim yarı zamanlı deneyimlerim doğrultusunda, kurumsal yapıları tanıyarak kendimi geliştirmeyi ve kariyerime değer katmayı hedefliyorum.",
+      "btn-contact": "İletişime Geç",
+      "btn-exp": "Deneyimlerimi Gör",
+      "btn-cv": "CV İndir",
+      "section-about": "Hakkımda",
+      "section-exp": "İş Deneyimi",
+      "section-edu": "Eğitim",
+      "section-proj": "Projeler",
+      "section-skills": "Beceriler",
+      "section-ref": "Referanslar",
+      "section-contact": "İletişim",
+      "about-p1": "Marmara Üniversitesi Atatürk Eğitim Fakültesi'nde Bilgisayar ve Öğretim Teknolojileri Eğitimi bölümünü tamamladım. Şu anda aynı alanda tezli yüksek lisans eğitimime devam etmekteyim.",
+      "about-p2": "Üniversite hayatım boyunca Marmara Üniversitesi'nin farklı birimlerinde teknik destek, bilgi işlem ve uzaktan eğitim alanlarında yarı zamanlı olarak görev aldım.",
+      "about-p3": "Articulate Storyline/Rise, H5P, Camtasia ve çeşitli LMS platformları kullanarak e-öğrenme içerikleri geliştiriyor; eğitim teknolojilerinin kurumsal öğrenme süreçlerine entegrasyonu üzerine çalışıyorum.",
+      "contact-text": "Bir proje fikriniz mi var? İş birliği yapmak mı istiyorsunuz? Bana ulaşmaktan çekinmeyin.",
+      "status": "Müsait",
+      "visitor": "ziyaretçi",
+    },
+    en: {
+      "nav-hakkimda": "About",
+      "nav-deneyim": "Experience",
+      "nav-egitim": "Education",
+      "nav-projeler": "Projects",
+      "nav-modul": "Module",
+      "nav-yetenekler": "Skills",
+      "nav-iletisim": "Contact",
+      "hero-badge": "Open to Opportunities",
+      "hero-greeting": "Hi, I'm",
+      "hero-title": "Educational Technologist",
+      "hero-desc": "With my education at Marmara University and part-time experience gained during my academic journey, I aim to develop myself within institutional structures and add value to my career.",
+      "btn-contact": "Get in Touch",
+      "btn-exp": "See My Experience",
+      "btn-cv": "Download CV",
+      "section-about": "About Me",
+      "section-exp": "Work Experience",
+      "section-edu": "Education",
+      "section-proj": "Projects",
+      "section-skills": "Skills",
+      "section-ref": "References",
+      "section-contact": "Contact",
+      "about-p1": "I completed my undergraduate degree in Computer Education and Instructional Technology (CEIT) at Marmara University, Atatürk Faculty of Education. I am currently pursuing a thesis-based master's degree in the same field.",
+      "about-p2": "Throughout my university years, I worked part-time in various units of Marmara University in technical support, IT, and distance education fields.",
+      "about-p3": "I develop e-learning content using Articulate Storyline/Rise, H5P, Camtasia and various LMS platforms, and work on integrating educational technologies into corporate learning processes.",
+      "contact-text": "Have a project idea? Want to collaborate? Feel free to reach out.",
+      "status": "Available",
+      "visitor": "visitors",
+    },
+  };
+
+  let currentLang = localStorage.getItem("lang") || "tr";
+
+  function applyLang(lang) {
+    const t = TRANSLATIONS[lang];
+    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+    const setQ = (sel, text) => { const el = document.querySelector(sel); if (el) el.textContent = text; };
+
+    set("nav-hakkimda-link", t["nav-hakkimda"]);
+    set("nav-deneyim-link", t["nav-deneyim"]);
+    set("nav-egitim-link", t["nav-egitim"]);
+    set("nav-projeler-link", t["nav-projeler"]);
+    set("nav-modul-link", t["nav-modul"]);
+    set("nav-yetenekler-link", t["nav-yetenekler"]);
+    set("nav-iletisim-link", t["nav-iletisim"]);
+    set("hero-badge-text", t["hero-badge"]);
+    set("hero-greeting-text", t["hero-greeting"]);
+    set("hero-title-text", t["hero-title"]);
+    set("hero-desc-text", t["hero-desc"]);
+    set("btn-contact-text", t["btn-contact"]);
+    set("btn-exp-text", t["btn-exp"]);
+    set("btn-cv-text", t["btn-cv"]);
+    set("section-about-title", t["section-about"]);
+    set("section-exp-title", t["section-exp"]);
+    set("section-edu-title", t["section-edu"]);
+    set("section-proj-title", t["section-proj"]);
+    set("section-skills-title", t["section-skills"]);
+    set("section-ref-title", t["section-ref"]);
+    set("section-contact-title", t["section-contact"]);
+    set("about-p1-text", t["about-p1"]);
+    set("about-p2-text", t["about-p2"]);
+    set("about-p3-text", t["about-p3"]);
+    set("contact-text-el", t["contact-text"]);
+    set("status-text", t["status"]);
+    set("visitor-label", t["visitor"]);
+
+    const btn = document.getElementById("lang-toggle");
+    if (btn) btn.textContent = lang === "tr" ? "🇬🇧" : "🇹🇷";
+    localStorage.setItem("lang", lang);
+    currentLang = lang;
+  }
+
+  window.toggleLang = function() {
+    applyLang(currentLang === "tr" ? "en" : "tr");
+  };
+
+  applyLang(currentLang);
 
   // ── Chatbot (Gemini AI) ───────────────────────────────────
   function addMsg(text, who) {
