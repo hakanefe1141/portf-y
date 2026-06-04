@@ -2491,24 +2491,25 @@ import Layout from "../layouts/Layout.astro";
   }
   .blog-arrow:disabled { opacity: 0.25; cursor: not-allowed; }
 
-  .blog-track-wrap { flex: 1; overflow: hidden; border-radius: 16px; }
+  .blog-track-wrap { flex: 1; min-width: 0; }
 
-  .blog-track {
-    display: flex;
-    transition: transform 0.42s cubic-bezier(0.25,0.46,0.45,0.94);
-    will-change: transform;
-  }
+  .blog-track { display: block; }
 
   /* ── Kart ── */
   .blog-card {
-    min-width: 100%; max-width: 100%;
-    flex-shrink: 0;
+    width: 100%;
     background: var(--bg-card);
+    animation: blog-card-in 0.3s ease;
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
     transition: border-color 0.25s;
   }
+  @keyframes blog-card-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   .blog-card:hover { border-color: var(--accent); }
 
   .blog-card-cover {
@@ -3316,10 +3317,85 @@ import Layout from "../layouts/Layout.astro";
   draw();
   window.addEventListener("resize", () => { resize(); initStars(); });
 
-  // ── BLOG CAROUSEL ────────────────────────────────────────
+  // ── BLOG ─────────────────────────────────────────────────
+  const TAG_GRADIENTS = {
+    default:   "linear-gradient(135deg,#7c3aed,#5b21b6)",
+    lms:       "linear-gradient(135deg,#2563eb,#1d4ed8)",
+    addie:     "linear-gradient(135deg,#059669,#047857)",
+    teknoloji: "linear-gradient(135deg,#d97706,#b45309)",
+    bloom:     "linear-gradient(135deg,#dc2626,#b91c1c)",
+    scorm:     "linear-gradient(135deg,#0891b2,#0e7490)",
+    yapay:     "linear-gradient(135deg,#7c3aed,#db2777)",
+  };
+  function tagGradient(tag) {
+    const t = (tag||"").toLowerCase();
+    if (t.includes("lms"))                           return TAG_GRADIENTS.lms;
+    if (t.includes("addie")||t.includes("tasarım"))  return TAG_GRADIENTS.addie;
+    if (t.includes("teknoloji"))                     return TAG_GRADIENTS.teknoloji;
+    if (t.includes("bloom")||t.includes("pedagoji")) return TAG_GRADIENTS.bloom;
+    if (t.includes("scorm")||t.includes("xapi"))     return TAG_GRADIENTS.scorm;
+    if (t.includes("yapay")||t.includes("ai"))       return TAG_GRADIENTS.yapay;
+    return TAG_GRADIENTS.default;
+  }
+
   let blogPosts = [];
   let blogIndex = 0;
-  const BLOG_VISIBLE = 1;
+
+  function buildCard(p) {
+    const date = new Date(p.date).toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"});
+    const excerpt = p.body.slice(0,300) + (p.body.length>300?"...":"");
+    const readMin = Math.max(1,Math.ceil(p.body.split(" ").length/200));
+    const initials = p.author.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+    return `<div class="blog-card">
+      <div class="blog-card-cover" style="background:${tagGradient(p.tag)}">
+        <div class="blog-cover-chips">
+          <span class="blog-tag-pill">${p.tag}</span>
+          <span class="blog-read-pill">⏱ ${readMin} dk</span>
+        </div>
+        <div class="blog-cover-title">${p.title}</div>
+      </div>
+      <div class="blog-card-body">
+        <p class="blog-excerpt">${excerpt}</p>
+        <div class="blog-card-meta">
+          <div class="blog-author-row">
+            <div class="blog-avatar">${initials}</div>
+            <div class="blog-author-info">
+              <span class="blog-author-name">${p.author}</span>
+              <span class="blog-post-date">${date}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderBlog() {
+    const track = document.getElementById("blog-track");
+    if (!blogPosts.length) return;
+    track.innerHTML = buildCard(blogPosts[blogIndex]);
+
+    // dots
+    const dotsEl = document.getElementById("blog-dots");
+    if (dotsEl) dotsEl.innerHTML = blogPosts.map((_,i)=>
+      `<div class="blog-dot${i===blogIndex?" active":""}" onclick="blogGoTo(${i})"></div>`
+    ).join("");
+
+    // counter
+    const counter = document.getElementById("blog-counter");
+    if (counter) counter.textContent = `${blogIndex+1} / ${blogPosts.length}`;
+
+    // buttons
+    const prev = document.getElementById("blog-prev");
+    const next = document.getElementById("blog-next");
+    if (prev) prev.disabled = blogIndex === 0;
+    if (next) next.disabled = blogIndex >= blogPosts.length - 1;
+  }
+
+  window.blogScroll = function(dir) {
+    blogIndex = Math.max(0, Math.min(blogIndex+dir, blogPosts.length-1));
+    renderBlog();
+  };
+  window.blogGoTo = function(idx) { blogIndex=idx; renderBlog(); };
 
   async function loadBlog() {
     try {
@@ -3327,8 +3403,8 @@ import Layout from "../layouts/Layout.astro";
         "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents/blog?orderBy=date%20desc&pageSize=20"
       );
       const data = await res.json();
-      blogPosts = (data.documents || []).map(doc => ({
-        id: doc.name.split("/").pop(),
+      blogPosts = (data.documents||[]).map(doc=>({
+        id:     doc.name.split("/").pop(),
         title:  doc.fields.title?.stringValue  || "",
         tag:    doc.fields.tag?.stringValue    || "Genel",
         body:   doc.fields.body?.stringValue   || "",
@@ -3336,127 +3412,30 @@ import Layout from "../layouts/Layout.astro";
         date:   doc.fields.date?.stringValue   || "",
       }));
 
-      const track = document.getElementById("blog-track");
-
       if (!blogPosts.length) {
-        track.innerHTML = `<div class="blog-empty">
-          <div class="blog-empty-icon">📝</div>
-          <p>Henüz yazı yok — yakında yeni içerikler gelecek!</p>
-        </div>`;
+        document.getElementById("blog-track").innerHTML =
+          `<div class="blog-empty"><div class="blog-empty-icon">📝</div><p>Henüz yazı yok — yakında gelecek!</p></div>`;
         return;
       }
-
-      const TAG_GRADIENTS = {
-        default:    "linear-gradient(135deg, #7c3aed, #5b21b6)",
-        lms:        "linear-gradient(135deg, #2563eb, #1d4ed8)",
-        addie:      "linear-gradient(135deg, #059669, #047857)",
-        teknoloji:  "linear-gradient(135deg, #d97706, #b45309)",
-        bloom:      "linear-gradient(135deg, #dc2626, #b91c1c)",
-        scorm:      "linear-gradient(135deg, #0891b2, #0e7490)",
-        yapay:      "linear-gradient(135deg, #7c3aed, #db2777)",
-      };
-      function tagGradient(tag) {
-        const t = (tag || "").toLowerCase();
-        if (t.includes("lms"))                      return TAG_GRADIENTS.lms;
-        if (t.includes("addie") || t.includes("tasarım")) return TAG_GRADIENTS.addie;
-        if (t.includes("teknoloji"))                return TAG_GRADIENTS.teknoloji;
-        if (t.includes("bloom") || t.includes("pedagoji")) return TAG_GRADIENTS.bloom;
-        if (t.includes("scorm") || t.includes("xapi"))     return TAG_GRADIENTS.scorm;
-        if (t.includes("yapay") || t.includes("ai"))       return TAG_GRADIENTS.yapay;
-        return TAG_GRADIENTS.default;
-      }
-
-      track.innerHTML = blogPosts.map((p) => {
-        const date = new Date(p.date).toLocaleDateString("tr-TR", { day:"numeric", month:"long", year:"numeric" });
-        const excerpt = p.body.slice(0, 280) + (p.body.length > 280 ? "..." : "");
-        const readMin = Math.max(1, Math.ceil(p.body.split(" ").length / 200));
-        const initials = p.author.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-        const gradient = tagGradient(p.tag);
-        return `<div class="blog-card">
-          <div class="blog-card-cover" style="background:${gradient}">
-            <div class="blog-cover-chips">
-              <span class="blog-tag-pill">${p.tag}</span>
-              <span class="blog-read-pill">⏱ ${readMin} dk okuma</span>
-            </div>
-            <div class="blog-cover-title">${p.title}</div>
-          </div>
-          <div class="blog-card-body">
-            <p class="blog-excerpt">${excerpt}</p>
-            <div class="blog-card-meta">
-              <div class="blog-author-row">
-                <div class="blog-avatar">${initials}</div>
-                <div class="blog-author-info">
-                  <span class="blog-author-name">${p.author}</span>
-                  <span class="blog-post-date">${date}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      }).join("");
-
-      renderDots();
-      updateBlogNav();
+      renderBlog();
     } catch {
       document.getElementById("blog-track").innerHTML =
         `<div class="blog-empty">Yazılar yüklenemedi.</div>`;
     }
   }
 
-  function renderDots() {
-    const dotsEl = document.getElementById("blog-dots");
-    if (!dotsEl) return;
-    dotsEl.innerHTML = Array.from({length: blogPosts.length}, (_, i) =>
-      `<div class="blog-dot ${i === 0 ? "active" : ""}" onclick="blogGoTo(${i})"></div>`
-    ).join("");
-  }
-
-  function updateDots() {
-    document.querySelectorAll(".blog-dot").forEach((d, i) => {
-      d.classList.toggle("active", i === blogIndex);
-    });
-  }
-
-  function updateBlogNav() {
-    const wrap = document.querySelector(".blog-track-wrap");
-    const cardW = wrap ? wrap.clientWidth : 310;
-    document.getElementById("blog-track").style.transform =
-      `translateX(-${blogIndex * cardW}px)`;
-    const prev = document.getElementById("blog-prev");
-    const next = document.getElementById("blog-next");
-    const counter = document.getElementById("blog-counter");
-    if (prev) prev.disabled = blogIndex === 0;
-    if (next) next.disabled = blogIndex >= blogPosts.length - 1;
-    if (counter && blogPosts.length) {
-      counter.textContent = `${blogIndex + 1} / ${blogPosts.length}`;
-    }
-    updateDots();
-  }
-
-  window.blogScroll = function(dir) {
-    const max = Math.max(0, blogPosts.length - 1);
-    blogIndex = Math.max(0, Math.min(blogIndex + dir, max));
-    updateBlogNav();
-  };
-
-  window.blogGoTo = function(idx) {
-    blogIndex = idx;
-    updateBlogNav();
-  };
-
-
   loadBlog();
 
-  // ── BLOG SWIPE (dokunmatik) ───────────────────────────────
+  // swipe desteği
   (() => {
-    let touchStartX = 0;
-    const stage = document.querySelector(".blog-track-wrap");
-    if (!stage) return;
-    stage.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    stage.addEventListener("touchend", e => {
-      const diff = touchStartX - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 40) window.blogScroll(diff > 0 ? 1 : -1);
-    }, { passive: true });
+    let sx = 0;
+    const wrap = document.querySelector(".blog-track-wrap");
+    if (!wrap) return;
+    wrap.addEventListener("touchstart", e => { sx = e.touches[0].clientX; }, {passive:true});
+    wrap.addEventListener("touchend",   e => {
+      const diff = sx - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) window.blogScroll(diff>0?1:-1);
+    }, {passive:true});
   })();
 
   // ── GERİ BİLDİRİM FORMU ──────────────────────────────────
