@@ -2542,8 +2542,8 @@ import Layout from "../layouts/Layout.astro";
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    min-width: calc(33.333% - 11px);
-    max-width: calc(33.333% - 11px);
+    min-width: 100%;
+    max-width: 100%;
     display: flex; flex-direction: column;
     flex-shrink: 0; overflow: hidden; position: relative;
     transition: border-color 0.2s, transform 0.2s;
@@ -2613,7 +2613,6 @@ import Layout from "../layouts/Layout.astro";
   .blog-dot.active { background:var(--accent); width:18px; }
 
   @media (max-width:768px) {
-    .blog-card { min-width:100%; max-width:100%; }
     .blog-stage { padding:16px; }
   }
 
@@ -3295,7 +3294,7 @@ import Layout from "../layouts/Layout.astro";
   // ── BLOG CAROUSEL ────────────────────────────────────────
   let blogPosts = [];
   let blogIndex = 0;
-  const BLOG_VISIBLE = 3;
+  const BLOG_VISIBLE = 1;
 
   async function loadBlog() {
     try {
@@ -3357,39 +3356,35 @@ import Layout from "../layouts/Layout.astro";
   function renderDots() {
     const dotsEl = document.getElementById("blog-dots");
     if (!dotsEl) return;
-    const pages = Math.ceil(blogPosts.length / BLOG_VISIBLE);
-    dotsEl.innerHTML = Array.from({length: pages}, (_, i) =>
-      `<div class="blog-dot ${i === 0 ? "active" : ""}" onclick="blogGoTo(${i * BLOG_VISIBLE})"></div>`
+    dotsEl.innerHTML = Array.from({length: blogPosts.length}, (_, i) =>
+      `<div class="blog-dot ${i === 0 ? "active" : ""}" onclick="blogGoTo(${i})"></div>`
     ).join("");
   }
 
   function updateDots() {
-    const page = Math.floor(blogIndex / BLOG_VISIBLE);
     document.querySelectorAll(".blog-dot").forEach((d, i) => {
-      d.classList.toggle("active", i === page);
+      d.classList.toggle("active", i === blogIndex);
     });
   }
 
   function updateBlogNav() {
     const wrap = document.querySelector(".blog-track-wrap");
-    const cardW = wrap ? wrap.clientWidth / BLOG_VISIBLE : 310;
+    const cardW = wrap ? wrap.clientWidth : 310;
     document.getElementById("blog-track").style.transform =
       `translateX(-${blogIndex * cardW}px)`;
     const prev = document.getElementById("blog-prev");
     const next = document.getElementById("blog-next");
     const counter = document.getElementById("blog-counter");
     if (prev) prev.disabled = blogIndex === 0;
-    if (next) next.disabled = blogIndex >= blogPosts.length - BLOG_VISIBLE;
+    if (next) next.disabled = blogIndex >= blogPosts.length - 1;
     if (counter && blogPosts.length) {
-      const from = blogIndex + 1;
-      const to = Math.min(blogIndex + BLOG_VISIBLE, blogPosts.length);
-      counter.textContent = `${from}–${to} / ${blogPosts.length}`;
+      counter.textContent = `${blogIndex + 1} / ${blogPosts.length}`;
     }
     updateDots();
   }
 
   window.blogScroll = function(dir) {
-    const max = Math.max(0, blogPosts.length - BLOG_VISIBLE);
+    const max = Math.max(0, blogPosts.length - 1);
     blogIndex = Math.max(0, Math.min(blogIndex + dir, max));
     updateBlogNav();
   };
@@ -3401,6 +3396,18 @@ import Layout from "../layouts/Layout.astro";
 
 
   loadBlog();
+
+  // ── BLOG SWIPE (dokunmatik) ───────────────────────────────
+  (() => {
+    let touchStartX = 0;
+    const stage = document.querySelector(".blog-track-wrap");
+    if (!stage) return;
+    stage.addEventListener("touchstart", e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    stage.addEventListener("touchend", e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) window.blogScroll(diff > 0 ? 1 : -1);
+    }, { passive: true });
+  })();
 
   // ── GERİ BİLDİRİM FORMU ──────────────────────────────────
   let selectedStar = 0;
