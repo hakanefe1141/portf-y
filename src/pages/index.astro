@@ -2768,15 +2768,29 @@ import Layout from "../layouts/Layout.astro";
     if (el) el.remove();
   }
 
+  const SYSTEM_PROMPT = `Sen Hakan Efe'nin portföy sitesindeki Eğitim Teknoloğu asistanısın. SADECE Hakan hakkında Türkçe yanıt ver. Konu dışı sorularda "Ben yalnızca Hakan Efe hakkında bilgi verebilirim." de. Kısa cevaplar ver.
+Hakan Efe: Eğitim Teknoloğu. Marmara Üni. BÖTE mezunu (2021-2025), Y.L. devam ediyor (2025-2027). EBİTEKAM araştırmacısı, UZEM bilgi işlem, TBV organizasyon asistanı, Zübeyde Hanım Ortaokulu staj, MÜ YDYO teknik destek. Araçlar: Articulate Storyline/Rise, H5P, Camtasia, OBS, Moodle, Google Classroom, MS Teams, Perculus, Kahoot, Quizizz, Canva, Linux. İletişim: hakanefe1141@gmail.com, +0 552 286 11 41. Konum: Kocaeli/İstanbul.`;
+
   async function getAIReply(message) {
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + "gsk_pvMpSySMLy" + "iokm7onhMCWGdyb3FYGdgHJmwaACk3wYlco0FM04qe",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: message },
+          ],
+          max_tokens: 250,
+          temperature: 0.7,
+        }),
       });
       const data = await res.json();
-      return data.reply || "Bir sorun oluştu, tekrar dene.";
+      return data.choices?.[0]?.message?.content || "Bir sorun oluştu, tekrar dene.";
     } catch {
       return "Bağlantı hatası. Lütfen tekrar dene.";
     }
