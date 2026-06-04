@@ -681,20 +681,6 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </section>
 
-  <!-- BLOG POST MODAL -->
-  <div id="blog-modal" onclick="closeBlogPost(event)">
-    <div id="blog-modal-box">
-      <div class="blog-modal-hero">
-        <button class="blog-modal-close" onclick="closeBlogPost()">✕</button>
-        <span id="bm-tag"></span>
-        <h2 id="bm-title"></h2>
-      </div>
-      <div class="blog-modal-body">
-        <p id="bm-meta"></p>
-        <div id="bm-body"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- REFERANSLAR -->
   <section id="referanslar" class="reveal">
@@ -2544,13 +2530,12 @@ import Layout from "../layouts/Layout.astro";
     padding: 0;
     min-width: 290px;
     max-width: 290px;
-    cursor: pointer;
-    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     overflow: hidden;
     position: relative;
+    box-shadow: 0 4px 20px var(--shadow);
   }
 
   .blog-card::before {
@@ -2559,17 +2544,7 @@ import Layout from "../layouts/Layout.astro";
     top: 0; left: 0; right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--accent), #c084fc);
-    opacity: 0;
-    transition: opacity 0.25s;
   }
-
-  .blog-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(124,58,237,0.15);
-    border-color: var(--accent);
-  }
-
-  .blog-card:hover::before { opacity: 1; }
 
   .blog-card-body {
     padding: 24px;
@@ -2658,17 +2633,6 @@ import Layout from "../layouts/Layout.astro";
     font-family: "JetBrains Mono", monospace;
   }
 
-  .blog-read-more {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--accent-light);
-    padding: 10px 24px 16px;
-    transition: gap 0.2s;
-  }
-  .blog-card:hover .blog-read-more { gap: 10px; }
 
   /* BOŞ DURUM */
   .blog-empty {
@@ -3494,14 +3458,14 @@ import Layout from "../layouts/Layout.astro";
 
       track.innerHTML = blogPosts.map((p, i) => {
         const date = new Date(p.date).toLocaleDateString("tr-TR", { day:"numeric", month:"long", year:"numeric" });
-        const excerpt = p.body.slice(0, 110) + (p.body.length > 110 ? "..." : "");
+        const excerpt = p.body.slice(0, 200) + (p.body.length > 200 ? "..." : "");
         const readMin = Math.max(1, Math.ceil(p.body.split(" ").length / 200));
         const initials = p.author.split(" ").map(w => w[0]).join("").slice(0,2);
-        return `<div class="blog-card" onclick="openBlogPost(${i})">
+        return `<div class="blog-card">
           <div class="blog-card-body">
             <div class="blog-card-top">
               <span class="blog-card-tag">✦ ${p.tag}</span>
-              <span class="blog-card-read">${readMin} dk okuma</span>
+              <span class="blog-card-read">⏱ ${readMin} dk</span>
             </div>
             <div class="blog-card-title">${p.title}</div>
             <div class="blog-card-excerpt">${excerpt}</div>
@@ -3513,7 +3477,6 @@ import Layout from "../layouts/Layout.astro";
             </div>
             <span class="blog-card-date">${date}</span>
           </div>
-          <div class="blog-read-more">Devamını oku →</div>
         </div>`;
       }).join("");
 
@@ -3563,25 +3526,6 @@ import Layout from "../layouts/Layout.astro";
     updateBlogNav();
   };
 
-  window.openBlogPost = function(i) {
-    const p = blogPosts[i];
-    const date = new Date(p.date).toLocaleDateString("tr-TR", { day:"numeric", month:"long", year:"numeric" });
-    const readMin = Math.max(1, Math.ceil(p.body.split(" ").length / 200));
-    document.getElementById("bm-tag").textContent = "✦ " + p.tag;
-    document.getElementById("bm-title").textContent = p.title;
-    document.getElementById("bm-meta").innerHTML =
-      `<span>✍️ ${p.author}</span><span>📅 ${date}</span><span>⏱ ${readMin} dk okuma</span>`;
-    document.getElementById("bm-body").textContent = p.body;
-    document.getElementById("blog-modal").classList.add("open");
-    document.body.style.overflow = "hidden";
-  };
-
-  window.closeBlogPost = function(e?: any) {
-    if (!e || e.target === document.getElementById("blog-modal")) {
-      document.getElementById("blog-modal").classList.remove("open");
-      document.body.style.overflow = "";
-    }
-  };
 
   loadBlog();
 
