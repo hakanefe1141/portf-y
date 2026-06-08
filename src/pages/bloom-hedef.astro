@@ -1,0 +1,522 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Bloom Hedef Oluşturucu | Hakan Efe" description="Bloom Taksonomisine göre ölçülebilir öğrenme hedefleri oluşturun">
+
+<div class="bloom-page">
+
+  <!-- HEADER -->
+  <header class="bloom-header">
+    <a href="/" class="back-link">← Portföye Dön</a>
+    <div class="header-content">
+      <span class="header-badge">🎓 Eğitim Teknolojisi Aracı</span>
+      <h1>Bloom Hedef Oluşturucu</h1>
+      <p>Konu ve hedef kitlenizi girin — Bloom Taksonomisinin 6 seviyesine göre ölçülebilir öğrenme hedefleri AI ile otomatik oluştursun.</p>
+    </div>
+  </header>
+
+  <main class="bloom-main">
+
+    <!-- FORM -->
+    <section class="form-section">
+      <div class="form-card">
+        <h2>Eğitim Bilgileri</h2>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="konu">Eğitim Konusu *</label>
+            <input type="text" id="konu" placeholder="örn: Excel'e Giriş, SCORM Standartları, Moodle Kullanımı" />
+          </div>
+          <div class="form-group">
+            <label for="hedefKitle">Hedef Kitle</label>
+            <input type="text" id="hedefKitle" placeholder="örn: Yeni çalışanlar, K-12 öğretmenleri" />
+          </div>
+          <div class="form-group">
+            <label for="sure">Eğitim Süresi</label>
+            <input type="text" id="sure" placeholder="örn: 2 saat, 3 günlük kurs" />
+          </div>
+          <div class="form-group">
+            <label for="seviye">Katılımcı Seviyesi</label>
+            <select id="seviye">
+              <option value="Başlangıç">Başlangıç</option>
+              <option value="Orta" selected>Orta</option>
+              <option value="İleri">İleri</option>
+            </select>
+          </div>
+        </div>
+        <button id="generate-btn" onclick="generateGoals()">
+          <span id="btn-text">✨ Hedefleri Oluştur</span>
+          <div id="btn-spinner" class="btn-spinner" style="display:none"></div>
+        </button>
+        <p id="form-error" class="form-error" style="display:none"></p>
+      </div>
+    </section>
+
+    <!-- BLOOM PİRAMİDİ (referans) -->
+    <section class="pyramid-section">
+      <h2>Bloom Taksonomisi</h2>
+      <div class="pyramid">
+        <div class="pyramid-level" style="--c:#a78bfa;--w:42%">
+          <span class="level-num">6</span>
+          <div><strong>Yaratma</strong><small>Tasarla · Üret · Geliştir</small></div>
+        </div>
+        <div class="pyramid-level" style="--c:#3b82f6;--w:54%">
+          <span class="level-num">5</span>
+          <div><strong>Değerlendirme</strong><small>Yargıla · Eleştir · Savun</small></div>
+        </div>
+        <div class="pyramid-level" style="--c:#22c55e;--w:66%">
+          <span class="level-num">4</span>
+          <div><strong>Analiz</strong><small>Ayırt et · Karşılaştır · Sınıflandır</small></div>
+        </div>
+        <div class="pyramid-level" style="--c:#eab308;--w:78%">
+          <span class="level-num">3</span>
+          <div><strong>Uygulama</strong><small>Kullan · Göster · Çöz</small></div>
+        </div>
+        <div class="pyramid-level" style="--c:#f97316;--w:90%">
+          <span class="level-num">2</span>
+          <div><strong>Anlama</strong><small>Açıkla · Yorumla · Özetle</small></div>
+        </div>
+        <div class="pyramid-level" style="--c:#ef4444;--w:100%">
+          <span class="level-num">1</span>
+          <div><strong>Hatırlama</strong><small>Tanımla · Listele · Hatırla</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SONUÇLAR -->
+    <section id="results-section" style="display:none">
+      <div class="results-header">
+        <h2 id="results-title">Öğrenme Hedefleri</h2>
+        <div class="results-actions">
+          <button onclick="printResults()" class="action-btn print-btn">🖨️ Yazdır / PDF</button>
+          <button onclick="copyResults()" class="action-btn copy-btn" id="copy-btn">📋 Kopyala</button>
+        </div>
+      </div>
+
+      <div id="results-grid" class="results-grid"></div>
+
+      <div id="tips-box" class="tips-box" style="display:none">
+        <h3>💡 Tasarım İpuçları</h3>
+        <ul id="tips-list"></ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bloom-footer">
+    <p>Hakan Efe · <a href="mailto:hakanefe1141@gmail.com">hakanefe1141@gmail.com</a> · <a href="/">hakanefe.com</a></p>
+  </footer>
+
+</div>
+
+</Layout>
+
+<style is:global>
+  .bloom-page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+  }
+
+  /* HEADER */
+  .bloom-header {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a0a2e 100%);
+    border-bottom: 1px solid #2a2a3e;
+    padding: 28px 40px 36px;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--accent-light);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 7px 14px;
+    border: 1px solid #2a2a3e;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .back-link:hover { border-color: var(--accent); opacity: 1; }
+  .header-badge {
+    display: inline-block;
+    background: rgba(124,58,237,0.2);
+    border: 1px solid rgba(124,58,237,0.4);
+    color: #a78bfa;
+    border-radius: 100px;
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .header-content h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: white;
+    margin-bottom: 12px;
+  }
+  .header-content p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    max-width: 600px;
+    line-height: 1.7;
+  }
+
+  /* MAIN */
+  .bloom-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  /* FORM */
+  .form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+  }
+  .form-card h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .form-group input, .form-group select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-size: 0.92rem;
+    font-family: "Inter", sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .form-group select { cursor: pointer; }
+
+  #generate-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #c084fc);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  #generate-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+  #generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .form-error { color: #ef4444; font-size: 0.85rem; margin-top: 10px; }
+
+  /* PİRAMİT */
+  .pyramid-section h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .pyramid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+  }
+  .pyramid-level {
+    width: var(--w);
+    background: var(--c);
+    border-radius: 8px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: white;
+    transition: transform 0.2s;
+    cursor: default;
+  }
+  .pyramid-level:hover { transform: scaleX(1.02); }
+  .level-num {
+    width: 24px; height: 24px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .pyramid-level strong { font-size: 0.9rem; font-weight: 700; display: block; }
+  .pyramid-level small { font-size: 0.72rem; opacity: 0.8; }
+
+  /* SONUÇLAR */
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .results-header h2 { font-size: 1.1rem; font-weight: 700; }
+  .results-actions { display: flex; gap: 10px; }
+  .action-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .action-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
+
+  .results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .result-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    animation: fadeUp 0.35s ease backwards;
+    border-left: 4px solid var(--level-color);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .result-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--level-color);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 0.75rem;
+    color: white;
+    flex-shrink: 0;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .result-content { flex: 1; }
+  .result-level {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--level-color);
+    margin-bottom: 5px;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .result-eylem {
+    display: inline-block;
+    background: rgba(0,0,0,0.06);
+    border-radius: 4px;
+    padding: 1px 8px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: 8px;
+    font-family: "JetBrains Mono", monospace;
+  }
+  :root[data-theme="dark"] .result-eylem { background: rgba(255,255,255,0.08); }
+  .result-hedef {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* İPUÇLARI */
+  .tips-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 16px;
+  }
+  .tips-box h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; }
+  .tips-box ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .tips-box li {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    padding-left: 20px;
+    position: relative;
+  }
+  .tips-box li::before { content: "▸"; position: absolute; left: 0; color: var(--accent-light); }
+
+  /* FOOTER */
+  .bloom-footer {
+    text-align: center;
+    padding: 28px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+
+  /* PRINT */
+  @media print {
+    .bloom-header, .form-section, .pyramid-section, .results-actions, .bloom-footer, .back-link { display: none !important; }
+    .bloom-main { padding: 0; }
+    #results-section { display: block !important; }
+    .result-card { break-inside: avoid; border: 1px solid #ccc !important; margin-bottom: 10px; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .bloom-header { padding: 20px 20px 28px; }
+    .form-card { padding: 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .pyramid-level { width: 100% !important; }
+    .result-card { flex-direction: column; gap: 12px; }
+  }
+</style>
+
+<script is:inline>
+  async function generateGoals() {
+    const konu = document.getElementById("konu").value.trim();
+    const hedefKitle = document.getElementById("hedefKitle").value.trim();
+    const sure = document.getElementById("sure").value.trim();
+    const seviye = document.getElementById("seviye").value;
+    const btn = document.getElementById("generate-btn");
+    const btnText = document.getElementById("btn-text");
+    const spinner = document.getElementById("btn-spinner");
+    const errEl = document.getElementById("form-error");
+
+    if (!konu) {
+      errEl.textContent = "Lütfen eğitim konusunu girin.";
+      errEl.style.display = "block";
+      return;
+    }
+    errEl.style.display = "none";
+
+    btn.disabled = true;
+    btnText.textContent = "Oluşturuluyor...";
+    spinner.style.display = "block";
+    document.getElementById("results-section").style.display = "none";
+
+    try {
+      const res = await fetch("/api/bloom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ konu, hedefKitle, sure, seviye }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "Hata");
+
+      renderResults(data, konu);
+    } catch (e) {
+      errEl.textContent = e.message || "Bir hata oluştu, tekrar dene.";
+      errEl.style.display = "block";
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = "✨ Hedefleri Oluştur";
+      spinner.style.display = "none";
+    }
+  }
+
+  function renderResults(data, konu) {
+    const section = document.getElementById("results-section");
+    const grid = document.getElementById("results-grid");
+    const tipsBox = document.getElementById("tips-box");
+    const tipsList = document.getElementById("tips-list");
+
+    document.getElementById("results-title").textContent = `"${konu}" — Öğrenme Hedefleri`;
+
+    const levels = [
+      { num: "1", label: "Hatırlama" },
+      { num: "2", label: "Anlama" },
+      { num: "3", label: "Uygulama" },
+      { num: "4", label: "Analiz" },
+      { num: "5", label: "Değerlendirme" },
+      { num: "6", label: "Yaratma" },
+    ];
+
+    grid.innerHTML = data.hedefler.map((h, i) => {
+      const delay = i * 0.07;
+      return `<div class="result-card" style="--level-color:${h.renk};animation-delay:${delay}s">
+        <div class="result-icon">${levels[i]?.num || i+1}</div>
+        <div class="result-content">
+          <div class="result-level">${h.seviye}<span class="result-eylem">${h.eylem}</span></div>
+          <div class="result-hedef">${h.hedef}</div>
+        </div>
+      </div>`;
+    }).join("");
+
+    if (data.ipuclari?.length) {
+      tipsList.innerHTML = data.ipuclari.map(t => `<li>${t}</li>`).join("");
+      tipsBox.style.display = "block";
+    } else {
+      tipsBox.style.display = "none";
+    }
+
+    section.style.display = "block";
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function printResults() {
+    window.print();
+  }
+
+  function copyResults() {
+    const cards = document.querySelectorAll(".result-card");
+    let text = document.getElementById("results-title").textContent + "\n\n";
+    cards.forEach(card => {
+      const level = card.querySelector(".result-level")?.textContent?.trim() || "";
+      const hedef = card.querySelector(".result-hedef")?.textContent?.trim() || "";
+      text += `${level}\n${hedef}\n\n`;
+    });
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById("copy-btn");
+      btn.textContent = "✅ Kopyalandı!";
+      setTimeout(() => btn.textContent = "📋 Kopyala", 2000);
+    });
+  }
+</script>
+
+</Layout>
