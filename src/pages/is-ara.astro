@@ -277,7 +277,8 @@ import Layout from "../layouts/Layout.astro";
 </style>
 
 <script is:inline>
-  const PROXY_URL = "https://jooble-proxy-1.onrender.com/jobs";
+  const ADZUNA_ID  = "d9dfe595";
+  const ADZUNA_KEY = "1c99a0e4e49e3a70631b4a75eb0f422a";
 
   let currentPage = 1;
   let lastKeyword = "";
@@ -312,43 +313,26 @@ import Layout from "../layouts/Layout.astro";
     const btn = document.querySelector(".search-btn");
     if (btn) btn.disabled = true;
 
-    const payload = JSON.stringify({
-      keywords: kw,
-      location: loc || "Türkiye",
-      page: String(page),
-      ResultsOnPage: PAGE_SIZE,
+    const params = new URLSearchParams({
+      app_id: ADZUNA_ID,
+      app_key: ADZUNA_KEY,
+      what: kw,
+      where: loc || "Turkey",
+      results_per_page: PAGE_SIZE,
+      page,
+      "content-type": "application/json",
     });
 
+    const url = `https://api.adzuna.com/v1/api/jobs/tr/search/${page}?${params}`;
+
     try {
-      const res  = await fetchWithTimeout(PROXY_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-        body: payload,
-      }, 20000);
-
-      const text = await res.text();
-
-      // Yanıt JSON mu kontrol et
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch(_) {
-        // Proxy HTML döndürdü (uyku modundan yeni kalktı), birkaç sn bekle
-        section.innerHTML = `<div class="loading-state"><div class="job-spinner"></div><span>Sunucu uyanıyor, lütfen bekle...</span></div>`;
-        await new Promise(r => setTimeout(r, 4000));
-        const res2 = await fetchWithTimeout(PROXY_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
-          body: payload,
-        }, 20000);
-        data = await res2.json();
-      }
-
-      if (!data || !data.jobs) throw new Error("İlan bulunamadı.");
-      totalCount = data.totalCount || 0;
-      renderResults(data.jobs, kw, page);
+      const res  = await fetchWithTimeout(url, {}, 12000);
+      const data = await res.json();
+      if (!data || !data.results) throw new Error("Sonuç bulunamadı.");
+      totalCount = data.count || 0;
+      renderResults(data.results, kw, page);
     } catch(e) {
-      section.innerHTML = `<div class="error-state">⚠️ İlanlar yüklenemedi.<br/><small>${e.message || "Bağlantı hatası. Tekrar dene."}</small></div>`;
+      section.innerHTML = `<div class="error-state">⚠️ İlanlar yüklenemedi.<br/><small>${e.message}</small></div>`;
     } finally {
       if (btn) btn.disabled = false;
     }
@@ -366,13 +350,15 @@ import Layout from "../layouts/Layout.astro";
 
     const cardsHtml = jobs.map((job, i) => {
       const title   = cleanHtml(job.title || "İlan");
-      const company = cleanHtml(job.company || "");
-      const loc     = cleanHtml(job.location || "");
-      const desc    = cleanHtml(job.snippet || "");
-      const salary  = job.salary ? `<span class="job-salary">💰 ${cleanHtml(job.salary)}</span>` : "";
-      const date    = job.updated ? formatDate(job.updated) : "";
-      const link    = job.link || "#";
-      const source  = job.source || "Jooble";
+      const company = cleanHtml(job.company?.display_name || "");
+      const loc     = cleanHtml(job.location?.display_name || "");
+      const desc    = cleanHtml(job.description || "");
+      const salMin  = job.salary_min ? Math.round(job.salary_min).toLocaleString("tr-TR") : null;
+      const salMax  = job.salary_max ? Math.round(job.salary_max).toLocaleString("tr-TR") : null;
+      const salary  = salMin ? `<span class="job-salary">💰 ${salMin}${salMax ? " – " + salMax : ""} ₺</span>` : "";
+      const date    = job.created ? formatDate(job.created) : "";
+      const link    = job.redirect_url || "#";
+      const source  = "Adzuna";
 
       return `<div class="job-card" style="animation-delay:${i*0.05}s">
         <div class="job-card-top">
