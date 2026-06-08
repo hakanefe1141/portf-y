@@ -11,7 +11,7 @@ import Layout from "../layouts/Layout.astro";
     <div class="header-content">
       <span class="job-badge">💼 İş Arama Aracı</span>
       <h1>İş İlanı Ara</h1>
-      <p>Anahtar kelimeyi gir — ilanlar buraya gelsin.</p>
+      <p>Anahtar kelimeyi gir — ilanlar buraya gelsin. Remote & uluslararası pozisyonlar için İngilizce ara.</p>
     </div>
   </header>
 
@@ -36,13 +36,13 @@ import Layout from "../layouts/Layout.astro";
 
       <div class="quick-tags">
         <span class="qtag-label">Hızlı:</span>
-        <button onclick="setAndSearch('Eğitim Teknoloğu')">Eğitim Teknoloğu</button>
         <button onclick="setAndSearch('Instructional Designer')">Instructional Designer</button>
-        <button onclick="setAndSearch('E-Learning Uzmanı')">E-Learning</button>
-        <button onclick="setAndSearch('LMS Yöneticisi')">LMS Yöneticisi</button>
-        <button onclick="setAndSearch('İçerik Tasarımcısı')">İçerik Tasarımcısı</button>
-        <button onclick="setAndSearch('Uzaktan Eğitim')">Uzaktan Eğitim</button>
-        <button onclick="setAndSearch('BÖTE')">BÖTE</button>
+        <button onclick="setAndSearch('E-Learning Developer')">E-Learning Developer</button>
+        <button onclick="setAndSearch('Learning Designer')">Learning Designer</button>
+        <button onclick="setAndSearch('LMS Administrator')">LMS Administrator</button>
+        <button onclick="setAndSearch('Education Technology')">Education Technology</button>
+        <button onclick="setAndSearch('Training Specialist')">Training Specialist</button>
+        <button onclick="setAndSearch('Content Designer')">Content Designer</button>
       </div>
     </div>
 
@@ -317,13 +317,12 @@ import Layout from "../layouts/Layout.astro";
       app_id: ADZUNA_ID,
       app_key: ADZUNA_KEY,
       what: kw,
-      where: loc || "Turkey",
+      where: loc || "",
       results_per_page: PAGE_SIZE,
-      page,
       "content-type": "application/json",
     });
 
-    const url = `https://api.adzuna.com/v1/api/jobs/tr/search/${page}?${params}`;
+    const url = `https://api.adzuna.com/v1/api/jobs/gb/search/${page}?${params}`;
 
     try {
       const res  = await fetchWithTimeout(url, {}, 12000);
