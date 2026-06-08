@@ -42,8 +42,13 @@ Her hedef cümlesi "Eğitim sonunda katılımcı/öğrenci; [eylem fiili]..." ş
 
     const raw = completion.choices[0]?.message?.content ?? "";
 
-    // JSON'u parse et
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    // Markdown kod bloğunu temizle, sonra JSON'u çıkar
+    const cleaned = raw
+      .replace(/```json\s*/gi, "")
+      .replace(/```\s*/g, "")
+      .trim();
+
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Geçersiz yanıt formatı");
     const data = JSON.parse(jsonMatch[0]);
 
