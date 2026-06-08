@@ -1,0 +1,378 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="İş İlanı Ara | Hakan Efe" description="Eğitim Teknoloğu iş ilanlarını tüm platformlarda tek tıkla ara">
+
+<div class="job-page">
+
+  <header class="job-header">
+    <a href="/" class="back-link">← Portföye Dön</a>
+    <div class="header-content">
+      <span class="job-badge">💼 İş Arama Aracı</span>
+      <h1>İş İlanı Arama</h1>
+      <p>Anahtar kelimeyi gir, tüm Türk iş platformlarında tek tıkla ara.</p>
+    </div>
+  </header>
+
+  <main class="job-main">
+
+    <!-- ARAMA FORMU -->
+    <div class="search-card">
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="keyword" placeholder="örn: Eğitim Teknoloğu, Instructional Designer..." value="Eğitim Teknoloğu" />
+          <button class="clear-btn" id="clear-btn" onclick="clearInput()" title="Temizle">✕</button>
+        </div>
+        <div class="search-input-wrap loc-wrap">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <input type="text" id="location" placeholder="Şehir (isteğe bağlı)" />
+        </div>
+        <button class="search-btn" onclick="searchAll()">🔍 Tümünde Ara</button>
+      </div>
+
+      <!-- HIZLI ETİKETLER -->
+      <div class="quick-tags">
+        <span class="qtag-label">Hızlı arama:</span>
+        <button onclick="setKeyword('Eğitim Teknoloğu')">Eğitim Teknoloğu</button>
+        <button onclick="setKeyword('Instructional Designer')">Instructional Designer</button>
+        <button onclick="setKeyword('E-Learning Uzmanı')">E-Learning Uzmanı</button>
+        <button onclick="setKeyword('LMS Yöneticisi')">LMS Yöneticisi</button>
+        <button onclick="setKeyword('İçerik Tasarımcısı')">İçerik Tasarımcısı</button>
+        <button onclick="setKeyword('Uzaktan Eğitim Uzmanı')">Uzaktan Eğitim</button>
+      </div>
+    </div>
+
+    <!-- PLATFORMLAR -->
+    <div class="platforms-section">
+      <h2 class="section-label">Platformlar — <span id="search-preview">Eğitim Teknoloğu</span></h2>
+      <div class="platforms-grid" id="platforms-grid">
+
+        <div class="platform-card" data-platform="linkedin" onclick="openPlatform('linkedin')">
+          <div class="platform-logo linkedin-logo">in</div>
+          <div class="platform-info">
+            <div class="platform-name">LinkedIn</div>
+            <div class="platform-desc">Profesyonel ağda iş ilanları</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+        <div class="platform-card" data-platform="kariyer" onclick="openPlatform('kariyer')">
+          <div class="platform-logo kariyer-logo">K</div>
+          <div class="platform-info">
+            <div class="platform-name">Kariyer.net</div>
+            <div class="platform-desc">Türkiye'nin önde gelen iş platformu</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+        <div class="platform-card" data-platform="yenibiris" onclick="openPlatform('yenibiris')">
+          <div class="platform-logo yenibiris-logo">Y</div>
+          <div class="platform-info">
+            <div class="platform-name">Yeni Bir İş</div>
+            <div class="platform-desc">Yenibiris.com ilanları</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+        <div class="platform-card" data-platform="indeed" onclick="openPlatform('indeed')">
+          <div class="platform-logo indeed-logo">i</div>
+          <div class="platform-info">
+            <div class="platform-name">Indeed Türkiye</div>
+            <div class="platform-desc">Küresel iş arama motoru</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+        <div class="platform-card" data-platform="secretcv" onclick="openPlatform('secretcv')">
+          <div class="platform-logo secretcv-logo">S</div>
+          <div class="platform-info">
+            <div class="platform-name">SecretCV</div>
+            <div class="platform-desc">Gizli özgeçmiş ve ilanlar</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+        <div class="platform-card" data-platform="glassdoor" onclick="openPlatform('glassdoor')">
+          <div class="platform-logo glassdoor-logo">G</div>
+          <div class="platform-info">
+            <div class="platform-name">Glassdoor</div>
+            <div class="platform-desc">İlan + şirket değerlendirmeleri</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+        <div class="platform-card" data-platform="eleman" onclick="openPlatform('eleman')">
+          <div class="platform-logo eleman-logo">E</div>
+          <div class="platform-info">
+            <div class="platform-name">Eleman.net</div>
+            <div class="platform-desc">Eleman arama platformu</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+        <div class="platform-card" data-platform="isilan" onclick="openPlatform('isilan')">
+          <div class="platform-logo isilan-logo">İ</div>
+          <div class="platform-info">
+            <div class="platform-name">İş İlan</div>
+            <div class="platform-desc">Türkiye geneli iş ilanları</div>
+          </div>
+          <div class="platform-arrow">→</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- İPUÇLARI -->
+    <div class="tips-card">
+      <h3>💡 Arama İpuçları</h3>
+      <div class="tips-grid">
+        <div class="tip-item">
+          <span class="tip-icon">🔤</span>
+          <div>
+            <strong>İngilizce de dene</strong>
+            <p>"Instructional Designer", "E-Learning Developer", "LMS Administrator"</p>
+          </div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-icon">🏢</span>
+          <div>
+            <strong>Şirket türü</strong>
+            <p>Üniversite, eğitim şirketi, kurumsal HR, teknoloji firması ara</p>
+          </div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-icon">📍</span>
+          <div>
+            <strong>Uzaktan filtrele</strong>
+            <p>Lokasyon kutusuna "uzaktan" veya "remote" yaz</p>
+          </div>
+        </div>
+        <div class="tip-item">
+          <span class="tip-icon">⚡</span>
+          <div>
+            <strong>BÖTE mezunu</strong>
+            <p>"BÖTE", "Bilgisayar Öğretmeni", "BT Öğretmeni" de arama listene ekle</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="job-footer">
+    <p>Hakan Efe · <a href="mailto:hakanefe1141@gmail.com">hakanefe1141@gmail.com</a> · <a href="/">hakanefe.com</a></p>
+  </footer>
+
+</div>
+</Layout>
+
+<style is:global>
+  .job-page { min-height:100vh; background:var(--bg); color:var(--text); font-family:"Inter",sans-serif; }
+
+  /* HEADER */
+  .job-header {
+    background: linear-gradient(135deg, #0f0f1a, #0a1628);
+    border-bottom: 1px solid #2a2a3e;
+    padding: 28px 40px 36px;
+  }
+  .back-link {
+    display: inline-flex; align-items: center;
+    color: #a78bfa; font-size: 0.875rem; font-weight: 500;
+    padding: 7px 14px; border: 1px solid #2a2a3e; border-radius: 8px;
+    text-decoration: none; margin-bottom: 20px; transition: border-color 0.2s;
+  }
+  .back-link:hover { border-color: #7c3aed; opacity: 1; }
+  .job-badge {
+    display: inline-block;
+    background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3);
+    color: #86efac; border-radius: 100px;
+    padding: 4px 14px; font-size: 0.75rem; font-weight: 600; margin-bottom: 14px;
+  }
+  .header-content h1 { font-size: clamp(1.6rem,4vw,2.2rem); font-weight: 700; color: white; margin-bottom: 10px; }
+  .header-content p { color: #94a3b8; font-size: 0.92rem; }
+
+  /* MAIN */
+  .job-main { max-width: 860px; margin: 0 auto; padding: 36px 24px 60px; display: flex; flex-direction: column; gap: 32px; }
+
+  /* SEARCH CARD */
+  .search-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+  }
+  .search-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-input-wrap {
+    flex: 1; min-width: 200px;
+    position: relative; display: flex; align-items: center;
+  }
+  .search-icon {
+    position: absolute; left: 14px; color: var(--text-muted); flex-shrink: 0; pointer-events: none;
+  }
+  .search-input-wrap input {
+    width: 100%;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 36px 12px 42px;
+    color: var(--text); font-size: 0.92rem; font-family: "Inter",sans-serif;
+    outline: none; transition: border-color 0.2s;
+  }
+  .search-input-wrap input:focus { border-color: #22c55e; }
+  .loc-wrap { max-width: 220px; }
+  .clear-btn {
+    position: absolute; right: 10px;
+    background: none; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 0.85rem; padding: 4px;
+    transition: color 0.15s;
+  }
+  .clear-btn:hover { color: var(--text); }
+  .search-btn {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white; border: none; border-radius: 10px;
+    padding: 12px 24px; font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; font-family: "Inter",sans-serif;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .search-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* QUICK TAGS */
+  .quick-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .qtag-label { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
+  .quick-tags button {
+    background: var(--tag-bg); color: var(--tag-text);
+    border: 1px solid var(--border); border-radius: 100px;
+    padding: 4px 12px; font-size: 0.75rem; font-weight: 500;
+    cursor: pointer; font-family: "Inter",sans-serif;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .quick-tags button:hover { border-color: #22c55e; background: rgba(34,197,94,0.08); color: #22c55e; }
+
+  /* PLATFORMS */
+  .section-label {
+    font-size: 0.82rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.07em; color: var(--text-muted);
+    margin-bottom: 16px;
+    font-family: "JetBrains Mono",monospace;
+  }
+  .section-label span { color: var(--text); text-transform: none; letter-spacing: 0; }
+  .platforms-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+
+  .platform-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .platform-card:hover {
+    border-color: #22c55e;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(34,197,94,0.12);
+  }
+  .platform-card:active { transform: translateY(0); }
+
+  .platform-logo {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; font-weight: 800; color: white;
+    flex-shrink: 0;
+  }
+  .linkedin-logo  { background: #0077b5; }
+  .kariyer-logo   { background: #e53935; }
+  .yenibiris-logo { background: #f59e0b; }
+  .indeed-logo    { background: #003a9b; font-size: 1.3rem; }
+  .secretcv-logo  { background: #7c3aed; }
+  .glassdoor-logo { background: #0caa41; }
+  .eleman-logo    { background: #ea580c; }
+  .isilan-logo    { background: #0891b2; }
+
+  .platform-info { flex: 1; }
+  .platform-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
+  .platform-desc { font-size: 0.75rem; color: var(--text-muted); }
+  .platform-arrow { color: var(--text-muted); font-size: 1rem; transition: transform 0.2s; }
+  .platform-card:hover .platform-arrow { transform: translateX(4px); color: #22c55e; }
+
+  /* TIPS */
+  .tips-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 24px;
+  }
+  .tips-card h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 16px; }
+  .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .tip-item { display: flex; align-items: flex-start; gap: 10px; }
+  .tip-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+  .tip-item strong { font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 3px; }
+  .tip-item p { font-size: 0.77rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
+
+  /* FOOTER */
+  .job-footer { text-align: center; padding: 28px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .job-header { padding: 20px 20px 28px; }
+    .platforms-grid { grid-template-columns: 1fr; }
+    .tips-grid { grid-template-columns: 1fr; }
+    .loc-wrap { max-width: 100%; }
+    .search-btn { width: 100%; justify-content: center; }
+  }
+</style>
+
+<script is:inline>
+  const PLATFORMS = {
+    linkedin:  kw => `https://www.linkedin.com/jobs/search/?keywords=${enc(kw)}&location=T%C3%BCrkiye`,
+    kariyer:   kw => `https://www.kariyer.net/is-ilanlari?q=${enc(kw)}`,
+    yenibiris: kw => `https://www.yenibiris.com/is-ilanlari?Keywords=${enc(kw)}`,
+    indeed:    kw => `https://tr.indeed.com/jobs?q=${enc(kw)}&l=${enc(loc())}`,
+    secretcv:  kw => `https://secretcv.com/is-ilanlari?q=${enc(kw)}`,
+    glassdoor: kw => `https://www.glassdoor.com/Job/turkey-${enc(kw)}-jobs-SRCH_IL.0,6_IN233_KO7,${7+kw.length}.htm`,
+    eleman:    kw => `https://www.eleman.net/is-ilanlari?q=${enc(kw)}`,
+    isilan:    kw => `https://www.isilan.com/is-ilanlari?arama=${enc(kw)}`,
+  };
+
+  function enc(s) { return encodeURIComponent(s || ''); }
+  function kw()   { return document.getElementById('keyword').value.trim() || 'Eğitim Teknoloğu'; }
+  function loc()  { return document.getElementById('location').value.trim(); }
+
+  function updatePreview() {
+    const el = document.getElementById('search-preview');
+    if (el) el.textContent = kw() + (loc() ? ' · ' + loc() : '');
+  }
+
+  document.getElementById('keyword').addEventListener('input', updatePreview);
+  document.getElementById('location').addEventListener('input', updatePreview);
+
+  window.setKeyword = function(val) {
+    document.getElementById('keyword').value = val;
+    updatePreview();
+  };
+
+  window.clearInput = function() {
+    document.getElementById('keyword').value = '';
+    document.getElementById('keyword').focus();
+    updatePreview();
+  };
+
+  window.openPlatform = function(platform) {
+    const url = PLATFORMS[platform]?.(kw());
+    if (url) window.open(url, '_blank', 'noopener');
+  };
+
+  window.searchAll = function() {
+    const keyword = kw();
+    if (!keyword) { document.getElementById('keyword').focus(); return; }
+
+    // Kartları animasyonlu aç
+    const cards = document.querySelectorAll('.platform-card');
+    cards.forEach((card, i) => {
+      setTimeout(() => {
+        card.style.borderColor = '#22c55e';
+        const platform = card.dataset.platform;
+        const url = PLATFORMS[platform]?.(keyword);
+        if (url) window.open(url, '_blank', 'noopener');
+        setTimeout(() => { card.style.borderColor = ''; }, 800);
+      }, i * 180);
+    });
+  };
+
+  updatePreview();
+</script>
