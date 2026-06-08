@@ -753,6 +753,17 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </section>
 
+  <!-- BLOG POST MODAL -->
+  <div id="blog-post-modal" onclick="closeBlogPost(event)">
+    <div id="blog-post-box">
+      <button class="blog-post-close" onclick="closeBlogPost()">✕</button>
+      <span class="blog-post-tag" id="bpm-tag"></span>
+      <h2 id="bpm-title"></h2>
+      <p id="bpm-meta"></p>
+      <div id="bpm-body"></div>
+    </div>
+  </div>
+
 
   <!-- REFERANSLAR -->
   <section id="referanslar" class="reveal">
@@ -2723,6 +2734,80 @@ import Layout from "../layouts/Layout.astro";
   .blog-empty-icon { font-size: 2.5rem; opacity: 0.35; }
   .blog-empty p { font-size: 0.88rem; line-height: 1.6; }
 
+  /* Blog "Tamamını Oku" butonu */
+  .blog-read-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-glow);
+    border: 1px solid var(--accent);
+    color: var(--accent-light);
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    transition: background 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+  .blog-read-btn:hover { background: rgba(124,58,237,0.2); transform: translateX(3px); }
+
+  /* Blog Post Modal */
+  #blog-post-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 9100;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    padding: 24px;
+  }
+  #blog-post-modal.open { display: flex; }
+
+  #blog-post-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: min(720px, 100%);
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    animation: quiz-in 0.3s ease;
+  }
+
+  .blog-post-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none; border: none;
+    color: var(--text-muted); font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .blog-post-tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-family: "JetBrains Mono", monospace;
+    margin-bottom: 16px;
+  }
+
+  #bpm-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+  #bpm-meta  { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 24px; font-family: "JetBrains Mono", monospace; }
+  #bpm-body  {
+    color: var(--text-dim);
+    line-height: 1.85;
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+  }
+
   @media (max-width: 640px) {
     .blog-cover { padding: 24px 24px 22px; min-height: 170px; }
     .blog-cover-title { font-size: 1.2rem; }
@@ -3467,6 +3552,7 @@ import Layout from "../layouts/Layout.astro";
             </div>
           </div>
           <div class="blog-nav-group">
+            <button class="blog-read-btn" onclick="openBlogPost(${idx})">Tamamını Oku →</button>
             <div class="blog-dots">${total>1?dots:""}</div>
             ${total>1?`<span class="blog-count">${idx+1}/${total}</span>`:""}
             ${total>1?`<button class="blog-btn" onclick="blogScroll(-1)" ${idx===0?"disabled":""}>←</button>`:""}
@@ -3515,6 +3601,22 @@ import Layout from "../layouts/Layout.astro";
         `<div class="blog-empty">Yazılar yüklenemedi.</div>`;
     }
   }
+
+  window.openBlogPost = function(idx) {
+    const p = blogPosts[idx];
+    if (!p) return;
+    const date = new Date(p.date).toLocaleDateString("tr-TR", { day:"numeric", month:"long", year:"numeric" });
+    document.getElementById("bpm-tag").textContent   = p.tag;
+    document.getElementById("bpm-title").textContent = p.title;
+    document.getElementById("bpm-meta").textContent  = `${p.author} · ${date}`;
+    document.getElementById("bpm-body").textContent  = p.body;
+    document.getElementById("blog-post-modal").classList.add("open");
+  };
+
+  window.closeBlogPost = function(e?: any) {
+    if (!e || e.target === document.getElementById("blog-post-modal"))
+      document.getElementById("blog-post-modal").classList.remove("open");
+  };
 
   loadBlog();
 
