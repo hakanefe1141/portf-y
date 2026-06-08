@@ -278,7 +278,8 @@ import Layout from "../layouts/Layout.astro";
 
 <script is:inline>
   const JOOBLE_KEY = "1c99a0e4e49e3a70631b4a75eb0f422a";
-  const PROXY = "https://api.allorigins.win/post?url=" + encodeURIComponent("https://jooble.org/api/" + JOOBLE_KEY);
+  const JOOBLE_URL = "https://jooble.org/api/" + JOOBLE_KEY;
+  const PROXY_URL  = "https://corsproxy.io/?" + encodeURIComponent(JOOBLE_URL);
 
   let currentPage = 1;
   let lastKeyword = "";
@@ -320,21 +321,31 @@ import Layout from "../layouts/Layout.astro";
       ResultsOnPage: PAGE_SIZE,
     });
 
-    try {
-      const res = await fetchWithTimeout(
-        "https://jooble.org/api/" + JOOBLE_KEY,
-        { method: "POST", headers: { "Content-Type": "application/json" }, body: payload },
-        8000
-      );
-      const data = await res.json();
-      if (!data || !data.jobs) throw new Error("boş");
-      totalCount = data.totalCount || 0;
-      renderResults(data.jobs, kw, page);
-    } catch(e) {
-      section.innerHTML = `<div class="error-state">⚠️ İlanlar yüklenemedi — API'ye ulaşılamadı.<br/><small>Tarayıcın CORS politikası engelliyor olabilir. Biraz bekleyip tekrar dene.</small></div>`;
-    } finally {
-      if (btn) btn.disabled = false;
+    // Önce proxy ile dene, olmazsa direkt dene
+    const attempts = [
+      () => fetchWithTimeout(PROXY_URL, { method:"POST", headers:{"Content-Type":"application/json","x-requested-with":"XMLHttpRequest"}, body: payload }, 10000),
+      () => fetchWithTimeout("https://api.allorigins.win/raw?url=" + encodeURIComponent(JOOBLE_URL), { method:"POST", headers:{"Content-Type":"application/json"}, body: payload }, 10000),
+      () => fetchWithTimeout(JOOBLE_URL, { method:"POST", headers:{"Content-Type":"application/json"}, body: payload }, 8000),
+    ];
+
+    let success = false;
+    for (const attempt of attempts) {
+      try {
+        const res  = await attempt();
+        const data = await res.json();
+        if (data && data.jobs) {
+          totalCount = data.totalCount || 0;
+          renderResults(data.jobs, kw, page);
+          success = true;
+          break;
+        }
+      } catch(_) { /* sonraki denemeye geç */ }
     }
+
+    if (!success) {
+      section.innerHTML = `<div class="error-state">⚠️ İlanlar yüklenemedi.<br/><small>Jooble API'sine şu an ulaşılamıyor. Birkaç dakika sonra tekrar dene.</small></div>`;
+    }
+
   };
 
   function renderResults(jobs, kw, page) {
