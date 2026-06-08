@@ -291,6 +291,13 @@ import Layout from "../layouts/Layout.astro";
     searchJobs(1);
   };
 
+  function fetchWithTimeout(url, options, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { ...options, signal: controller.signal })
+      .finally(() => clearTimeout(timer));
+  }
+
   window.searchJobs = async function(page) {
     const kw  = document.getElementById("keyword").value.trim();
     const loc = document.getElementById("location").value.trim();
@@ -306,44 +313,25 @@ import Layout from "../layouts/Layout.astro";
     const btn = document.querySelector(".search-btn");
     if (btn) btn.disabled = true;
 
+    const payload = JSON.stringify({
+      keywords: kw,
+      location: loc || "Türkiye",
+      page: String(page),
+      ResultsOnPage: PAGE_SIZE,
+    });
+
     try {
-      const body = JSON.stringify({
-        keywords: kw,
-        location: loc || "Türkiye",
-        page: String(page),
-        ResultsOnPage: PAGE_SIZE,
-      });
-
-      const res = await fetch(PROXY, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pageUrl: "https://jooble.org/api/" + JOOBLE_KEY, data: body }),
-      });
-
-      // allorigins returns { contents: "..." }
-      const wrapper = await res.json();
-      const raw = typeof wrapper.contents === "string" ? wrapper.contents : JSON.stringify(wrapper);
-      const data = JSON.parse(raw);
-
-      if (!data || !data.jobs) throw new Error("Veri alınamadı");
-
+      const res = await fetchWithTimeout(
+        "https://jooble.org/api/" + JOOBLE_KEY,
+        { method: "POST", headers: { "Content-Type": "application/json" }, body: payload },
+        8000
+      );
+      const data = await res.json();
+      if (!data || !data.jobs) throw new Error("boş");
       totalCount = data.totalCount || 0;
       renderResults(data.jobs, kw, page);
-
     } catch(e) {
-      // Fallback: allorigins alternatif
-      try {
-        const res2 = await fetch("https://jooble.org/api/" + JOOBLE_KEY, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ keywords: kw, location: loc || "Türkiye", page: String(page) }),
-        });
-        const data2 = await res2.json();
-        totalCount = data2.totalCount || 0;
-        renderResults(data2.jobs || [], kw, page);
-      } catch(e2) {
-        section.innerHTML = `<div class="error-state">⚠️ İlanlar yüklenemedi. İnternet bağlantını kontrol et veya biraz sonra tekrar dene.</div>`;
-      }
+      section.innerHTML = `<div class="error-state">⚠️ İlanlar yüklenemedi — API'ye ulaşılamadı.<br/><small>Tarayıcın CORS politikası engelliyor olabilir. Biraz bekleyip tekrar dene.</small></div>`;
     } finally {
       if (btn) btn.disabled = false;
     }
@@ -421,9 +409,6 @@ import Layout from "../layouts/Layout.astro";
   document.getElementById("keyword").addEventListener("keydown", e => { if(e.key==="Enter") searchJobs(1); });
   document.getElementById("location").addEventListener("keydown", e => { if(e.key==="Enter") searchJobs(1); });
 
-  // Sayfa açılınca otomatik ara
-  window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("keyword").value = "Eğitim Teknoloğu";
-    searchJobs(1);
-  });
+  // Sayfa açılınca sadece alanı doldur, otomatik arama yapma
+  document.getElementById("keyword").value = "Eğitim Teknoloğu";
 </script>
