@@ -88,7 +88,7 @@ import Layout from "../layouts/Layout.astro";
       <div class="results-header">
         <h2 id="results-title">Öğrenme Hedefleri</h2>
         <div class="results-actions">
-          <button onclick="printResults()" class="action-btn print-btn">🖨️ Yazdır / PDF</button>
+          <button onclick="downloadPDF()" class="action-btn pdf-btn">⬇️ PDF İndir</button>
           <button onclick="copyResults()" class="action-btn copy-btn" id="copy-btn">📋 Kopyala</button>
         </div>
       </div>
@@ -526,8 +526,50 @@ Her hedef "Eğitim sonunda katılımcı; [eylem fiili]..." şeklinde başlasın.
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function printResults() {
-    window.print();
+  function downloadPDF() {
+    const title = document.getElementById("results-title").textContent;
+    const cards = document.querySelectorAll(".result-card");
+    const tips  = document.getElementById("tips-box");
+
+    let html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <title>${title}</title>
+    <style>
+      body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1e293b; background: white; }
+      h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+      .sub { font-size: 0.82rem; color: #64748b; margin-bottom: 28px; }
+      .card { border-left: 4px solid var(--c,#7c3aed); background: #f8fafc; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; page-break-inside: avoid; }
+      .level { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
+      .eylem { font-size: 0.68rem; background: #e2e8f0; border-radius: 4px; padding: 1px 7px; margin-left: 6px; color: #64748b; }
+      .hedef { font-size: 0.9rem; line-height: 1.7; color: #334155; }
+      .tips { margin-top: 28px; background: #f1f5f9; border-radius: 8px; padding: 16px 20px; }
+      .tips h3 { font-size: 0.9rem; margin-bottom: 10px; }
+      .tips li { font-size: 0.85rem; color: #475569; margin-bottom: 6px; line-height: 1.6; }
+      footer { margin-top: 40px; font-size: 0.75rem; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 14px; }
+    </style></head><body>
+    <h1>${title}</h1>
+    <div class="sub">Oluşturulma: ${new Date().toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"})} · hakanefe.com/bloom-hedef</div>`;
+
+    cards.forEach(card => {
+      const color = card.style.getPropertyValue("--level-color") || "#7c3aed";
+      const level = card.querySelector(".result-level")?.innerHTML || "";
+      const hedef = card.querySelector(".result-hedef")?.textContent || "";
+      html += `<div class="card" style="--c:${color};border-left-color:${color}">
+        <div class="level" style="color:${color}">${level}</div>
+        <div class="hedef">${hedef}</div></div>`;
+    });
+
+    if (tips && tips.style.display !== "none") {
+      const items = [...tips.querySelectorAll("li")].map(li => `<li>${li.textContent}</li>`).join("");
+      html += `<div class="tips"><h3>💡 Tasarım İpuçları</h3><ul>${items}</ul></div>`;
+    }
+
+    html += `<footer>Hakan Efe · hakanefe1141@gmail.com · hakanefe.com</footer></body></html>`;
+
+    const win = window.open("","_blank","width=800,height=700");
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => { win.print(); }, 500);
   }
 
   function copyResults() {

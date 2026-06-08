@@ -110,7 +110,7 @@ import Layout from "../layouts/Layout.astro";
       <div class="doc-toolbar">
         <h2 id="doc-title">ADDIE Tasarım Belgesi</h2>
         <div class="toolbar-actions">
-          <button onclick="printDoc()" class="tool-btn">🖨️ Yazdır / PDF</button>
+          <button onclick="downloadPDF()" class="tool-btn">⬇️ PDF İndir</button>
           <button onclick="copyDoc()" class="tool-btn" id="copy-btn">📋 Kopyala</button>
         </div>
       </div>
@@ -635,7 +635,88 @@ Yanıtı SADECE aşağıdaki JSON formatında ver, başka hiçbir metin ekleme:
     sec.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  function printDoc() { window.print(); }
+  function downloadPDF() {
+    const title = document.getElementById("doc-title").textContent;
+    const phases = document.querySelectorAll(".phase-section");
+    const meta   = document.querySelector(".doc-meta");
+
+    const phaseColors = { "A":"#7c3aed","D1":"#2563eb","D2":"#059669","I":"#d97706","E":"#dc2626" };
+    const phaseList   = ["#7c3aed","#2563eb","#059669","#d97706","#dc2626"];
+
+    let metaHtml = "";
+    if (meta) {
+      const items = [...meta.querySelectorAll(".doc-meta-item")].map(el => {
+        const label = el.querySelector(".doc-meta-label")?.textContent || "";
+        const val   = el.querySelector(".doc-meta-value")?.textContent || "";
+        return `<div class="m-item"><span class="m-label">${label}</span><span class="m-val">${val}</span></div>`;
+      }).join("");
+      metaHtml = `<div class="meta-grid">${items}</div>`;
+    }
+
+    let phasesHtml = "";
+    phases.forEach((ph, i) => {
+      const color = phaseList[i] || "#7c3aed";
+      const badge = ph.querySelector(".phase-badge")?.textContent || "";
+      const name  = ph.querySelector(".phase-header h3")?.textContent || "";
+      const sub   = ph.querySelector(".phase-header span")?.textContent || "";
+      const blocks = [...ph.querySelectorAll(".content-block")].map(b => {
+        const label = b.querySelector(".content-label")?.textContent || "";
+        const text  = b.querySelector(".content-text")?.textContent || "";
+        const items = [...b.querySelectorAll(".content-list li")].map(li => `<li>${li.textContent}</li>`).join("");
+        const table = b.querySelector("table");
+        let tableHtml = "";
+        if (table) tableHtml = table.outerHTML;
+        return `<div class="cb"><div class="cb-label" style="color:${color}">${label}</div>
+          ${text ? `<p class="cb-text">${text}</p>` : ""}
+          ${items ? `<ul>${items}</ul>` : ""}
+          ${tableHtml}
+        </div>`;
+      }).join("");
+
+      phasesHtml += `<div class="phase" style="border-top:4px solid ${color}">
+        <div class="ph-header" style="background:${color}15">
+          <span class="ph-badge" style="background:${color}">${badge}</span>
+          <div><strong>${name}</strong> <span style="color:#94a3b8;font-size:.8rem">${sub}</span></div>
+        </div>
+        <div class="ph-body">${blocks}</div>
+      </div>`;
+    });
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+    <style>
+      body{font-family:'Segoe UI',Arial,sans-serif;padding:36px 44px;color:#1e293b;background:#fff;font-size:13px}
+      h1{font-size:1.3rem;font-weight:700;margin-bottom:6px;color:#0f172a}
+      .sub{font-size:.75rem;color:#64748b;margin-bottom:24px}
+      .meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px}
+      .m-item{display:flex;flex-direction:column;gap:2px}
+      .m-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8}
+      .m-val{font-size:.85rem;font-weight:500;color:#0f172a}
+      .phase{border:1px solid #e2e8f0;border-radius:10px;margin-bottom:16px;overflow:hidden;page-break-inside:avoid}
+      .ph-header{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid #e2e8f0}
+      .ph-badge{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:white;flex-shrink:0}
+      .ph-body{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+      .cb-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+      .cb-text{font-size:.85rem;line-height:1.7;color:#475569;margin:0}
+      ul{margin:4px 0 0 0;padding-left:16px}
+      li{font-size:.85rem;color:#475569;line-height:1.65;margin-bottom:4px}
+      table{width:100%;border-collapse:collapse;margin-top:6px}
+      th{text-align:left;padding:8px 10px;font-size:.7rem;text-transform:uppercase;color:#94a3b8;border-bottom:1px solid #e2e8f0}
+      td{padding:9px 10px;font-size:.83rem;color:#475569;border-bottom:1px solid #f1f5f9;vertical-align:top;line-height:1.6}
+      footer{margin-top:32px;font-size:.72rem;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:12px}
+    </style></head><body>
+    <h1>${title}</h1>
+    <div class="sub">Oluşturulma: ${new Date().toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"})} · hakanefe.com/addie-belge</div>
+    ${metaHtml}
+    ${phasesHtml}
+    <footer>Hakan Efe · hakanefe1141@gmail.com · hakanefe.com</footer>
+    </body></html>`;
+
+    const win = window.open("","_blank","width=900,height=750");
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    setTimeout(() => { win.print(); }, 600);
+  }
 
   function copyDoc() {
     const blocks = document.querySelectorAll(".content-block");
