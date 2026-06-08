@@ -3119,7 +3119,16 @@ import Layout from "../layouts/Layout.astro";
   }
 
   window.skipTerminal = skipTerminal;
-  setTimeout(typeTerminal, 400);
+
+  // Sadece ilk ziyarette göster
+  if (localStorage.getItem("terminal_shown") === "1") {
+    // Daha önce görmüş — direkt geç
+    overlay.remove();
+    termDone = true;
+  } else {
+    localStorage.setItem("terminal_shown", "1");
+    setTimeout(typeTerminal, 400);
+  }
 
   // ── 2. ZİYARETÇİ SAYACI ──────────────────────────────────
   const BASE = 1247;
