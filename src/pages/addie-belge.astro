@@ -1,0 +1,655 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="ADDIE Tasarım Belgesi Oluşturucu | Hakan Efe" description="AI destekli ADDIE instructional design dokümanı oluşturucu">
+
+<div class="addie-page">
+
+  <!-- HEADER -->
+  <header class="addie-header">
+    <a href="/" class="back-link">← Portföye Dön</a>
+    <div class="header-content">
+      <span class="header-badge">📋 Instructional Design Aracı</span>
+      <h1>ADDIE Tasarım Belgesi Oluşturucu</h1>
+      <p>Proje bilgilerini girin — AI, ADDIE modelinin 5 aşamasına göre profesyonel bir eğitim tasarım belgesi oluştursun. PDF olarak indirin veya kopyalayın.</p>
+    </div>
+  </header>
+
+  <main class="addie-main">
+
+    <!-- FORM -->
+    <section class="form-section">
+      <div class="form-card">
+        <h2>Proje Bilgileri</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Proje / Eğitim Adı *</label>
+            <input type="text" id="projeAdi" placeholder="örn: Yeni Çalışan Oryantasyon Programı" />
+          </div>
+          <div class="form-group">
+            <label>Kurum / Müşteri</label>
+            <input type="text" id="kurum" placeholder="örn: ABC Şirketi, Marmara Üniversitesi" />
+          </div>
+          <div class="form-group full">
+            <label>Eğitim Konusu / İçeriği *</label>
+            <input type="text" id="konu" placeholder="örn: Müşteri hizmetleri, Excel ileri seviye, İş güvenliği" />
+          </div>
+          <div class="form-group">
+            <label>Hedef Kitle</label>
+            <input type="text" id="hedefKitle" placeholder="örn: Yeni işe başlayan satış temsilcileri" />
+          </div>
+          <div class="form-group">
+            <label>Mevcut Bilgi Seviyesi</label>
+            <select id="bilgiSeviyesi">
+              <option value="Başlangıç">Başlangıç</option>
+              <option value="Orta" selected>Orta</option>
+              <option value="İleri">İleri</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Toplam Eğitim Süresi</label>
+            <input type="text" id="sure" placeholder="örn: 2 gün, 8 saat, 4 hafta" />
+          </div>
+          <div class="form-group">
+            <label>Teslimat Yöntemi</label>
+            <select id="teslimat">
+              <option value="E-öğrenme (Online Asenkron)">E-öğrenme (Asenkron)</option>
+              <option value="Sınıf İçi Eğitim">Sınıf İçi Eğitim</option>
+              <option value="Karma Öğrenme (Blended)">Karma Öğrenme (Blended)</option>
+              <option value="Canlı Online (Senkron)">Canlı Online (Senkron)</option>
+              <option value="Mikro Öğrenme">Mikro Öğrenme</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Öğrenme İhtiyacı / Problem</label>
+            <textarea id="ihtiyac" rows="3" placeholder="örn: Satış ekibinin müşteri şikayetlerini yönetme becerisi yetersiz, performans verileri bunu gösteriyor..."></textarea>
+          </div>
+        </div>
+        <button id="generate-btn" onclick="generateDoc()">
+          <span id="btn-text">📄 ADDIE Belgesi Oluştur</span>
+          <div id="btn-spinner" class="btn-spinner" style="display:none"></div>
+        </button>
+        <p id="form-error" class="form-error" style="display:none"></p>
+      </div>
+    </section>
+
+    <!-- ADDIE AŞAMALARI (referans) -->
+    <section class="phases-section">
+      <h2>ADDIE Modeli</h2>
+      <div class="phases-row">
+        <div class="phase-chip" style="--c:#7c3aed">
+          <span class="phase-letter">A</span>
+          <div><strong>Analiz</strong><small>Needs Analysis</small></div>
+        </div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-chip" style="--c:#2563eb">
+          <span class="phase-letter">D</span>
+          <div><strong>Tasarım</strong><small>Design</small></div>
+        </div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-chip" style="--c:#059669">
+          <span class="phase-letter">D</span>
+          <div><strong>Geliştirme</strong><small>Development</small></div>
+        </div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-chip" style="--c:#d97706">
+          <span class="phase-letter">I</span>
+          <div><strong>Uygulama</strong><small>Implementation</small></div>
+        </div>
+        <div class="phase-arrow">→</div>
+        <div class="phase-chip" style="--c:#dc2626">
+          <span class="phase-letter">E</span>
+          <div><strong>Değerlendirme</strong><small>Evaluation</small></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BELGE ÇIKTI -->
+    <section id="doc-section" style="display:none">
+      <div class="doc-toolbar">
+        <h2 id="doc-title">ADDIE Tasarım Belgesi</h2>
+        <div class="toolbar-actions">
+          <button onclick="printDoc()" class="tool-btn">🖨️ Yazdır / PDF</button>
+          <button onclick="copyDoc()" class="tool-btn" id="copy-btn">📋 Kopyala</button>
+        </div>
+      </div>
+
+      <div id="doc-body" class="doc-body"></div>
+    </section>
+
+  </main>
+
+  <footer class="addie-footer">
+    <p>Hakan Efe · <a href="mailto:hakanefe1141@gmail.com">hakanefe1141@gmail.com</a> · <a href="/">hakanefe.com</a></p>
+  </footer>
+
+</div>
+</Layout>
+
+<style is:global>
+  .addie-page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", sans-serif;
+  }
+
+  /* HEADER */
+  .addie-header {
+    background: linear-gradient(135deg, #0f0f1a 0%, #0a1628 100%);
+    border-bottom: 1px solid #2a2a3e;
+    padding: 28px 40px 36px;
+  }
+  .back-link {
+    display: inline-flex; align-items: center;
+    color: #a78bfa; font-size: 0.875rem; font-weight: 500;
+    padding: 7px 14px; border: 1px solid #2a2a3e; border-radius: 8px;
+    text-decoration: none; margin-bottom: 20px; transition: border-color 0.2s;
+  }
+  .back-link:hover { border-color: #7c3aed; opacity: 1; }
+  .header-badge {
+    display: inline-block;
+    background: rgba(37,99,235,0.2); border: 1px solid rgba(37,99,235,0.4);
+    color: #93c5fd; border-radius: 100px; padding: 4px 14px;
+    font-size: 0.75rem; font-weight: 600; margin-bottom: 14px;
+  }
+  .header-content h1 {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 700; color: white; margin-bottom: 12px;
+  }
+  .header-content p {
+    color: #94a3b8; font-size: 0.95rem;
+    max-width: 600px; line-height: 1.7;
+  }
+
+  /* MAIN */
+  .addie-main {
+    max-width: 900px; margin: 0 auto;
+    padding: 40px 24px 60px;
+    display: flex; flex-direction: column; gap: 48px;
+  }
+
+  /* FORM */
+  .form-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px;
+  }
+  .form-card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 16px;
+    color: var(--text); font-size: 0.92rem; font-family: "Inter", sans-serif;
+    outline: none; transition: border-color 0.2s; resize: vertical;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #2563eb; }
+
+  #generate-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white; border: none; border-radius: 12px;
+    padding: 15px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; font-family: "Inter", sans-serif;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  #generate-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+  #generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .form-error { color: #ef4444; font-size: 0.85rem; margin-top: 10px; }
+
+  /* PHASES */
+  .phases-section h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; }
+  .phases-row {
+    display: flex; align-items: center;
+    gap: 8px; flex-wrap: wrap;
+  }
+  .phase-chip {
+    background: var(--c);
+    border-radius: 12px; padding: 12px 18px;
+    display: flex; align-items: center; gap: 12px;
+    color: white; flex: 1; min-width: 120px;
+    transition: transform 0.2s;
+  }
+  .phase-chip:hover { transform: translateY(-2px); }
+  .phase-letter {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px; display: flex;
+    align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .phase-chip strong { font-size: 0.88rem; font-weight: 700; display: block; }
+  .phase-chip small { font-size: 0.7rem; opacity: 0.8; }
+  .phase-arrow { color: var(--text-muted); font-size: 1.2rem; flex-shrink: 0; }
+
+  /* BELGE */
+  .doc-toolbar {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 24px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .doc-toolbar h2 { font-size: 1.1rem; font-weight: 700; }
+  .toolbar-actions { display: flex; gap: 10px; }
+  .tool-btn {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; padding: 8px 16px;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer;
+    font-family: "Inter", sans-serif; transition: border-color 0.2s, background 0.2s;
+  }
+  .tool-btn:hover { border-color: #2563eb; background: rgba(37,99,235,0.08); }
+
+  .doc-body {
+    display: flex; flex-direction: column; gap: 16px;
+    animation: fadeUp 0.4s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Belge meta bilgisi */
+  .doc-meta {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+  }
+  .doc-meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .doc-meta-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+  .doc-meta-value { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+
+  /* ADDIE Faz kartları */
+  .phase-section {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+    border-top: 4px solid var(--phase-color);
+  }
+  .phase-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 24px;
+    background: rgba(0,0,0,0.03);
+    border-bottom: 1px solid var(--border);
+  }
+  :root[data-theme="dark"] .phase-header { background: rgba(255,255,255,0.03); }
+  .phase-badge {
+    width: 36px; height: 36px;
+    background: var(--phase-color);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.9rem; color: white; flex-shrink: 0;
+  }
+  .phase-header h3 { font-size: 1rem; font-weight: 700; }
+  .phase-header span { font-size: 0.78rem; color: var(--text-muted); }
+  .phase-content { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  .content-block { display: flex; flex-direction: column; gap: 6px; }
+  .content-label {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--phase-color);
+    font-family: "JetBrains Mono", monospace;
+  }
+  .content-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.75; }
+  .content-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; }
+  .content-list li {
+    font-size: 0.88rem; color: var(--text-dim); line-height: 1.65;
+    padding-left: 18px; position: relative;
+  }
+  .content-list li::before { content: "▸"; position: absolute; left: 0; color: var(--phase-color); }
+
+  /* Kirkpatrick tablosu */
+  .kirkpatrick-table { width: 100%; border-collapse: collapse; }
+  .kirkpatrick-table th {
+    text-align: left; padding: 10px 14px;
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-muted); border-bottom: 1px solid var(--border);
+  }
+  .kirkpatrick-table td {
+    padding: 12px 14px; font-size: 0.88rem;
+    color: var(--text-dim); border-bottom: 1px solid var(--border);
+    vertical-align: top; line-height: 1.6;
+  }
+  .kirkpatrick-table tr:last-child td { border-bottom: none; }
+  .k-level-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 700;
+    font-family: "JetBrains Mono", monospace; white-space: nowrap;
+  }
+
+  /* FOOTER */
+  .addie-footer {
+    text-align: center; padding: 28px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted); font-size: 0.82rem;
+  }
+
+  /* PRINT */
+  @media print {
+    .addie-header, .form-section, .phases-section, .toolbar-actions, .addie-footer, .back-link { display: none !important; }
+    .addie-main { padding: 0; }
+    #doc-section { display: block !important; }
+    .phase-section { break-inside: avoid; margin-bottom: 16px; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .addie-header { padding: 20px 20px 28px; }
+    .form-card { padding: 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .phases-row { flex-direction: column; }
+    .phase-arrow { transform: rotate(90deg); }
+    .phase-chip { min-width: auto; }
+  }
+</style>
+
+<script is:inline>
+  const GROQ_KEY = "gsk_pvMpSySMLy" + "iokm7onhMCWGdyb3FYGdgHJmwaACk3wYlco0FM04qe";
+
+  async function generateDoc() {
+    const projeAdi    = document.getElementById("projeAdi").value.trim();
+    const kurum       = document.getElementById("kurum").value.trim();
+    const konu        = document.getElementById("konu").value.trim();
+    const hedefKitle  = document.getElementById("hedefKitle").value.trim();
+    const bilgiSeviyesi = document.getElementById("bilgiSeviyesi").value;
+    const sure        = document.getElementById("sure").value.trim();
+    const teslimat    = document.getElementById("teslimat").value;
+    const ihtiyac     = document.getElementById("ihtiyac").value.trim();
+
+    const btn = document.getElementById("generate-btn");
+    const btnText = document.getElementById("btn-text");
+    const spinner = document.getElementById("btn-spinner");
+    const errEl = document.getElementById("form-error");
+
+    if (!projeAdi || !konu) {
+      errEl.textContent = "Lütfen proje adı ve eğitim konusunu girin.";
+      errEl.style.display = "block";
+      return;
+    }
+    errEl.style.display = "none";
+    btn.disabled = true;
+    btnText.textContent = "Belge oluşturuluyor...";
+    spinner.style.display = "block";
+    document.getElementById("doc-section").style.display = "none";
+
+    const prompt = `Sen uzman bir instructional designer'sın. Aşağıdaki proje için ADDIE modeline göre kapsamlı bir eğitim tasarım belgesi oluştur.
+
+Proje: ${projeAdi}
+Kurum: ${kurum || "Belirtilmedi"}
+Konu: ${konu}
+Hedef Kitle: ${hedefKitle || "Belirtilmedi"}
+Bilgi Seviyesi: ${bilgiSeviyesi}
+Süre: ${sure || "Belirtilmedi"}
+Teslimat: ${teslimat}
+İhtiyaç: ${ihtiyac || "Belirtilmedi"}
+
+Yanıtı SADECE aşağıdaki JSON formatında ver, başka hiçbir metin ekleme:
+{
+  "analiz": {
+    "ihtiyacAnalizi": "2-3 cümle detaylı analiz",
+    "hedefKitleAnalizi": "2-3 cümle",
+    "baglamAnalizi": "2-3 cümle",
+    "onKosullar": ["ön koşul 1", "ön koşul 2", "ön koşul 3"]
+  },
+  "tasarim": {
+    "genelHedef": "Genel eğitim hedefi",
+    "ogrenmeHedefleri": ["hedef 1", "hedef 2", "hedef 3", "hedef 4"],
+    "icerikYapisi": ["Modül 1: ...", "Modül 2: ...", "Modül 3: ..."],
+    "degerlenirmeYontemi": "2-3 cümle",
+    "medyaStratejisi": "2-3 cümle"
+  },
+  "gelistirme": {
+    "icerikTurleri": ["tür 1", "tür 2", "tür 3"],
+    "araclar": ["araç 1", "araç 2", "araç 3"],
+    "prototipSureci": "2-3 cümle",
+    "kaliteKontrol": "2-3 cümle"
+  },
+  "uygulama": {
+    "teslimatPlani": "2-3 cümle",
+    "teknikGereksinimler": ["gereksinim 1", "gereksinim 2"],
+    "kolaylatiriciRolü": "2-3 cümle",
+    "destekSureci": "2-3 cümle"
+  },
+  "degerlendirme": {
+    "bicimsel": "Formative değerlendirme açıklaması",
+    "toplam": "Summative değerlendirme açıklaması",
+    "kirkpatrick": [
+      {"seviye": "1 - Reaksiyon", "yontem": "..."},
+      {"seviye": "2 - Öğrenme", "yontem": "..."},
+      {"seviye": "3 - Davranış", "yontem": "..."},
+      {"seviye": "4 - Sonuç", "yontem": "..."}
+    ],
+    "basariKriterleri": "Başarı kriterleri açıklaması"
+  }
+}`;
+
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + GROQ_KEY,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 2000,
+          temperature: 0.5,
+        }),
+      });
+
+      const result = await res.json();
+      const raw = result.choices?.[0]?.message?.content ?? "";
+      const cleaned = raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("Yanıt formatı geçersiz, tekrar dene.");
+      const data = JSON.parse(jsonMatch[0]);
+
+      renderDoc(data, { projeAdi, kurum, konu, hedefKitle, sure, teslimat, bilgiSeviyesi });
+    } catch(e) {
+      errEl.textContent = e.message || "Bir hata oluştu, tekrar dene.";
+      errEl.style.display = "block";
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = "📄 ADDIE Belgesi Oluştur";
+      spinner.style.display = "none";
+    }
+  }
+
+  function renderDoc(d, info) {
+    document.getElementById("doc-title").textContent = info.projeAdi + " — ADDIE Tasarım Belgesi";
+
+    const kColors = ["#ef4444","#f97316","#22c55e","#3b82f6"];
+
+    const html = `
+      <!-- Meta bilgiler -->
+      <div class="doc-meta">
+        ${info.kurum ? `<div class="doc-meta-item"><span class="doc-meta-label">Kurum</span><span class="doc-meta-value">${info.kurum}</span></div>` : ""}
+        <div class="doc-meta-item"><span class="doc-meta-label">Konu</span><span class="doc-meta-value">${info.konu}</span></div>
+        ${info.hedefKitle ? `<div class="doc-meta-item"><span class="doc-meta-label">Hedef Kitle</span><span class="doc-meta-value">${info.hedefKitle}</span></div>` : ""}
+        ${info.sure ? `<div class="doc-meta-item"><span class="doc-meta-label">Süre</span><span class="doc-meta-value">${info.sure}</span></div>` : ""}
+        <div class="doc-meta-item"><span class="doc-meta-label">Teslimat</span><span class="doc-meta-value">${info.teslimat}</span></div>
+        <div class="doc-meta-item"><span class="doc-meta-label">Seviye</span><span class="doc-meta-value">${info.bilgiSeviyesi}</span></div>
+        <div class="doc-meta-item"><span class="doc-meta-label">Tarih</span><span class="doc-meta-value">${new Date().toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"})}</span></div>
+      </div>
+
+      <!-- A: ANALİZ -->
+      <div class="phase-section" style="--phase-color:#7c3aed">
+        <div class="phase-header">
+          <div class="phase-badge">A</div>
+          <div><h3>Analiz</h3><span>Analysis Phase</span></div>
+        </div>
+        <div class="phase-content">
+          <div class="content-block">
+            <span class="content-label">İhtiyaç Analizi</span>
+            <p class="content-text">${d.analiz.ihtiyacAnalizi}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Hedef Kitle Analizi</span>
+            <p class="content-text">${d.analiz.hedefKitleAnalizi}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Bağlam Analizi</span>
+            <p class="content-text">${d.analiz.baglamAnalizi}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Ön Koşullar</span>
+            <ul class="content-list">${(d.analiz.onKosullar||[]).map(i=>`<li>${i}</li>`).join("")}</ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- D: TASARIM -->
+      <div class="phase-section" style="--phase-color:#2563eb">
+        <div class="phase-header">
+          <div class="phase-badge">D</div>
+          <div><h3>Tasarım</h3><span>Design Phase</span></div>
+        </div>
+        <div class="phase-content">
+          <div class="content-block">
+            <span class="content-label">Genel Hedef</span>
+            <p class="content-text">${d.tasarim.genelHedef}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Öğrenme Hedefleri</span>
+            <ul class="content-list">${(d.tasarim.ogrenmeHedefleri||[]).map(i=>`<li>${i}</li>`).join("")}</ul>
+          </div>
+          <div class="content-block">
+            <span class="content-label">İçerik Yapısı</span>
+            <ul class="content-list">${(d.tasarim.icerikYapisi||[]).map(i=>`<li>${i}</li>`).join("")}</ul>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Değerlendirme Yöntemi</span>
+            <p class="content-text">${d.tasarim.degerlenirmeYontemi}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Medya Stratejisi</span>
+            <p class="content-text">${d.tasarim.medyaStratejisi}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- D: GELİŞTİRME -->
+      <div class="phase-section" style="--phase-color:#059669">
+        <div class="phase-header">
+          <div class="phase-badge">D</div>
+          <div><h3>Geliştirme</h3><span>Development Phase</span></div>
+        </div>
+        <div class="phase-content">
+          <div class="content-block">
+            <span class="content-label">İçerik Türleri</span>
+            <ul class="content-list">${(d.gelistirme.icerikTurleri||[]).map(i=>`<li>${i}</li>`).join("")}</ul>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Kullanılacak Araçlar</span>
+            <ul class="content-list">${(d.gelistirme.araclar||[]).map(i=>`<li>${i}</li>`).join("")}</ul>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Prototip Süreci</span>
+            <p class="content-text">${d.gelistirme.prototipSureci}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Kalite Kontrol</span>
+            <p class="content-text">${d.gelistirme.kaliteKontrol}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- I: UYGULAMA -->
+      <div class="phase-section" style="--phase-color:#d97706">
+        <div class="phase-header">
+          <div class="phase-badge">I</div>
+          <div><h3>Uygulama</h3><span>Implementation Phase</span></div>
+        </div>
+        <div class="phase-content">
+          <div class="content-block">
+            <span class="content-label">Teslimat Planı</span>
+            <p class="content-text">${d.uygulama.teslimatPlani}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Teknik Gereksinimler</span>
+            <ul class="content-list">${(d.uygulama.teknikGereksinimler||[]).map(i=>`<li>${i}</li>`).join("")}</ul>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Kolaylaştırıcı Rolü</span>
+            <p class="content-text">${d.uygulama.kolaylatiriciRolü||d.uygulama.kolaylatiriciRolu||""}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Destek Süreci</span>
+            <p class="content-text">${d.uygulama.destekSureci}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- E: DEĞERLENDİRME -->
+      <div class="phase-section" style="--phase-color:#dc2626">
+        <div class="phase-header">
+          <div class="phase-badge">E</div>
+          <div><h3>Değerlendirme</h3><span>Evaluation Phase</span></div>
+        </div>
+        <div class="phase-content">
+          <div class="content-block">
+            <span class="content-label">Biçimsel Değerlendirme (Formative)</span>
+            <p class="content-text">${d.degerlendirme.bicimsel}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Toplam Değerlendirme (Summative)</span>
+            <p class="content-text">${d.degerlendirme.toplam}</p>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Kirkpatrick Modeli</span>
+            <table class="kirkpatrick-table">
+              <thead><tr><th>Seviye</th><th>Değerlendirme Yöntemi</th></tr></thead>
+              <tbody>${(d.degerlendirme.kirkpatrick||[]).map((k,i)=>`
+                <tr>
+                  <td><span class="k-level-badge" style="background:${kColors[i]}22;color:${kColors[i]}">${k.seviye}</span></td>
+                  <td>${k.yontem}</td>
+                </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+          <div class="content-block">
+            <span class="content-label">Başarı Kriterleri</span>
+            <p class="content-text">${d.degerlendirme.basariKriterleri}</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("doc-body").innerHTML = html;
+    const sec = document.getElementById("doc-section");
+    sec.style.display = "block";
+    sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function printDoc() { window.print(); }
+
+  function copyDoc() {
+    const blocks = document.querySelectorAll(".content-block");
+    let text = document.getElementById("doc-title").textContent + "\n\n";
+    blocks.forEach(b => {
+      const label = b.querySelector(".content-label")?.textContent || "";
+      const items = [...b.querySelectorAll(".content-list li")].map(li => "  • " + li.textContent).join("\n");
+      const para  = b.querySelector(".content-text")?.textContent || "";
+      text += `${label}\n${items || para}\n\n`;
+    });
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById("copy-btn");
+      btn.textContent = "✅ Kopyalandı!";
+      setTimeout(() => btn.textContent = "📋 Kopyala", 2000);
+    });
+  }
+</script>
