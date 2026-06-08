@@ -277,9 +277,7 @@ import Layout from "../layouts/Layout.astro";
 </style>
 
 <script is:inline>
-  const JOOBLE_KEY = "1c99a0e4e49e3a70631b4a75eb0f422a";
-  const JOOBLE_URL = "https://jooble.org/api/" + JOOBLE_KEY;
-  const PROXY_URL  = "https://jooble-proxy-kn9b.onrender.com/" + JOOBLE_URL;
+  const PROXY_URL = "https://jooble-proxy-1.onrender.com/jobs";
 
   let currentPage = 1;
   let lastKeyword = "";
@@ -322,15 +320,31 @@ import Layout from "../layouts/Layout.astro";
     });
 
     try {
-      const res = await fetchWithTimeout(PROXY_URL, {
+      const res  = await fetchWithTimeout(PROXY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
         body: payload,
-      }, 15000);
+      }, 20000);
 
-      const data = await res.json();
+      const text = await res.text();
+
+      // Yanıt JSON mu kontrol et
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch(_) {
+        // Proxy HTML döndürdü (uyku modundan yeni kalktı), birkaç sn bekle
+        section.innerHTML = `<div class="loading-state"><div class="job-spinner"></div><span>Sunucu uyanıyor, lütfen bekle...</span></div>`;
+        await new Promise(r => setTimeout(r, 4000));
+        const res2 = await fetchWithTimeout(PROXY_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+          body: payload,
+        }, 20000);
+        data = await res2.json();
+      }
+
       if (!data || !data.jobs) throw new Error("İlan bulunamadı.");
-
       totalCount = data.totalCount || 0;
       renderResults(data.jobs, kw, page);
     } catch(e) {
