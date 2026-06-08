@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Dedektif Oyunu | Hakan Efe" description="Türkçe dedektif hikaye oyunu — kanıt topla, şüphelileri sorguya çek, suçluyu bul">
+<Layout title="Dedektif Oyunu | Hakan Efe" description="Türkçe dedektif hikaye oyunu — 10 vaka, kanıt topla, şüphelileri sorguya çek, suçluyu bul">
 
 <div class="game-page">
 
@@ -12,11 +12,11 @@ import Layout from "../layouts/Layout.astro";
       <div class="header-text">
         <span class="game-badge">🎮 Eğitici Oyun Projesi</span>
         <h1>🕵️ Dedektif Oyunu</h1>
-        <p>Türkçe dedektif hikaye oyunu — şehrin farklı lokasyonlarında kanıt topla, şüphelileri sorguya çek, suçluyu bul ve liderlik tablosuna adını yazdır.</p>
+        <p>Türkçe dedektif hikaye oyunu — şehrin 10 farklı lokasyonunda kanıt topla, şüphelileri sorguya çek, kanıtlarla yüzleştir ve suçluyu bul. Puan kazan, liderlik tablosuna çık.</p>
         <div class="header-actions">
           <a href="/game/" target="_blank" class="play-btn">▶ Hemen Oyna</a>
           <div class="tech-chips">
-            <span>React</span><span>TypeScript</span><span>Vite</span><span>Tailwind</span><span>PWA</span>
+            <span>React</span><span>TypeScript</span><span>Vite</span><span>Tailwind CSS</span><span>PWA</span>
           </div>
         </div>
       </div>
@@ -25,20 +25,22 @@ import Layout from "../layouts/Layout.astro";
           <div class="preview-screen">
             <div class="preview-top">
               <span>🕵️ Dedektif Oyunu</span>
-              <span class="preview-badge">CANLI</span>
+              <span class="preview-badge">10 VAKA</span>
             </div>
             <div class="preview-locations">
               <div class="loc-chip">🏪 Bakkal</div>
               <div class="loc-chip">🏫 Okul</div>
               <div class="loc-chip">🏛️ Müze</div>
               <div class="loc-chip">🏥 Hastane</div>
-              <div class="loc-chip">🏢 Ofis</div>
-            </div>
-            <div class="preview-scene">
-              <p>"Kasa boş, kapı kırık değil. Birisi içeriden biliyor..."</p>
+              <div class="loc-chip">🏢 Belediye</div>
+              <div class="loc-chip">📚 Kütüphane</div>
+              <div class="loc-chip">🍽️ Restoran</div>
+              <div class="loc-chip">🏨 Otel</div>
+              <div class="loc-chip">🎓 Üniversite</div>
+              <div class="loc-chip">⚓ Liman</div>
             </div>
             <div class="preview-btns">
-              <div class="preview-btn">🔍 İnceleme</div>
+              <div class="preview-btn">🔍 Kanıt</div>
               <div class="preview-btn">💬 Sorgulama</div>
               <div class="preview-btn">🃏 Joker</div>
             </div>
@@ -56,38 +58,126 @@ import Layout from "../layouts/Layout.astro";
       <div class="features-grid">
         <div class="feature-card">
           <span class="feature-icon">🗺️</span>
-          <h3>5 Lokasyon</h3>
-          <p>Bakkal, okul, müze, hastane ve ofis — her lokasyonda farklı bir cinayet/hırsızlık vakası seni bekliyor.</p>
+          <h3>10 Farklı Lokasyon</h3>
+          <p>Bakkal, okul, müze, hastane, belediye, kütüphane, restoran, otel, üniversite ve liman — her biri benzersiz bir suç vakası.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">🔎</span>
           <h3>Kanıt Panosu</h3>
-          <p>Topladığın kanıtları şüphelilerle ilişkilendir, aralarındaki bağlantıları çöz.</p>
+          <p>Topladığın kanıtları şüphelilerle ilişkilendir, aralarındaki bağlantıları çöz. Gerçek ve tuzak kanıtları ayırt et.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">💬</span>
           <h3>Sorgulama Sistemi</h3>
-          <p>Şüphelilere özel sorular sor, kanıtlarla yüzleştir, tepkilerini gözlemle.</p>
+          <p>Şüphelilere kanıtları göster, tepkilerini gözlemle. Sinirli mi? Sakin mi? Bozuluyor mu?</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">🃏</span>
           <h3>Joker Sistemi</h3>
-          <p>Sıkıştığında joker kullan — doğru soruyu yanıtla, gizli ipucunu kazan.</p>
+          <p>Sıkıştığında mini quiz soruyu doğru yanıtla, gizli ipucunu kazan — ama joker hakkı sınırlı!</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">🏆</span>
           <h3>Liderlik Tablosu</h3>
-          <p>Puan topla, sıralamaya gir. En iyi dedektif kim olacak?</p>
+          <p>Puan topla, lokasyonları aç, sıralamaya gir. Her doğru suçlama puan, yanlış suçlama itibar kaybı.</p>
         </div>
         <div class="feature-card">
           <span class="feature-icon">🔊</span>
-          <h3>Sesli Anlatım (TTS)</h3>
-          <p>Text-to-speech ile tüm diyaloglar sesli okunuyor, tam bir hikaye deneyimi.</p>
+          <h3>Türkçe Sesli Anlatım</h3>
+          <p>Web Speech API ile tüm diyaloglar ve anlatımlar Türkçe sesli okunuyor — tam hikaye deneyimi.</p>
         </div>
       </div>
     </section>
 
-    <!-- TEKNOLOJI -->
+    <!-- 10 VAKA -->
+    <section>
+      <h2 class="section-title">10 Vaka</h2>
+      <div class="cases-grid">
+
+        <div class="case-row">
+          <div class="case-num">01</div>
+          <div class="case-info">
+            <div class="case-title">🏪 Mahalle Bakkalı — <em>Kayıp Para Kasası</em></div>
+            <div class="case-desc">Kasa boş ama kapı kırılmamış. Birisi içeriden biliyor. <span class="case-diff diff-easy">Başlangıç</span></div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">02</div>
+          <div class="case-info">
+            <div class="case-title">🏫 Güneş İlkokulu — <em>Kayıp Sınav Notları</em></div>
+            <div class="case-desc">14 öğrencinin notu değiştirilmiş, giriş öğretmen şifresiyle yapılmış. <span class="case-diff diff-easy">120 puan gerekli</span></div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">03</div>
+          <div class="case-info">
+            <div class="case-title">🏛️ Tarih Müzesi — <em>Kaybolan Altın Mühür</em></div>
+            <div class="case-desc">500 yıllık Osmanlı mührü kayıp. Alarm çalmadı, kamera bakımda. <span class="case-diff diff-mid">320 puan gerekli</span></div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">04</div>
+          <div class="case-info">
+            <div class="case-title">🏥 Merkez Hastanesi — <em>Çalınan İlaç Formülü</em></div>
+            <div class="case-desc">12 yıllık kanser ilacı formülü rakip firmada. Sızıntı bu haftadan. <span class="case-diff diff-mid">650 puan gerekli</span></div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">05</div>
+          <div class="case-info">
+            <div class="case-title">🏢 Şehir Belediyesi — <em>İhale Yolsuzluğu</em></div>
+            <div class="case-desc">50 milyon liralık inşaat ihalesi deneyimsiz firmaya verilmiş. <span class="case-diff diff-hard">1100 puan gerekli</span></div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">06</div>
+          <div class="case-info">
+            <div class="case-title">📚 Şehir Kütüphanesi — <em>Kayıp El Yazması</em></div>
+            <div class="case-desc">700 yıllık Osmanlı el yazması kayboldu. Kapılar kilitliydi, alarm çalmadı.</div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">07</div>
+          <div class="case-info">
+            <div class="case-title">🍽️ Lezzet Restoran — <em>Kasıtlı Zehirleme</em></div>
+            <div class="case-desc">Üç müşteri zehirlenerek hastaneye kaldırıldı. Kaza mı, kasıt mı?</div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">08</div>
+          <div class="case-info">
+            <div class="case-title">🏨 Grand Otel — <em>Kaybolan Pırlanta</em></div>
+            <div class="case-desc">2 milyon TL'lik kolye oda içeriden kilitliyken kayboldu. Gerçekten çalındı mı?</div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">09</div>
+          <div class="case-info">
+            <div class="case-title">🎓 Teknik Üniversite — <em>Sınav Sorusu Sızıntısı</em></div>
+            <div class="case-desc">8 öğrenci final sorularını önceden biliyordu. Akademik personelden biri sattı.</div>
+          </div>
+        </div>
+
+        <div class="case-row">
+          <div class="case-num">10</div>
+          <div class="case-info">
+            <div class="case-title">⚓ Ticaret Limanı — <em>Gümrük Kaçakçılığı</em></div>
+            <div class="case-desc">10 milyon TL'lik kaçak elektronik "tekstil" olarak gümrükten geçirilmiş.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TEKNİK DETAYLAR -->
     <section>
       <h2 class="section-title">Teknik Detaylar</h2>
       <div class="tech-grid">
@@ -95,59 +185,37 @@ import Layout from "../layouts/Layout.astro";
           <span class="tech-icon">⚛️</span>
           <div>
             <strong>React + TypeScript</strong>
-            <p>Context API ile global state yönetimi, tam tip güvenliği</p>
+            <p>Context API ile merkezi state yönetimi, tam tip güvenliği, bileşen mimarisi</p>
           </div>
         </div>
         <div class="tech-item">
           <span class="tech-icon">⚡</span>
           <div>
             <strong>Vite + PWA</strong>
-            <p>Hızlı build, Progressive Web App — ana ekrana eklenebilir</p>
+            <p>Hızlı build, Progressive Web App desteği — ana ekrana eklenebilir</p>
           </div>
         </div>
         <div class="tech-item">
           <span class="tech-icon">🎨</span>
           <div>
             <strong>Tailwind CSS</strong>
-            <p>Dinamik gradient arka planlar, responsive tasarım</p>
+            <p>Dinamik gradient arka planlar, responsive tasarım, durum bazlı stiller</p>
           </div>
         </div>
         <div class="tech-item">
           <span class="tech-icon">🔊</span>
           <div>
             <strong>Web Speech API</strong>
-            <p>Tarayıcı TTS ile Türkçe sesli anlatım</p>
+            <p>Tarayıcı tabanlı TTS ile Türkçe sesli anlatım, her sahne için otomatik seslendirme</p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- VAKA ÖRNEĞİ -->
-    <section>
-      <h2 class="section-title">Vaka Örneği: Mahalle Bakkalı</h2>
-      <div class="case-card">
-        <div class="case-header">
-          <span>🏪</span>
-          <div>
-            <h3>Kayıp Para Kasası</h3>
-            <p>Zorluk: Başlangıç · Şüpheli sayısı: 2</p>
-          </div>
-        </div>
-        <blockquote>
-          "Sabah erken saatlerde telefon çalıyor. Mahalle bakkalı soyulmuş. Kasa boş, kapı kırık değil. Birisi içeriden biliyor..."
-        </blockquote>
-        <div class="suspects-row">
-          <div class="suspect">👩 <strong>Fatma Hanım</strong><span>Komşu</span></div>
-          <div class="suspect">👷 <strong>Kemal</strong><span>Bakkal İşçisi</span></div>
-        </div>
-        <p class="case-note">Suçluyu bulmak için kanıtları topla, joker ipuçlarını kullan!</p>
       </div>
     </section>
 
     <!-- OYNA CTA -->
     <section class="cta-section">
-      <h2>Hemen Dene!</h2>
-      <p>Tarayıcında çalışıyor, kurulum gerektirmiyor.</p>
+      <h2>Dedektif misin?</h2>
+      <p>10 vaka, 10 suçlu. Hepsini bulabilecek misin?</p>
       <a href="/game/" target="_blank" class="cta-btn">🕵️ Oyunu Başlat</a>
     </section>
 
@@ -163,7 +231,6 @@ import Layout from "../layouts/Layout.astro";
 <style is:global>
   .game-page { min-height:100vh; background:var(--bg); color:var(--text); font-family:"Inter",sans-serif; }
 
-  /* HEADER */
   .game-header {
     background: linear-gradient(135deg, #0a0a0f 0%, #0f0f1a 50%, #1a0a0a 100%);
     border-bottom: 1px solid #2a2a3e;
@@ -176,10 +243,7 @@ import Layout from "../layouts/Layout.astro";
     text-decoration: none; margin-bottom: 24px; transition: border-color 0.2s;
   }
   .back-link:hover { border-color: #7c3aed; opacity: 1; }
-  .header-inner {
-    display: grid; grid-template-columns: 1fr auto;
-    gap: 48px; align-items: center;
-  }
+  .header-inner { display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center; }
   .game-badge {
     display: inline-block;
     background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.35);
@@ -191,73 +255,88 @@ import Layout from "../layouts/Layout.astro";
   .header-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   .play-btn {
     background: linear-gradient(135deg, #dc2626, #7c3aed);
-    color: white; border: none; border-radius: 10px;
+    color: white; border-radius: 10px;
     padding: 12px 28px; font-size: 0.95rem; font-weight: 700;
     text-decoration: none; transition: opacity 0.2s, transform 0.2s;
-    display: inline-flex; align-items: center; gap: 8px;
   }
   .play-btn:hover { opacity: 0.9; transform: translateY(-2px); }
-  .tech-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tech-chips { display: flex; gap: 7px; flex-wrap: wrap; }
   .tech-chips span {
     background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
     color: rgba(255,255,255,0.7); border-radius: 6px;
-    padding: 4px 12px; font-size: 0.75rem; font-family: "JetBrains Mono",monospace;
+    padding: 3px 11px; font-size: 0.72rem; font-family: "JetBrains Mono",monospace;
   }
 
-  /* GAME PREVIEW CARD */
-  .game-preview-card {
-    width: 260px; flex-shrink: 0;
-  }
+  /* Preview card */
+  .game-preview-card { width: 280px; flex-shrink: 0; }
   .preview-screen {
     background: #111118; border: 1px solid #2a2a3e;
-    border-radius: 16px; padding: 16px; overflow: hidden;
+    border-radius: 16px; padding: 16px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
   .preview-top {
     display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 14px; font-size: 0.78rem; font-weight: 600; color: #e2e8f0;
+    margin-bottom: 12px; font-size: 0.78rem; font-weight: 600; color: #e2e8f0;
   }
   .preview-badge {
-    background: #22c55e; color: white;
-    border-radius: 100px; padding: 2px 8px; font-size: 0.6rem;
-    animation: pulse-green 2s infinite;
+    background: #dc2626; color: white;
+    border-radius: 100px; padding: 2px 8px; font-size: 0.6rem; font-weight: 700;
   }
-  @keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:0.6} }
   .preview-locations { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
   .loc-chip {
     background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3);
-    color: #a78bfa; border-radius: 6px; padding: 3px 8px; font-size: 0.68rem;
+    color: #a78bfa; border-radius: 6px; padding: 2px 8px; font-size: 0.65rem;
   }
-  .preview-scene {
-    background: rgba(255,255,255,0.04); border-radius: 8px;
-    padding: 10px 12px; margin-bottom: 12px;
-  }
-  .preview-scene p { font-size: 0.75rem; color: #94a3b8; line-height: 1.6; font-style: italic; margin: 0; }
   .preview-btns { display: flex; gap: 6px; }
   .preview-btn {
     flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px; padding: 7px 4px; font-size: 0.65rem; color: #cbd5e1;
-    text-align: center;
+    border-radius: 8px; padding: 7px 4px; font-size: 0.65rem; color: #cbd5e1; text-align: center;
   }
 
-  /* MAIN */
+  /* Main */
   .game-main { max-width: 900px; margin: 0 auto; padding: 48px 24px 60px; display: flex; flex-direction: column; gap: 56px; }
   .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
   .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
-  /* FEATURES */
-  .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  /* Features */
+  .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
   .feature-card {
     background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 14px; padding: 22px;
+    border-radius: 14px; padding: 20px;
     transition: border-color 0.2s, transform 0.2s;
   }
   .feature-card:hover { border-color: #7c3aed; transform: translateY(-2px); }
-  .feature-icon { font-size: 1.8rem; display: block; margin-bottom: 12px; }
-  .feature-card h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 8px; }
-  .feature-card p { font-size: 0.83rem; color: var(--text-muted); line-height: 1.65; margin: 0; }
+  .feature-icon { font-size: 1.7rem; display: block; margin-bottom: 10px; }
+  .feature-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 7px; }
+  .feature-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; margin: 0; }
 
-  /* TECH */
+  /* Cases */
+  .cases-grid { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .case-row {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .case-row:last-child { border-bottom: none; }
+  .case-row:hover { background: var(--accent-glow); }
+  .case-num {
+    font-size: 0.72rem; font-weight: 800; color: var(--text-muted);
+    font-family: "JetBrains Mono",monospace;
+    width: 24px; flex-shrink: 0;
+  }
+  .case-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 3px; }
+  .case-title em { font-style: normal; color: var(--accent-light); }
+  .case-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+  .case-diff {
+    display: inline-block; border-radius: 100px;
+    padding: 1px 8px; font-size: 0.68rem; font-weight: 700;
+    font-family: "JetBrains Mono",monospace; margin-left: 6px;
+  }
+  .diff-easy  { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .diff-mid   { background: rgba(234,179,8,0.15);  color: #ca8a04; }
+  .diff-hard  { background: rgba(239,68,68,0.15);  color: #ef4444; }
+
+  /* Tech */
   .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .tech-item {
     background: var(--bg-card); border: 1px solid var(--border);
@@ -267,31 +346,6 @@ import Layout from "../layouts/Layout.astro";
   .tech-icon { font-size: 1.6rem; flex-shrink: 0; }
   .tech-item strong { font-size: 0.9rem; font-weight: 700; display: block; margin-bottom: 4px; }
   .tech-item p { font-size: 0.82rem; color: var(--text-muted); margin: 0; line-height: 1.6; }
-
-  /* CASE CARD */
-  .case-card {
-    background: var(--bg-card); border: 1px solid #dc2626;
-    border-radius: 14px; padding: 24px;
-    background: linear-gradient(135deg, var(--bg-card), rgba(220,38,38,0.03));
-  }
-  .case-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-  .case-header span { font-size: 2rem; }
-  .case-header h3 { font-size: 1rem; font-weight: 700; margin-bottom: 3px; }
-  .case-header p { font-size: 0.75rem; color: var(--text-muted); font-family: "JetBrains Mono",monospace; margin: 0; }
-  .case-card blockquote {
-    border-left: 3px solid #dc2626; padding-left: 14px;
-    color: var(--text-dim); font-size: 0.9rem; line-height: 1.7;
-    font-style: italic; margin: 0 0 16px;
-  }
-  .suspects-row { display: flex; gap: 12px; margin-bottom: 14px; }
-  .suspect {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 14px;
-    display: flex; align-items: center; gap: 8px;
-    font-size: 0.85rem;
-  }
-  .suspect span { font-size: 0.72rem; color: var(--text-muted); display: block; }
-  .case-note { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
 
   /* CTA */
   .cta-section {
@@ -310,14 +364,8 @@ import Layout from "../layouts/Layout.astro";
   }
   .cta-btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-  /* FOOTER */
-  .game-footer {
-    text-align: center; padding: 28px;
-    border-top: 1px solid var(--border);
-    color: var(--text-muted); font-size: 0.82rem;
-  }
+  .game-footer { text-align: center; padding: 28px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.82rem; }
 
-  /* RESPONSIVE */
   @media (max-width: 768px) {
     .game-header { padding: 20px 20px 28px; }
     .header-inner { grid-template-columns: 1fr; }
