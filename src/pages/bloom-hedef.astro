@@ -417,6 +417,8 @@ import Layout from "../layouts/Layout.astro";
 </style>
 
 <script is:inline>
+  const GROQ_KEY = "gsk_pvMpSySMLy" + "iokm7onhMCWGdyb3FYGdgHJmwaACk3wYlco0FM04qe";
+
   async function generateGoals() {
     const konu = document.getElementById("konu").value.trim();
     const hedefKitle = document.getElementById("hedefKitle").value.trim();
@@ -433,21 +435,46 @@ import Layout from "../layouts/Layout.astro";
       return;
     }
     errEl.style.display = "none";
-
     btn.disabled = true;
     btnText.textContent = "Oluşturuluyor...";
     spinner.style.display = "block";
     document.getElementById("results-section").style.display = "none";
 
+    const prompt = `Sen deneyimli bir eğitim tasarımı uzmanısın. Aşağıdaki bilgilere göre Bloom Taksonomisinin 6 seviyesine uygun, ölçülebilir öğrenme hedefleri oluştur.
+
+Konu: ${konu}
+Hedef Kitle: ${hedefKitle || "Genel"}
+Eğitim Süresi: ${sure || "Belirtilmedi"}
+Seviye: ${seviye}
+
+Yanıtı SADECE şu JSON formatında ver, başka hiçbir metin ekleme:
+{"hedefler":[{"seviye":"Hatırlama","renk":"#ef4444","eylem":"listeler","hedef":"..."},{"seviye":"Anlama","renk":"#f97316","eylem":"açıklar","hedef":"..."},{"seviye":"Uygulama","renk":"#eab308","eylem":"uygular","hedef":"..."},{"seviye":"Analiz","renk":"#22c55e","eylem":"analiz eder","hedef":"..."},{"seviye":"Değerlendirme","renk":"#3b82f6","eylem":"değerlendirir","hedef":"..."},{"seviye":"Yaratma","renk":"#a78bfa","eylem":"tasarlar","hedef":"..."}],"ipuclari":["...","...","..."]}
+
+Her hedef "Eğitim sonunda katılımcı; [eylem fiili]..." şeklinde başlasın. Somut ve ölçülebilir olsun.`;
+
     try {
-      const res = await fetch("/api/bloom", {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ konu, hedefKitle, sure, seviye }),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + GROQ_KEY,
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 1200,
+          temperature: 0.6,
+        }),
       });
 
-      const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || "Hata");
+      const result = await res.json();
+      const raw = result.choices?.[0]?.message?.content ?? "";
+
+      // Markdown kod bloğunu temizle
+      const cleaned = raw.replace(/```json\s*/gi,"").replace(/```\s*/g,"").trim();
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("Yanıt formatı geçersiz, tekrar dene.");
+      const data = JSON.parse(jsonMatch[0]);
 
       renderResults(data, konu);
     } catch (e) {
