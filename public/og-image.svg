@@ -13,9 +13,9 @@
   <rect x='0' y='0' width='6' height='630' fill='url(#accent)'/>
   <circle cx='950' cy='150' r='300' fill='rgba(124,58,237,0.08)'/>
   <circle cx='1100' cy='500' r='180' fill='rgba(192,132,252,0.06)'/>
-  <text x='80' y='200' font-family='Georgia,serif' font-size='22' fill='#a78bfa' letter-spacing='6'>EĞİTİM TEKNOLOĞİSİ</text>
+  <text x='80' y='200' font-family='Georgia,serif' font-size='22' fill='#a78bfa' letter-spacing='6'>PORTFÖY</text>
   <text x='80' y='310' font-family='Georgia,serif' font-size='88' font-weight='bold' fill='white'>Hakan Efe</text>
-  <text x='80' y='390' font-family='Arial,sans-serif' font-size='32' fill='#94a3b8'>Instructional Designer · E-Öğrenme Uzmanı</text>
+  <text x='80' y='390' font-family='Arial,sans-serif' font-size='32' fill='#94a3b8'>Eğitim Teknoloğu</text>
   <line x1='80' y1='430' x2='400' y2='430' stroke='#7c3aed' stroke-width='2'/>
   <text x='80' y='480' font-family='Arial,sans-serif' font-size='24' fill='#64748b'>Marmara Üniversitesi · BÖTE · İstanbul</text>
   <text x='80' y='560' font-family='Arial,sans-serif' font-size='22' fill='#a78bfa'>hakanefe.com</text>
