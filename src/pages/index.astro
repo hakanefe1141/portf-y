@@ -809,7 +809,7 @@ import Layout from "../layouts/Layout.astro";
           Bana ulaşmaktan çekinmeyin.</p>
           <div class="contact-actions">
             <div class="runaway-wrap">
-              <button id="hire-btn" onmouseenter="runAway(this)">Beni İşe Al! 🎯</button>
+              <button id="hire-btn" onmouseenter="runAway(this)" ontouchstart="runAway(this)">Beni İşe Al! 🎯</button>
             </div>
             <button class="quiz-trigger-btn" onclick="openQuiz()">Beni Ne Kadar Tanıyorsun? 🧠</button>
           </div>
@@ -2959,8 +2959,7 @@ import Layout from "../layouts/Layout.astro";
     /* İLETİŞİM */
     .contact-actions { flex-direction: column; align-items: flex-start; }
     .runaway-wrap { width: 100%; height: 48px; }
-    #hire-btn { width: 100%; position: relative !important;
-      left: auto !important; top: auto !important; }
+    #hire-btn { width: auto; }
     .quiz-trigger-btn { width: 100%; }
 
     /* E-ÖĞRENİM */
@@ -3271,6 +3270,7 @@ import Layout from "../layouts/Layout.astro";
       btn.classList.add("caught");
       btn.textContent = "Yakaladın! 🎉";
       btn.onmouseenter = null;
+      btn.ontouchstart = null;
       launchConfetti();
       return;
     }
