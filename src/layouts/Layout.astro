@@ -4,15 +4,59 @@ interface Props {
   description?: string;
 }
 
-const { title, description = "Hakan Efe - Eğitim Teknoloğu Portföyü" } = Astro.props;
+const { title, description = "Hakan Efe – Eğitim Teknoloğu | Instructional Designer | E-Öğrenme Uzmanı" } = Astro.props;
+const canonicalURL = "https://hakanefe.com";
 ---
 
 <!doctype html>
 <html lang="tr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content="Hakan Efe, Eğitim Teknoloğu, Instructional Designer, E-Öğrenme, LMS, ADDIE, Bloom Taksonomisi, Articulate Storyline, Moodle, BÖTE, Marmara Üniversitesi" />
+    <meta name="author" content="Hakan Efe" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://hakanefe.com/hakan.jpg" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="Hakan Efe Portföy" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://hakanefe.com/hakan.jpg" />
+
+    <!-- JSON-LD Yapısal Veri -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Hakan Efe",
+      "url": "https://hakanefe.com",
+      "image": "https://hakanefe.com/hakan.jpg",
+      "jobTitle": "Eğitim Teknoloğu",
+      "description": "Marmara Üniversitesi BÖTE mezunu, tezli yüksek lisans öğrencisi. E-öğrenme içerik geliştirme, LMS yönetimi ve instructional design alanlarında uzman.",
+      "email": "hakanefe1141@gmail.com",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "Marmara Üniversitesi"
+      },
+      "sameAs": [
+        "https://linkedin.com/in/hakan-efe",
+        "https://github.com/hakanefe1141"
+      ],
+      "knowsAbout": ["E-Öğrenme", "Instructional Design", "LMS", "ADDIE", "Bloom Taksonomisi", "Articulate Storyline", "H5P", "Moodle"]
+    }
+    </script>
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" href="/favicon.svg" />
     <title>{title}</title>
