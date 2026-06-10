@@ -247,8 +247,8 @@ import Layout from "../layouts/Layout.astro";
     auth.languageCode = "tr";
   }
 
-  // ─── Oturum kontrolü ──────────────────────────────────────
-  if (localStorage.getItem("admin_auth") === "1") showPanel();
+  // ─── Oturum kontrolü — her zaman tam SMS doğrulaması gerekir ──
+  // localStorage bypass kaldırıldı, güvenlik artırıldı
 
   // ─── 1. Şifre kontrolü ────────────────────────────────────
   function resetRecaptcha() {
