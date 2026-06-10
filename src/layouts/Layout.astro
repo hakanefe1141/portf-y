@@ -5,7 +5,7 @@ interface Props {
 }
 
 const { title, description = "Hakan Efe – Eğitim Teknoloğu | Instructional Designer | E-Öğrenme Uzmanı" } = Astro.props;
-const canonicalURL = "https://hakanefe.com";
+const canonicalURL = new URL(Astro.url.pathname, "https://hakanefe.com").href;
 ---
 
 <!doctype html>
