@@ -796,7 +796,7 @@ import Layout from "../layouts/Layout.astro";
           <div>
             <h3>Göker Kurtuldu</h3>
             <p class="org">Allianz Avrupa Bölge Müdürlüğü / Yönetici</p>
-            <a href="tel:+905302903969" class="ref-contact">+90 530 290 39 69</a>
+            <p class="ref-contact-hidden">İletişim bilgisi talep üzerine paylaşılır</p>
           </div>
         </div>
         <div class="card ref-card">
@@ -804,7 +804,7 @@ import Layout from "../layouts/Layout.astro";
           <div>
             <h3>Öğr. Gör. Mevlüt Can</h3>
             <p class="org">Marmara Üniversitesi</p>
-            <a href="tel:+905075939397" class="ref-contact">+90 507 593 93 97</a>
+            <p class="ref-contact-hidden">İletişim bilgisi talep üzerine paylaşılır</p>
           </div>
         </div>
 
@@ -813,7 +813,7 @@ import Layout from "../layouts/Layout.astro";
           <div>
             <h3>Mehmet Kocataş</h3>
             <p class="org">Marmara Üniversitesi Yabancı Diller Yüksekokulu / Sekreter</p>
-            <a href="tel:+905357659985" class="ref-contact">+90 535 765 99 85</a>
+            <p class="ref-contact-hidden">İletişim bilgisi talep üzerine paylaşılır</p>
           </div>
         </div>
       </div>
@@ -1480,6 +1480,14 @@ import Layout from "../layouts/Layout.astro";
     color: var(--text-muted);
     display: block;
     margin-top: 4px;
+  }
+
+  .ref-contact-hidden {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 4px;
+    opacity: 0.6;
   }
 
   /* CONTACT */
