@@ -377,6 +377,14 @@ import Layout from "../layouts/Layout.astro";
   .exp-item-company { font-size:0.82rem; color:var(--accent-light); margin:2px 0; }
   .exp-item-date { font-size:0.75rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
 
+  /* DÜZENLE BUTONU */
+  .item-actions { display:flex; gap:6px; flex-shrink:0; }
+  .edit-btn { background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.25); color:var(--accent-light); border-radius:6px; padding:5px 12px; font-size:0.78rem; cursor:pointer; white-space:nowrap; }
+  .edit-btn:hover { background:rgba(124,58,237,0.18); }
+  /* YORUM DÜZENLE */
+  .fb-edit-panel { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+  .fb-edit-panel input, .fb-edit-panel textarea { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:9px 12px; color:var(--text); font-size:0.85rem; font-family:"Inter",sans-serif; outline:none; resize:vertical; }
+  .fb-edit-panel input:focus, .fb-edit-panel textarea:focus { border-color:var(--accent); }
   /* REFERANSLAR */
   .ref-item { display:flex; justify-content:space-between; align-items:flex-start; padding:14px 16px; border:1px solid rgba(255,255,255,0.09); border-radius:10px; background:var(--bg); gap:12px; margin-bottom:8px; }
   .ref-item:last-child { margin-bottom:0; }
@@ -558,35 +566,59 @@ import Layout from "../layouts/Layout.astro";
     document.getElementById("char-count").textContent = this.value.length + " karakter";
   });
 
-  // ─── Blog yayınla ─────────────────────────────────────────
+  // ─── Blog yayınla / güncelle ──────────────────────────────
+  let editingPostId = null;
+
   window.publishPost = async function(e) {
     e.preventDefault();
     const btn = document.getElementById("publish-btn");
-    btn.disabled = true; btn.textContent = "Yayınlanıyor...";
+    btn.disabled = true; btn.textContent = editingPostId ? "Güncelleniyor..." : "Yayınlanıyor...";
     document.getElementById("publish-success").style.display = "none";
     document.getElementById("publish-error").style.display   = "none";
     try {
-      await fetch(FB_BASE + "/blog", {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ fields: {
-          title:  { stringValue: document.getElementById("post-title").value },
-          tag:    { stringValue: document.getElementById("post-tag").value || "Genel" },
-          body:   { stringValue: document.getElementById("post-body").value },
-          author: { stringValue: "Hakan Efe" },
-          date:   { stringValue: new Date().toISOString() },
-        }})
-      });
+      const fields = {
+        title:  { stringValue: document.getElementById("post-title").value },
+        tag:    { stringValue: document.getElementById("post-tag").value || "Genel" },
+        body:   { stringValue: document.getElementById("post-body").value },
+        author: { stringValue: "Hakan Efe" },
+        date:   { stringValue: new Date().toISOString() },
+      };
+      if (editingPostId) {
+        await fetch(FB_BASE + "/blog/" + editingPostId, { method:"PATCH", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ fields }) });
+      } else {
+        await fetch(FB_BASE + "/blog", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ fields }) });
+      }
       document.getElementById("publish-success").style.display = "block";
+      document.getElementById("publish-success").textContent = editingPostId ? "✅ Yazı güncellendi!" : "✅ Yazı yayınlandı!";
       document.getElementById("post-form").reset();
       document.getElementById("char-count").textContent = "0 karakter";
+      document.getElementById("publish-btn").textContent = "Yayınla 🚀";
+      document.querySelector("#tab-write h2").textContent = "Yeni Blog Yazısı";
+      editingPostId = null;
     } catch {
       document.getElementById("publish-error").style.display = "block";
     } finally {
-      btn.disabled = false; btn.textContent = "Yayınla 🚀";
+      btn.disabled = false;
     }
   };
 
+  window.editPost = function(id) {
+    const doc = _postDocs[id];
+    if (!doc) return;
+    const f = doc.fields;
+    document.getElementById("post-title").value = f.title?.stringValue || "";
+    document.getElementById("post-tag").value   = f.tag?.stringValue || "";
+    document.getElementById("post-body").value  = f.body?.stringValue || "";
+    document.getElementById("char-count").textContent = (f.body?.stringValue || "").length + " karakter";
+    document.querySelector("#tab-write h2").textContent = "✏️ Yazıyı Düzenle";
+    document.getElementById("publish-btn").textContent = "Güncelle 💾";
+    editingPostId = id;
+    showTab("tab-write");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   // ─── Yazıları yükle ───────────────────────────────────────
+  const _postDocs = {};
   async function loadPosts() {
     const list = document.getElementById("posts-list");
     list.innerHTML = "<p class='loading-p'>Yükleniyor...</p>";
@@ -603,6 +635,7 @@ import Layout from "../layouts/Layout.astro";
       const rows = await res.json();
       const docs = rows.filter(r => r.document).map(r => r.document);
       if (!docs.length) { list.innerHTML = "<p class='loading-p'>Henüz yazı yok.</p>"; return; }
+      docs.forEach(doc => { _postDocs[doc.name.split("/").pop()] = doc; });
       list.innerHTML = docs.map(doc => {
         const f = doc.fields;
         const id = doc.name.split("/").pop();
@@ -612,7 +645,10 @@ import Layout from "../layouts/Layout.astro";
             <div class="post-item-title">${f.title?.stringValue || ""}</div>
             <div class="post-item-meta">${f.tag?.stringValue || "Genel"} · ${date}</div>
           </div>
-          <button class="delete-btn" onclick="deletePost('${id}')">🗑 Sil</button>
+          <div class="item-actions">
+            <button class="edit-btn" onclick="editPost('${id}')">✏️ Düzenle</button>
+            <button class="delete-btn" onclick="deletePost('${id}')">🗑 Sil</button>
+          </div>
         </div>`;
       }).join("");
     } catch(e) { list.innerHTML = `<p style='color:#ef4444'>Yüklenemedi: ${e.message}</p>`; }
@@ -649,29 +685,67 @@ import Layout from "../layouts/Layout.astro";
       const rows = await res.json();
       const docs = rows.filter(r => r.document).map(r => r.document);
       if (!docs.length) { list.innerHTML = "<div class='fb-empty'>💬 Henüz yorum yok.</div>"; return; }
+      docs.forEach(doc => { _fbDocs[doc.name.split("/").pop()] = doc; });
       list.innerHTML = docs.map(doc => {
         const f = doc.fields;
+        const id = doc.name.split("/").pop();
         const stars = parseInt(f.stars?.integerValue || "5");
         const starsHtml = "★".repeat(Math.min(5,stars)) + "☆".repeat(Math.max(0,5-stars));
         const rawDate = f.date?.stringValue || "";
         const date = rawDate ? new Date(rawDate).toLocaleDateString("tr-TR",{day:"numeric",month:"long",year:"numeric"}) : "—";
-        return `<div class="feedback-item">
+        const msgEsc = (f.message?.stringValue||"").replace(/"/g,"&quot;");
+        const nameEsc = (f.name?.stringValue||"").replace(/"/g,"&quot;");
+        return `<div class="feedback-item" id="fb-${id}">
           <div class="fb-item-header">
             <div>
               <div class="fb-item-name">${f.name?.stringValue||"Anonim"}</div>
               ${f.email?.stringValue?`<div class="fb-item-email">${f.email.stringValue}</div>`:""}
             </div>
-            <div style="text-align:right">
-              <div class="fb-stars-display">${starsHtml}</div>
-              <div class="fb-item-date">${date}</div>
+            <div style="text-align:right;display:flex;align-items:center;gap:8px">
+              <div>
+                <div class="fb-stars-display">${starsHtml}</div>
+                <div class="fb-item-date">${date}</div>
+              </div>
+              <div class="item-actions" style="flex-direction:column">
+                <button class="edit-btn" onclick="toggleFbEdit('${id}')">✏️</button>
+                <button class="delete-btn" onclick="deleteFeedback('${id}')">🗑</button>
+              </div>
             </div>
           </div>
           <div class="fb-item-msg">${f.message?.stringValue||""}</div>
+          <div id="fb-edit-${id}" class="fb-edit-panel" style="display:none">
+            <input type="text" value="${nameEsc}" id="fb-name-${id}" placeholder="Ad" />
+            <textarea rows="3" id="fb-msg-${id}" placeholder="Mesaj">${f.message?.stringValue||""}</textarea>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+              <button class="cancel-btn" onclick="toggleFbEdit('${id}')">İptal</button>
+              <button class="upload-btn" style="padding:7px 16px;font-size:0.82rem" onclick="saveFeedback('${id}')">💾 Kaydet</button>
+            </div>
+          </div>
         </div>`;
       }).join("");
     } catch(e) { list.innerHTML = `<p style='color:#ef4444'>Hata: ${e.message}</p>`; }
   }
   window.loadFeedback = loadFeedback;
+
+  const _fbDocs = {};
+  window.toggleFbEdit = function(id) {
+    const panel = document.getElementById("fb-edit-" + id);
+    if (panel) panel.style.display = panel.style.display === "none" ? "block" : "none";
+  };
+  window.saveFeedback = async function(id) {
+    const name = document.getElementById("fb-name-" + id)?.value.trim() || "";
+    const msg  = document.getElementById("fb-msg-"  + id)?.value.trim() || "";
+    await fetch(FB_BASE + "/feedback/" + id, {
+      method: "PATCH", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ fields: { name:{stringValue:name}, message:{stringValue:msg} } })
+    });
+    loadFeedback();
+  };
+  window.deleteFeedback = async function(id) {
+    if (!confirm("Bu yorumu silmek istediğinden emin misin?")) return;
+    await fetch(FB_BASE + "/feedback/" + id, { method:"DELETE" });
+    loadFeedback();
+  };
 
   // ─── CV Yönetimi ──────────────────────────────────────────
   async function loadCVInfo() {
@@ -721,50 +795,71 @@ import Layout from "../layouts/Layout.astro";
   };
 
   // ─── Deneyim Yönetimi ─────────────────────────────────────
+  const _expDocs = {};
+  let editingExpId = null;
+
   window.toggleExpForm = function() {
     const form = document.getElementById("exp-form");
     const btn  = document.getElementById("add-exp-btn");
     const visible = form.style.display !== "none";
     form.style.display = visible ? "none" : "block";
     btn.textContent = visible ? "+ Yeni Ekle" : "İptal";
-    if (!visible) {
+    if (visible) {
       ["exp-title","exp-company","exp-location","exp-start","exp-end","exp-bullets","exp-tags"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
+        const el = document.getElementById(id); if (el) el.value = "";
       });
       document.getElementById("exp-save-status").innerHTML = "";
+      document.querySelector("#exp-form .upload-btn").textContent = "💾 Kaydet";
+      editingExpId = null;
     }
+  };
+
+  window.editExperience = function(id) {
+    const doc = _expDocs[id]; if (!doc) return;
+    const f = doc.fields;
+    document.getElementById("exp-title").value    = f.title?.stringValue || "";
+    document.getElementById("exp-company").value  = f.company?.stringValue || "";
+    document.getElementById("exp-location").value = f.location?.stringValue || "";
+    document.getElementById("exp-start").value    = f.startDate?.stringValue || "";
+    document.getElementById("exp-end").value      = f.endDate?.stringValue || "";
+    document.getElementById("exp-bullets").value  = (f.bullets?.arrayValue?.values||[]).map(v=>v.stringValue).join("\n");
+    document.getElementById("exp-tags").value     = (f.tags?.arrayValue?.values||[]).map(v=>v.stringValue).join(", ");
+    document.querySelector("#exp-form .upload-btn").textContent = "💾 Güncelle";
+    editingExpId = id;
+    document.getElementById("exp-form").style.display = "block";
+    document.getElementById("add-exp-btn").textContent = "İptal";
+    document.getElementById("exp-form").scrollIntoView({ behavior:"smooth" });
   };
 
   window.saveExperience = async function() {
     const title   = document.getElementById("exp-title").value.trim();
     const company = document.getElementById("exp-company").value.trim();
     if (!title || !company) { alert("Ünvan ve şirket zorunlu!"); return; }
-    const location = document.getElementById("exp-location").value.trim();
-    const start    = document.getElementById("exp-start").value.trim();
-    const end      = document.getElementById("exp-end").value.trim();
-    const bulletsRaw = document.getElementById("exp-bullets").value.trim();
-    const bullets  = bulletsRaw ? bulletsRaw.split("\n").filter(b => b.trim()) : [];
-    const tagsRaw  = document.getElementById("exp-tags").value.trim();
-    const tags     = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
-    const status   = document.getElementById("exp-save-status");
+    const location   = document.getElementById("exp-location").value.trim();
+    const start      = document.getElementById("exp-start").value.trim();
+    const end        = document.getElementById("exp-end").value.trim();
+    const bullets    = document.getElementById("exp-bullets").value.trim().split("\n").filter(b=>b.trim());
+    const tags       = document.getElementById("exp-tags").value.trim().split(",").map(t=>t.trim()).filter(Boolean);
+    const status     = document.getElementById("exp-save-status");
     status.innerHTML = "";
     try {
-      await fetch(FB_BASE + "/experience", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ fields: {
-          title:    { stringValue: title },
-          company:  { stringValue: company },
-          location: { stringValue: location },
-          startDate:{ stringValue: start },
-          endDate:  { stringValue: end },
-          bullets:  { arrayValue: { values: bullets.map(b => ({ stringValue: b })) }},
-          tags:     { arrayValue: { values: tags.map(t => ({ stringValue: t })) }},
-          createdAt:{ stringValue: new Date().toISOString() },
-        }})
-      });
-      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ Kaydedildi!</p>`;
+      const fields = {
+        title:    { stringValue: title },
+        company:  { stringValue: company },
+        location: { stringValue: location },
+        startDate:{ stringValue: start },
+        endDate:  { stringValue: end },
+        bullets:  { arrayValue: { values: bullets.map(b=>({stringValue:b})) }},
+        tags:     { arrayValue: { values: tags.map(t=>({stringValue:t})) }},
+        createdAt:{ stringValue: new Date().toISOString() },
+      };
+      if (editingExpId) {
+        await fetch(FB_BASE + "/experience/" + editingExpId, { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({fields}) });
+      } else {
+        await fetch(FB_BASE + "/experience", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({fields}) });
+      }
+      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ ${editingExpId ? "Güncellendi" : "Kaydedildi"}!</p>`;
+      editingExpId = null;
       setTimeout(() => { toggleExpForm(); loadExperiences(); }, 800);
     } catch(e) {
       status.innerHTML = `<p style="color:#ef4444;margin-top:8px">❌ Hata: ${e.message}</p>`;
@@ -787,6 +882,7 @@ import Layout from "../layouts/Layout.astro";
       const rows = await res.json();
       const docs = rows.filter(r => r.document).map(r => r.document);
       if (!docs.length) { list.innerHTML = "<p class='loading-p'>Henüz deneyim eklenmedi.</p>"; return; }
+      docs.forEach(doc => { _expDocs[doc.name.split("/").pop()] = doc; });
       list.innerHTML = docs.map(doc => {
         const f  = doc.fields;
         const id = doc.name.split("/").pop();
@@ -799,7 +895,10 @@ import Layout from "../layouts/Layout.astro";
             <div class="exp-item-date">${date}</div>
             ${tags ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">${tags}</div>` : ""}
           </div>
-          <button class="delete-btn" onclick="deleteExperience('${id}')">🗑 Sil</button>
+          <div class="item-actions">
+            <button class="edit-btn" onclick="editExperience('${id}')">✏️ Düzenle</button>
+            <button class="delete-btn" onclick="deleteExperience('${id}')">🗑 Sil</button>
+          </div>
         </div>`;
       }).join("");
     } catch(e) {
@@ -815,19 +914,40 @@ import Layout from "../layouts/Layout.astro";
   };
 
   // ─── Referans Yönetimi ────────────────────────────────────
+  const _refDocs = {};
+  let editingRefId = null;
+
   window.toggleRefForm = function() {
     const form = document.getElementById("ref-form");
     const btn  = document.getElementById("add-ref-btn");
     const visible = form.style.display !== "none";
     form.style.display = visible ? "none" : "block";
     btn.textContent = visible ? "+ Yeni Ekle" : "İptal";
-    if (!visible) {
+    if (visible) {
       ["ref-name","ref-title","ref-org","ref-relation","ref-phone","ref-email","ref-note"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
+        const el = document.getElementById(id); if (el) el.value = "";
       });
       document.getElementById("ref-save-status").innerHTML = "";
+      document.querySelector("#ref-form .upload-btn").textContent = "💾 Kaydet";
+      editingRefId = null;
     }
+  };
+
+  window.editReference = function(id) {
+    const doc = _refDocs[id]; if (!doc) return;
+    const f = doc.fields;
+    document.getElementById("ref-name").value     = f.name?.stringValue || "";
+    document.getElementById("ref-title").value    = f.title?.stringValue || "";
+    document.getElementById("ref-org").value      = f.org?.stringValue || "";
+    document.getElementById("ref-relation").value = f.relation?.stringValue || "";
+    document.getElementById("ref-phone").value    = f.phone?.stringValue || "";
+    document.getElementById("ref-email").value    = f.email?.stringValue || "";
+    document.getElementById("ref-note").value     = f.note?.stringValue || "";
+    document.querySelector("#ref-form .upload-btn").textContent = "💾 Güncelle";
+    editingRefId = id;
+    document.getElementById("ref-form").style.display = "block";
+    document.getElementById("add-ref-btn").textContent = "İptal";
+    document.getElementById("ref-form").scrollIntoView({ behavior:"smooth" });
   };
 
   window.saveReference = async function() {
@@ -842,21 +962,23 @@ import Layout from "../layouts/Layout.astro";
     const status   = document.getElementById("ref-save-status");
     status.innerHTML = "";
     try {
-      await fetch(FB_BASE + "/references", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ fields: {
-          name:      { stringValue: name },
-          title:     { stringValue: title },
-          org:       { stringValue: org },
-          relation:  { stringValue: relation },
-          phone:     { stringValue: phone },
-          email:     { stringValue: email },
-          note:      { stringValue: note },
-          createdAt: { stringValue: new Date().toISOString() },
-        }})
-      });
-      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ Kaydedildi!</p>`;
+      const fields = {
+        name:      { stringValue: name },
+        title:     { stringValue: title },
+        org:       { stringValue: org },
+        relation:  { stringValue: relation },
+        phone:     { stringValue: phone },
+        email:     { stringValue: email },
+        note:      { stringValue: note },
+        createdAt: { stringValue: new Date().toISOString() },
+      };
+      if (editingRefId) {
+        await fetch(FB_BASE + "/references/" + editingRefId, { method:"PATCH", headers:{"Content-Type":"application/json"}, body:JSON.stringify({fields}) });
+      } else {
+        await fetch(FB_BASE + "/references", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({fields}) });
+      }
+      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ ${editingRefId ? "Güncellendi" : "Kaydedildi"}!</p>`;
+      editingRefId = null;
       setTimeout(() => { toggleRefForm(); loadReferences(); }, 800);
     } catch(e) {
       status.innerHTML = `<p style="color:#ef4444;margin-top:8px">❌ Hata: ${e.message}</p>`;
@@ -879,6 +1001,7 @@ import Layout from "../layouts/Layout.astro";
       const rows = await res.json();
       const docs = rows.filter(r => r.document).map(r => r.document);
       if (!docs.length) { list.innerHTML = "<p class='loading-p'>Henüz referans eklenmedi.</p>"; return; }
+      docs.forEach(doc => { _refDocs[doc.name.split("/").pop()] = doc; });
       list.innerHTML = docs.map(doc => {
         const f  = doc.fields;
         const id = doc.name.split("/").pop();
@@ -894,7 +1017,10 @@ import Layout from "../layouts/Layout.astro";
             ${contact ? `<div class="ref-item-contact">${contact}</div>` : ""}
             ${f.note?.stringValue ? `<div class="ref-item-note">${f.note.stringValue}</div>` : ""}
           </div>
-          <button class="delete-btn" onclick="deleteReference('${id}')">🗑 Sil</button>
+          <div class="item-actions">
+            <button class="edit-btn" onclick="editReference('${id}')">✏️ Düzenle</button>
+            <button class="delete-btn" onclick="deleteReference('${id}')">🗑 Sil</button>
+          </div>
         </div>`;
       }).join("");
     } catch(e) {
