@@ -1037,9 +1037,21 @@ import Layout from "../layouts/Layout.astro";
         <form id="feedback-form" onsubmit="submitFeedback(event)">
           <div class="fb-row">
             <input type="text" id="fb-name" placeholder="Adınız" required />
-            <input type="email" id="fb-email" placeholder="E-posta adresiniz *" required />
-            <p id="fb-email-error" style="display:none;color:#ef4444;font-size:0.78rem;margin-top:4px">Geçerli bir e-posta adresi girin.</p>
+            <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;gap:8px">
+                <input type="email" id="fb-email" placeholder="E-posta adresiniz *" required style="flex:1" />
+                <button type="button" id="fb-send-code-btn" onclick="sendVerificationCode()" class="fb-verify-btn">Kod Gönder</button>
+              </div>
+              <p id="fb-email-error" style="display:none;color:#ef4444;font-size:0.78rem">Geçerli bir e-posta adresi girin.</p>
+              <p id="fb-code-sent-msg" style="display:none;color:#22c55e;font-size:0.78rem">✅ Kod gönderildi! E-postanı kontrol et.</p>
+            </div>
           </div>
+          <!-- Kod doğrulama alanı -->
+          <div id="fb-code-row" style="display:none;gap:8px;align-items:center" class="fb-row">
+            <input type="text" id="fb-code-input" placeholder="6 haneli kod" maxlength="6" inputmode="numeric" style="flex:1;letter-spacing:0.3em;text-align:center;font-size:1.1rem" />
+            <button type="button" onclick="verifyCode()" class="fb-verify-btn">Doğrula</button>
+          </div>
+          <p id="fb-code-error" style="display:none;color:#ef4444;font-size:0.78rem;margin-top:-4px"></p>
           <div class="fb-stars" id="fb-stars">
             <span>Değerlendirme:</span>
             <div class="stars-row">
@@ -1051,7 +1063,7 @@ import Layout from "../layouts/Layout.astro";
             </div>
           </div>
           <textarea id="fb-message" placeholder="Görüşünüz..." rows="4" required></textarea>
-          <button type="submit" class="fb-submit" id="fb-submit-btn">Gönder ✉️</button>
+          <button type="submit" class="fb-submit" id="fb-submit-btn" disabled>E-postanı doğrula ↑</button>
           <div id="fb-success" class="fb-success" style="display:none">Teşekkürler! Geri bildiriminiz alındı 🎉</div>
         </form>
       </div>
@@ -3114,6 +3126,21 @@ import Layout from "../layouts/Layout.astro";
 
   .fb-submit:hover { opacity: 0.88; }
   .fb-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+  .fb-verify-btn {
+    background: rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.35);
+    color: var(--accent-light);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: "Inter", sans-serif;
+    transition: background 0.2s;
+  }
+  .fb-verify-btn:hover { background: rgba(124,58,237,0.22); }
+  .fb-verify-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .fb-success {
     color: #22c55e;
@@ -3860,27 +3887,77 @@ import Layout from "../layouts/Layout.astro";
     });
   };
 
-  window.submitFeedback = async function(e) {
-    e.preventDefault();
+  let _emailVerified = false;
 
+  window.sendVerificationCode = async function() {
     const emailInput = document.getElementById("fb-email") as HTMLInputElement;
     const emailError = document.getElementById("fb-email-error");
-    const emailVal = emailInput.value.trim();
-    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
-    if (!emailOk) {
-      emailError.style.display = "block";
-      emailInput.focus();
-      return;
+    const sentMsg    = document.getElementById("fb-code-sent-msg");
+    const codeRow    = document.getElementById("fb-code-row");
+    const sendBtn    = document.getElementById("fb-send-code-btn") as HTMLButtonElement;
+    const email = emailInput.value.trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      emailError.style.display = "block"; return;
     }
     emailError.style.display = "none";
+    sendBtn.disabled = true; sendBtn.textContent = "Gönderiliyor...";
 
-    const btn = document.getElementById("fb-submit-btn");
+    try {
+      const res = await fetch("/api/send-code", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) throw new Error();
+      sentMsg.style.display = "block";
+      codeRow.style.display = "flex";
+      sendBtn.textContent = "Tekrar Gönder";
+    } catch {
+      emailError.textContent = "Kod gönderilemedi, tekrar dene.";
+      emailError.style.display = "block";
+      sendBtn.textContent = "Kod Gönder";
+    } finally {
+      sendBtn.disabled = false;
+    }
+  };
+
+  window.verifyCode = async function() {
+    const email = (document.getElementById("fb-email") as HTMLInputElement).value.trim();
+    const code  = (document.getElementById("fb-code-input") as HTMLInputElement).value.trim();
+    const codeError = document.getElementById("fb-code-error");
+    const submitBtn = document.getElementById("fb-submit-btn") as HTMLButtonElement;
+
+    if (code.length !== 6) { codeError.textContent = "6 haneli kodu gir."; codeError.style.display = "block"; return; }
+
+    try {
+      const res = await fetch("/api/verify-code", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await res.json();
+      if (!data.ok) { codeError.textContent = data.error || "Yanlış kod."; codeError.style.display = "block"; return; }
+      codeError.style.display = "none";
+      _emailVerified = true;
+      document.getElementById("fb-code-row").style.display = "none";
+      document.getElementById("fb-code-sent-msg").textContent = "✅ E-posta doğrulandı!";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Gönder ✉️";
+    } catch {
+      codeError.textContent = "Bir hata oluştu, tekrar dene."; codeError.style.display = "block";
+    }
+  };
+
+  window.submitFeedback = async function(e) {
+    e.preventDefault();
+    if (!_emailVerified) return;
+
+    const btn = document.getElementById("fb-submit-btn") as HTMLButtonElement;
     btn.disabled = true;
     btn.textContent = "Gönderiliyor...";
 
     const data = {
       name: (document.getElementById("fb-name") as HTMLInputElement).value,
-      email: emailVal,
+      email: (document.getElementById("fb-email") as HTMLInputElement).value.trim(),
       stars: selectedStar || 5,
       message: (document.getElementById("fb-message") as HTMLTextAreaElement).value,
       date: new Date().toISOString(),

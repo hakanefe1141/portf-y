@@ -7,5 +7,17 @@ service cloud.firestore {
     match /feedback/{doc} {
       allow read, write: if true;
     }
+    match /experience/{doc} {
+      allow read, write: if true;
+    }
+    match /references/{doc} {
+      allow read, write: if true;
+    }
+    match /settings/{doc} {
+      allow read, write: if true;
+    }
+    match /verifications/{doc} {
+      allow read, write: if true;
+    }
   }
 }
