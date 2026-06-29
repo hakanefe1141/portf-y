@@ -4,9 +4,10 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title="Admin Panel | Hakan Efe">
 
-<!-- Firebase Auth SDK (compat) -->
+<!-- Firebase SDKs -->
 <script is:inline src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script is:inline src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script is:inline src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 
 <div class="admin-page">
 
@@ -50,6 +51,8 @@ import Layout from "../layouts/Layout.astro";
         <button onclick="showTab('tab-write')" class="admin-tab active" id="btn-write">✏️ Yazı Yaz</button>
         <button onclick="showTab('tab-posts')" class="admin-tab" id="btn-posts">📋 Yazılarım</button>
         <button onclick="showTab('tab-feedback')" class="admin-tab" id="btn-feedback">💬 Yorumlar</button>
+        <button onclick="showTab('tab-cv')" class="admin-tab" id="btn-cv">📄 CV</button>
+        <button onclick="showTab('tab-exp')" class="admin-tab" id="btn-exp">💼 Deneyim</button>
       </div>
       <button onclick="adminLogout()" class="logout-btn">Çıkış</button>
     </header>
@@ -93,6 +96,56 @@ import Layout from "../layouts/Layout.astro";
             <button onclick="loadFeedback()" class="refresh-btn">↺ Yenile</button>
           </div>
           <div id="feedback-list"><p class="loading-p">Yükleniyor...</p></div>
+        </div>
+      </div>
+
+      <!-- CV YÖNETİMİ -->
+      <div id="tab-cv" class="admin-tab-content" style="display:none">
+        <div class="admin-card">
+          <h2>📄 CV Yönetimi</h2>
+          <div id="cv-current" class="cv-current-info">
+            <p class="loading-p">Mevcut CV bilgisi yükleniyor...</p>
+          </div>
+          <div class="cv-upload-section">
+            <label class="cv-upload-label" for="cv-file-input">
+              <span>📎 PDF Seç</span>
+              <input type="file" id="cv-file-input" accept=".pdf" onchange="onCVFileSelect(this)" />
+            </label>
+            <span id="cv-file-name" class="cv-file-name">Dosya seçilmedi</span>
+            <button id="cv-upload-btn" onclick="uploadCV()" disabled class="upload-btn">Yükle & Güncelle</button>
+          </div>
+          <div id="cv-upload-status"></div>
+        </div>
+      </div>
+
+      <!-- DENEYİM YÖNETİMİ -->
+      <div id="tab-exp" class="admin-tab-content" style="display:none">
+        <div class="admin-card">
+          <div class="card-header">
+            <h2>💼 İş Deneyimi</h2>
+            <button onclick="toggleExpForm()" class="refresh-btn" id="add-exp-btn">+ Yeni Ekle</button>
+          </div>
+
+          <!-- Yeni deneyim formu -->
+          <div id="exp-form" style="display:none" class="exp-form-wrap">
+            <input type="text" id="exp-title" placeholder="Ünvan *" />
+            <input type="text" id="exp-company" placeholder="Şirket / Kurum *" />
+            <input type="text" id="exp-location" placeholder="Şehir (örn: İstanbul)" />
+            <div class="exp-date-row">
+              <input type="text" id="exp-start" placeholder="Başlangıç (örn: 2024)" />
+              <span>—</span>
+              <input type="text" id="exp-end" placeholder="Bitiş (örn: 2025 veya Günümüz)" />
+            </div>
+            <textarea id="exp-bullets" rows="4" placeholder="Görevler (her satıra bir madde)"></textarea>
+            <input type="text" id="exp-tags" placeholder="Etiketler (virgülle ayır: React, LMS)" />
+            <div class="form-footer">
+              <button onclick="toggleExpForm()" class="cancel-btn">İptal</button>
+              <button onclick="saveExperience()" class="upload-btn">💾 Kaydet</button>
+            </div>
+            <div id="exp-save-status"></div>
+          </div>
+
+          <div id="exp-list"><p class="loading-p">Yükleniyor...</p></div>
         </div>
       </div>
 
@@ -216,8 +269,37 @@ import Layout from "../layouts/Layout.astro";
   .fb-item-date { font-size:0.72rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
   .fb-item-msg { color:var(--text-dim); font-size:0.88rem; line-height:1.7; font-style:italic; border-left:3px solid var(--accent); padding-left:12px; }
   .fb-empty { text-align:center; padding:40px; color:var(--text-muted); font-size:0.9rem; }
+  /* CV */
+  .cv-current-info { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:16px; font-size:0.88rem; }
+  .cv-upload-section { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .cv-upload-label { display:inline-flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:9px 16px; cursor:pointer; font-size:0.85rem; transition:border-color 0.2s; }
+  .cv-upload-label:hover { border-color:var(--accent); }
+  .cv-upload-label input { display:none; }
+  .cv-file-name { font-size:0.8rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
+  .upload-btn { background:linear-gradient(135deg,var(--accent),#c084fc); color:white; border:none; border-radius:8px; padding:9px 20px; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:"Inter",sans-serif; }
+  .upload-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  /* DENEYIM */
+  .exp-form-wrap { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:20px; display:flex; flex-direction:column; gap:10px; }
+  .exp-form-wrap input, .exp-form-wrap textarea {
+    background:var(--bg-card); border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; color:var(--text); font-size:0.88rem;
+    font-family:"Inter",sans-serif; outline:none; resize:vertical;
+    transition:border-color 0.2s;
+  }
+  .exp-form-wrap input:focus, .exp-form-wrap textarea:focus { border-color:var(--accent); }
+  .exp-date-row { display:flex; align-items:center; gap:8px; }
+  .exp-date-row input { flex:1; }
+  .exp-date-row span { color:var(--text-muted); }
+  .cancel-btn { background:none; border:1px solid var(--border); color:var(--text-muted); border-radius:8px; padding:9px 20px; font-size:0.88rem; cursor:pointer; font-family:"Inter",sans-serif; }
+  .exp-item { display:flex; justify-content:space-between; align-items:flex-start; padding:16px 0; border-bottom:1px solid var(--border); gap:12px; }
+  .exp-item:last-child { border-bottom:none; }
+  .exp-item-title { font-weight:700; font-size:0.9rem; }
+  .exp-item-company { font-size:0.82rem; color:var(--accent-light); margin:2px 0; }
+  .exp-item-date { font-size:0.75rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
+
   @media (max-width:640px) {
-    .admin-tabs { gap:2px; }
+    .admin-tabs { gap:2px; flex-wrap:wrap; }
     .admin-tab { padding:7px 10px; font-size:0.78rem; }
   }
 </style>
@@ -377,10 +459,12 @@ import Layout from "../layouts/Layout.astro";
     document.querySelectorAll(".admin-tab-content").forEach(t => t.style.display = "none");
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.remove("active"));
     document.getElementById(id).style.display = "block";
-    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback"};
+    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback","tab-cv":"btn-cv","tab-exp":"btn-exp"};
     document.getElementById(map[id]).classList.add("active");
     if (id === "tab-posts")    loadPosts();
     if (id === "tab-feedback") loadFeedback();
+    if (id === "tab-cv")       loadCVInfo();
+    if (id === "tab-exp")      loadExperiences();
   };
 
   document.getElementById("post-body")?.addEventListener("input", function() {
@@ -501,6 +585,161 @@ import Layout from "../layouts/Layout.astro";
     } catch(e) { list.innerHTML = `<p style='color:#ef4444'>Hata: ${e.message}</p>`; }
   }
   window.loadFeedback = loadFeedback;
+
+  // ─── CV Yönetimi ──────────────────────────────────────────
+  async function loadCVInfo() {
+    const el = document.getElementById("cv-current");
+    try {
+      const res = await fetch(FB_BASE + "/settings/cv");
+      if (res.ok) {
+        const data = await res.json();
+        const f = data.fields || {};
+        const url = f.url?.stringValue || "";
+        const name = f.name?.stringValue || "CV";
+        const date = f.uploadedAt?.stringValue ? new Date(f.uploadedAt.stringValue).toLocaleDateString("tr-TR") : "—";
+        el.innerHTML = url
+          ? `<p>📄 <strong>${name}</strong> · Yüklenme: ${date}</p><a href="${url}" target="_blank" style="color:var(--accent-light);font-size:0.82rem">Mevcut CV'yi Görüntüle →</a>`
+          : `<p style="color:var(--text-muted)">Henüz CV yüklenmedi.</p>`;
+      } else {
+        el.innerHTML = `<p style="color:var(--text-muted)">Henüz CV yüklenmedi.</p>`;
+      }
+    } catch {
+      el.innerHTML = `<p style="color:var(--text-muted)">Bilgi alınamadı.</p>`;
+    }
+  }
+
+  window.onCVFileSelect = function(input) {
+    const file = input.files[0];
+    document.getElementById("cv-file-name").textContent = file ? file.name : "Dosya seçilmedi";
+    document.getElementById("cv-upload-btn").disabled = !file;
+  };
+
+  window.uploadCV = async function() {
+    const input = document.getElementById("cv-file-input");
+    const file = input.files[0];
+    if (!file) return;
+    const btn = document.getElementById("cv-upload-btn");
+    const status = document.getElementById("cv-upload-status");
+    btn.disabled = true; btn.textContent = "Yükleniyor...";
+    status.innerHTML = "";
+    try {
+      const storage = firebase.storage();
+      const ref = storage.ref("cv/HakanEfe_CV.pdf");
+      await ref.put(file);
+      const url = await ref.getDownloadURL();
+      await fetch(FB_BASE + "/settings/cv", {
+        method: "PATCH",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ fields: {
+          url:        { stringValue: url },
+          name:       { stringValue: file.name },
+          uploadedAt: { stringValue: new Date().toISOString() },
+        }})
+      });
+      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ CV güncellendi!</p>`;
+      loadCVInfo();
+      input.value = "";
+      document.getElementById("cv-file-name").textContent = "Dosya seçilmedi";
+    } catch(e) {
+      status.innerHTML = `<p style="color:#ef4444;margin-top:8px">❌ Hata: ${e.message}</p>`;
+    } finally {
+      btn.disabled = false; btn.textContent = "Yükle & Güncelle";
+    }
+  };
+
+  // ─── Deneyim Yönetimi ─────────────────────────────────────
+  window.toggleExpForm = function() {
+    const form = document.getElementById("exp-form");
+    const btn  = document.getElementById("add-exp-btn");
+    const visible = form.style.display !== "none";
+    form.style.display = visible ? "none" : "block";
+    btn.textContent = visible ? "+ Yeni Ekle" : "İptal";
+    if (!visible) {
+      ["exp-title","exp-company","exp-location","exp-start","exp-end","exp-bullets","exp-tags"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      document.getElementById("exp-save-status").innerHTML = "";
+    }
+  };
+
+  window.saveExperience = async function() {
+    const title   = document.getElementById("exp-title").value.trim();
+    const company = document.getElementById("exp-company").value.trim();
+    if (!title || !company) { alert("Ünvan ve şirket zorunlu!"); return; }
+    const location = document.getElementById("exp-location").value.trim();
+    const start    = document.getElementById("exp-start").value.trim();
+    const end      = document.getElementById("exp-end").value.trim();
+    const bulletsRaw = document.getElementById("exp-bullets").value.trim();
+    const bullets  = bulletsRaw ? bulletsRaw.split("\n").filter(b => b.trim()) : [];
+    const tagsRaw  = document.getElementById("exp-tags").value.trim();
+    const tags     = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
+    const status   = document.getElementById("exp-save-status");
+    status.innerHTML = "";
+    try {
+      await fetch(FB_BASE + "/experience", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ fields: {
+          title:    { stringValue: title },
+          company:  { stringValue: company },
+          location: { stringValue: location },
+          startDate:{ stringValue: start },
+          endDate:  { stringValue: end },
+          bullets:  { arrayValue: { values: bullets.map(b => ({ stringValue: b })) }},
+          tags:     { arrayValue: { values: tags.map(t => ({ stringValue: t })) }},
+          createdAt:{ stringValue: new Date().toISOString() },
+        }})
+      });
+      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ Kaydedildi!</p>`;
+      setTimeout(() => { toggleExpForm(); loadExperiences(); }, 800);
+    } catch(e) {
+      status.innerHTML = `<p style="color:#ef4444;margin-top:8px">❌ Hata: ${e.message}</p>`;
+    }
+  };
+
+  async function loadExperiences() {
+    const list = document.getElementById("exp-list");
+    list.innerHTML = "<p class='loading-p'>Yükleniyor...</p>";
+    try {
+      const res = await fetch(
+        "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents:runQuery",
+        { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ structuredQuery: {
+            from:[{collectionId:"experience"}],
+            orderBy:[{field:{fieldPath:"createdAt"},direction:"DESCENDING"}], limit:20
+          }})
+        }
+      );
+      const rows = await res.json();
+      const docs = rows.filter(r => r.document).map(r => r.document);
+      if (!docs.length) { list.innerHTML = "<p class='loading-p'>Henüz deneyim eklenmedi.</p>"; return; }
+      list.innerHTML = docs.map(doc => {
+        const f  = doc.fields;
+        const id = doc.name.split("/").pop();
+        const tags = (f.tags?.arrayValue?.values || []).map(v => v.stringValue).join(", ");
+        const date = `${f.startDate?.stringValue || ""} — ${f.endDate?.stringValue || ""}`;
+        return `<div class="exp-item">
+          <div>
+            <div class="exp-item-title">${f.title?.stringValue || ""}</div>
+            <div class="exp-item-company">${f.company?.stringValue || ""} ${f.location?.stringValue ? `· ${f.location.stringValue}` : ""}</div>
+            <div class="exp-item-date">${date}</div>
+            ${tags ? `<div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">${tags}</div>` : ""}
+          </div>
+          <button class="delete-btn" onclick="deleteExperience('${id}')">🗑 Sil</button>
+        </div>`;
+      }).join("");
+    } catch(e) {
+      list.innerHTML = `<p style='color:#ef4444'>Hata: ${e.message}</p>`;
+    }
+  }
+  window.loadExperiences = loadExperiences;
+
+  window.deleteExperience = async function(id) {
+    if (!confirm("Bu deneyimi silmek istediğinden emin misin?")) return;
+    await fetch(FB_BASE + "/experience/" + id, { method:"DELETE" });
+    loadExperiences();
+  };
 </script>
 </content>
 </invoke>

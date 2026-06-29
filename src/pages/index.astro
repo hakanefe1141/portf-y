@@ -83,7 +83,7 @@ import Layout from "../layouts/Layout.astro";
         <div class="hero-cta">
           <a href="#iletisim" class="btn-primary"><span id="btn-contact-text">İletişime Geç</span></a>
           <a href="#deneyim" class="btn-secondary"><span id="btn-exp-text">Deneyimlerimi Gör</span></a>
-          <a href="/HakanEfe_CV.pdf" download class="btn-cv">
+          <a href="/HakanEfe_CV.pdf" download class="btn-cv" id="cv-download-link">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span id="btn-cv-text">CV İndir</span>
           </a>
@@ -165,9 +165,9 @@ import Layout from "../layouts/Layout.astro";
   <section id="deneyim" class="reveal">
     <div class="container">
       <h2 class="section-title" id="section-exp-title">İş Deneyimi</h2>
-      <div class="timeline">
-
-        <div class="timeline-item card">
+      <div class="timeline" id="experience-timeline">
+        <!-- Statik fallback — Firestore boşsa gösterilir -->
+        <div class="timeline-item card" data-static>
           <div class="timeline-header">
             <div>
               <h3>Eğitim Araştırmacısı</h3>
@@ -183,8 +183,7 @@ import Layout from "../layouts/Layout.astro";
             <span class="tag">Akademi-Endüstri İşbirliği</span>
           </div>
         </div>
-
-        <div class="timeline-item card">
+        <div class="timeline-item card" data-static>
           <div class="timeline-header">
             <div>
               <h3>Bilgi İşlem Destek</h3>
@@ -202,8 +201,7 @@ import Layout from "../layouts/Layout.astro";
             <span class="tag">İçerik Geliştirme</span>
           </div>
         </div>
-
-        <div class="timeline-item card">
+        <div class="timeline-item card" data-static>
           <div class="timeline-header">
             <div>
               <h3>Organizasyon Asistanı</h3>
@@ -219,8 +217,7 @@ import Layout from "../layouts/Layout.astro";
             <span class="tag">Organizasyon</span>
           </div>
         </div>
-
-        <div class="timeline-item card">
+        <div class="timeline-item card" data-static>
           <div class="timeline-header">
             <div>
               <h3>Bilişim Teknolojileri Öğretmenliği (Staj)</h3>
@@ -236,8 +233,7 @@ import Layout from "../layouts/Layout.astro";
             <span class="tag">BT Eğitimi</span>
           </div>
         </div>
-
-        <div class="timeline-item card">
+        <div class="timeline-item card" data-static>
           <div class="timeline-header">
             <div>
               <h3>Teknik Destek</h3>
@@ -257,10 +253,61 @@ import Layout from "../layouts/Layout.astro";
             <span class="tag">İçerik Geliştirme</span>
           </div>
         </div>
-
       </div>
     </div>
   </section>
+
+  <script>
+    // Firestore'dan deneyimleri yükle
+    (async () => {
+      try {
+        const res = await fetch(
+          "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents:runQuery",
+          { method:"POST", headers:{"Content-Type":"application/json"},
+            body: JSON.stringify({ structuredQuery: {
+              from:[{collectionId:"experience"}],
+              orderBy:[{field:{fieldPath:"createdAt"},direction:"DESCENDING"}], limit:20
+            }})
+          }
+        );
+        const rows = await res.json();
+        const docs = rows.filter(r => r.document).map(r => r.document);
+        if (!docs.length) return; // Firestore boş → statik içerik kalır
+        const timeline = document.getElementById("experience-timeline");
+        timeline.innerHTML = docs.map(doc => {
+          const f = doc.fields;
+          const bullets = (f.bullets?.arrayValue?.values || []).map(v => v.stringValue).filter(Boolean);
+          const tags    = (f.tags?.arrayValue?.values || []).map(v => v.stringValue).filter(Boolean);
+          const loc     = f.location?.stringValue ? ` — ${f.location.stringValue}` : "";
+          const date    = `${f.startDate?.stringValue || ""} — ${f.endDate?.stringValue || ""}`;
+          return `<div class="timeline-item card">
+            <div class="timeline-header">
+              <div>
+                <h3>${f.title?.stringValue || ""}</h3>
+                <p class="org">${f.company?.stringValue || ""}${loc}</p>
+              </div>
+              <span class="date-badge">${date}</span>
+            </div>
+            ${bullets.length ? `<ul class="timeline-list">${bullets.map(b=>`<li>${b}</li>`).join("")}</ul>` : ""}
+            ${tags.length ? `<div class="tag-row">${tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>` : ""}
+          </div>`;
+        }).join("");
+      } catch {}
+
+      // CV linkini Firestore'dan güncelle
+      try {
+        const cvRes = await fetch("https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents/settings/cv");
+        if (cvRes.ok) {
+          const cvData = await cvRes.json();
+          const url = cvData.fields?.url?.stringValue;
+          if (url) {
+            const link = document.getElementById("cv-download-link");
+            if (link) { link.href = url; link.removeAttribute("download"); link.target = "_blank"; }
+          }
+        }
+      } catch {}
+    })();
+  </script>
 
   <!-- EĞİTİM -->
   <section id="egitim" class="reveal">
