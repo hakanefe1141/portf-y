@@ -1037,7 +1037,8 @@ import Layout from "../layouts/Layout.astro";
         <form id="feedback-form" onsubmit="submitFeedback(event)">
           <div class="fb-row">
             <input type="text" id="fb-name" placeholder="Adınız" required />
-            <input type="email" id="fb-email" placeholder="E-posta (isteğe bağlı)" />
+            <input type="email" id="fb-email" placeholder="E-posta adresiniz *" required />
+            <p id="fb-email-error" style="display:none;color:#ef4444;font-size:0.78rem;margin-top:4px">Geçerli bir e-posta adresi girin.</p>
           </div>
           <div class="fb-stars" id="fb-stars">
             <span>Değerlendirme:</span>
@@ -3861,13 +3862,25 @@ import Layout from "../layouts/Layout.astro";
 
   window.submitFeedback = async function(e) {
     e.preventDefault();
+
+    const emailInput = document.getElementById("fb-email") as HTMLInputElement;
+    const emailError = document.getElementById("fb-email-error");
+    const emailVal = emailInput.value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal);
+    if (!emailOk) {
+      emailError.style.display = "block";
+      emailInput.focus();
+      return;
+    }
+    emailError.style.display = "none";
+
     const btn = document.getElementById("fb-submit-btn");
     btn.disabled = true;
     btn.textContent = "Gönderiliyor...";
 
     const data = {
       name: (document.getElementById("fb-name") as HTMLInputElement).value,
-      email: (document.getElementById("fb-email") as HTMLInputElement).value,
+      email: emailVal,
       stars: selectedStar || 5,
       message: (document.getElementById("fb-message") as HTMLTextAreaElement).value,
       date: new Date().toISOString(),
