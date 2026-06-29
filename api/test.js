@@ -1,3 +1,3 @@
-module.exports = (req, res) => {
+export default function handler(req, res) {
   res.status(200).json({ ok: true, node: process.version, env: !!process.env.GMAIL_USER });
-};
+}

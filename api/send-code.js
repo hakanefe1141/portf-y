@@ -1,8 +1,8 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 const FB = "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents";
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -21,7 +21,6 @@ module.exports = async (req, res) => {
     const code = String(Math.floor(100000 + Math.random() * 900000));
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
-    // Kodu Firestore'a kaydet
     await fetch(`${FB}/verifications/${encodeURIComponent(email)}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -31,7 +30,6 @@ module.exports = async (req, res) => {
       }}),
     });
 
-    // Gmail ile gönder
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -63,4 +61,4 @@ module.exports = async (req, res) => {
     console.error("send-code error:", e);
     return res.status(500).json({ error: e.message || "Sunucu hatası" });
   }
-};
+}
