@@ -107,13 +107,12 @@ import Layout from "../layouts/Layout.astro";
           <div id="cv-current" class="cv-current-info">
             <p class="loading-p">Mevcut CV bilgisi yükleniyor...</p>
           </div>
-          <div class="cv-upload-section">
-            <label class="cv-upload-label" for="cv-file-input">
-              <span>📎 PDF Seç</span>
-              <input type="file" id="cv-file-input" accept=".pdf" onchange="onCVFileSelect(this)" />
-            </label>
-            <span id="cv-file-name" class="cv-file-name">Dosya seçilmedi</span>
-            <button id="cv-upload-btn" onclick="uploadCV()" disabled class="upload-btn">Yükle & Güncelle</button>
+          <div class="cv-url-section">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px">CV'ni Google Drive, Dropbox veya başka bir yere yükle, paylaşım linkini buraya yapıştır.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <input type="url" id="cv-url-input" placeholder="https://drive.google.com/file/d/..." style="flex:1;min-width:200px" />
+              <button onclick="saveCVUrl()" class="upload-btn">💾 Kaydet</button>
+            </div>
           </div>
           <div id="cv-upload-status"></div>
         </div>
@@ -300,11 +299,9 @@ import Layout from "../layouts/Layout.astro";
   .fb-empty { text-align:center; padding:40px; color:var(--text-muted); font-size:0.9rem; }
   /* CV */
   .cv-current-info { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:16px; font-size:0.88rem; }
-  .cv-upload-section { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
-  .cv-upload-label { display:inline-flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:9px 16px; cursor:pointer; font-size:0.85rem; transition:border-color 0.2s; }
-  .cv-upload-label:hover { border-color:var(--accent); }
-  .cv-upload-label input { display:none; }
-  .cv-file-name { font-size:0.8rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
+  .cv-url-section { margin-bottom:12px; }
+  #cv-url-input { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-size:0.88rem; font-family:"Inter",sans-serif; outline:none; transition:border-color 0.2s; }
+  #cv-url-input:focus { border-color:var(--accent); }
   .upload-btn { background:linear-gradient(135deg,var(--accent),#c084fc); color:white; border:none; border-radius:8px; padding:9px 20px; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:"Inter",sans-serif; }
   .upload-btn:disabled { opacity:0.4; cursor:not-allowed; }
 
@@ -630,42 +627,28 @@ import Layout from "../layouts/Layout.astro";
     }
   }
 
-  window.onCVFileSelect = function(input) {
-    const file = input.files[0];
-    document.getElementById("cv-file-name").textContent = file ? file.name : "Dosya seçilmedi";
-    document.getElementById("cv-upload-btn").disabled = !file;
-  };
-
-  window.uploadCV = async function() {
-    const input = document.getElementById("cv-file-input");
-    const file = input.files[0];
-    if (!file) return;
-    const btn = document.getElementById("cv-upload-btn");
+  window.saveCVUrl = async function() {
+    const input = document.getElementById("cv-url-input");
+    const url = input.value.trim();
     const status = document.getElementById("cv-upload-status");
-    btn.disabled = true; btn.textContent = "Yükleniyor...";
-    status.innerHTML = "";
+    if (!url) { status.innerHTML = `<p style="color:#ef4444;margin-top:8px">❌ Link boş olamaz.</p>`; return; }
+    status.innerHTML = `<p style="color:var(--text-muted);margin-top:8px">Kaydediliyor...</p>`;
     try {
-      const storage = firebase.storage();
-      const ref = storage.ref("cv/HakanEfe_CV.pdf");
-      await ref.put(file);
-      const url = await ref.getDownloadURL();
-      await fetch(FB_BASE + "/settings/cv", {
+      const res = await fetch(FB_BASE + "/settings/cv", {
         method: "PATCH",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ fields: {
           url:        { stringValue: url },
-          name:       { stringValue: file.name },
+          name:       { stringValue: "HakanEfe_CV.pdf" },
           uploadedAt: { stringValue: new Date().toISOString() },
         }})
       });
-      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ CV güncellendi!</p>`;
-      loadCVInfo();
+      if (!res.ok) throw new Error("Firestore hatası");
+      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ CV linki güncellendi!</p>`;
       input.value = "";
-      document.getElementById("cv-file-name").textContent = "Dosya seçilmedi";
+      loadCVInfo();
     } catch(e) {
       status.innerHTML = `<p style="color:#ef4444;margin-top:8px">❌ Hata: ${e.message}</p>`;
-    } finally {
-      btn.disabled = false; btn.textContent = "Yükle & Güncelle";
     }
   };
 
