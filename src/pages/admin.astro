@@ -471,9 +471,26 @@ import Layout from "../layouts/Layout.astro";
       return;
     }
     err.style.display = "none";
-    // SMS geçici olarak devre dışı — sadece şifreyle giriş
-    initFirebase();
-    showPanel();
+    btn.disabled = true;
+    btn.textContent = "SMS gönderiliyor...";
+
+    try {
+      initFirebase();
+      confirmResult = await sendSms();
+
+      document.getElementById("screen-pass").style.display = "none";
+      document.getElementById("screen-otp").style.display  = "flex";
+      document.getElementById("input-otp").focus();
+      startTimer(120);
+
+    } catch(e) {
+      console.error(e);
+      btn.disabled = false;
+      btn.textContent = "Giriş Yap →";
+      err.textContent = "SMS gönderilemedi: " + (e.message || e.code);
+      err.style.display = "block";
+      resetRecaptcha();
+    }
   };
 
   // ─── 2. OTP doğrulama ─────────────────────────────────────
