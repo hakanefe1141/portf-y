@@ -54,6 +54,7 @@ import Layout from "../layouts/Layout.astro";
         <button onclick="showTab('tab-cv')" class="admin-tab" id="btn-cv">📄 CV</button>
         <button onclick="showTab('tab-exp')" class="admin-tab" id="btn-exp">💼 Deneyim</button>
         <button onclick="showTab('tab-ref')" class="admin-tab" id="btn-ref">👥 Referanslar</button>
+        <button onclick="showTab('tab-profile')" class="admin-tab" id="btn-profile">⚙️ Bilgiler</button>
       </div>
       <button onclick="adminLogout()" class="logout-btn">Çıkış</button>
     </header>
@@ -174,6 +175,58 @@ import Layout from "../layouts/Layout.astro";
           </div>
 
           <div id="ref-list"><p class="loading-p">Yükleniyor...</p></div>
+        </div>
+      </div>
+
+      <!-- BİLGİLER / PROFİL -->
+      <div id="tab-profile" class="admin-tab-content" style="display:none">
+        <div class="admin-card">
+          <div class="card-header">
+            <h2>⚙️ Profil Bilgileri</h2>
+            <button onclick="loadProfile()" class="refresh-btn">↺ Yenile</button>
+          </div>
+          <div class="profile-form">
+            <div class="profile-field-group">
+              <label>Ad Soyad</label>
+              <input type="text" id="pf-name" placeholder="Hakan Efe" />
+            </div>
+            <div class="profile-field-group">
+              <label>Ünvan</label>
+              <input type="text" id="pf-title" placeholder="Eğitim Teknoloğu" />
+            </div>
+            <div class="profile-field-group">
+              <label>Kısa Açıklama (Hero)</label>
+              <textarea id="pf-desc" rows="4" placeholder="Ana sayfadaki tanıtım metni..."></textarea>
+            </div>
+            <div class="profile-row">
+              <div class="profile-field-group">
+                <label>E-posta</label>
+                <input type="email" id="pf-email" placeholder="hakanefe1141@gmail.com" />
+              </div>
+              <div class="profile-field-group">
+                <label>Telefon</label>
+                <input type="text" id="pf-phone" placeholder="+905522861141" />
+              </div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-field-group">
+                <label>LinkedIn URL</label>
+                <input type="url" id="pf-linkedin" placeholder="https://linkedin.com/in/hakan-efe" />
+              </div>
+              <div class="profile-field-group">
+                <label>GitHub URL</label>
+                <input type="url" id="pf-github" placeholder="https://github.com/hakanefe1141" />
+              </div>
+            </div>
+            <div class="profile-field-group">
+              <label>Müsaitlik Durumu (badge)</label>
+              <input type="text" id="pf-badge" placeholder="Açık Pozisyonlara Müsait" />
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px">
+              <button onclick="saveProfile()" class="upload-btn">💾 Kaydet</button>
+            </div>
+            <div id="profile-status"></div>
+          </div>
         </div>
       </div>
 
@@ -333,9 +386,23 @@ import Layout from "../layouts/Layout.astro";
   .ref-item-contact { font-size:0.78rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; margin-top:4px; }
   .ref-item-note { font-size:0.78rem; color:var(--text-dim); margin-top:4px; }
 
+  /* PROFİL */
+  .profile-form { display:flex; flex-direction:column; gap:14px; }
+  .profile-field-group { display:flex; flex-direction:column; gap:6px; flex:1; }
+  .profile-field-group label { font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; }
+  .profile-field-group input, .profile-field-group textarea {
+    background:var(--bg); border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; color:var(--text); font-size:0.88rem;
+    font-family:"Inter",sans-serif; outline:none; resize:vertical;
+    transition:border-color 0.2s;
+  }
+  .profile-field-group input:focus, .profile-field-group textarea:focus { border-color:var(--accent); }
+  .profile-row { display:flex; gap:14px; }
+
   @media (max-width:640px) {
     .admin-tabs { gap:2px; flex-wrap:wrap; }
     .admin-tab { padding:7px 10px; font-size:0.78rem; }
+    .profile-row { flex-direction:column; }
   }
 </style>
 
@@ -477,13 +544,14 @@ import Layout from "../layouts/Layout.astro";
     document.querySelectorAll(".admin-tab-content").forEach(t => t.style.display = "none");
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.remove("active"));
     document.getElementById(id).style.display = "block";
-    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback","tab-cv":"btn-cv","tab-exp":"btn-exp","tab-ref":"btn-ref"};
+    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback","tab-cv":"btn-cv","tab-exp":"btn-exp","tab-ref":"btn-ref","tab-profile":"btn-profile"};
     document.getElementById(map[id]).classList.add("active");
     if (id === "tab-posts")    loadPosts();
     if (id === "tab-feedback") loadFeedback();
     if (id === "tab-cv")       loadCVInfo();
     if (id === "tab-exp")      loadExperiences();
     if (id === "tab-ref")      loadReferences();
+    if (id === "tab-profile")  loadProfile();
   };
 
   document.getElementById("post-body")?.addEventListener("input", function() {
@@ -839,6 +907,54 @@ import Layout from "../layouts/Layout.astro";
     if (!confirm("Bu referansı silmek istediğinden emin misin?")) return;
     await fetch(FB_BASE + "/references/" + id, { method:"DELETE" });
     loadReferences();
+  };
+
+  // ─── Profil Bilgileri ─────────────────────────────────────
+  async function loadProfile() {
+    const status = document.getElementById("profile-status");
+    try {
+      const res = await fetch(FB_BASE + "/settings/profile");
+      if (!res.ok) return;
+      const data = await res.json();
+      const f = data.fields || {};
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ""; };
+      set("pf-name",     f.name?.stringValue);
+      set("pf-title",    f.title?.stringValue);
+      set("pf-desc",     f.desc?.stringValue);
+      set("pf-email",    f.email?.stringValue);
+      set("pf-phone",    f.phone?.stringValue);
+      set("pf-linkedin", f.linkedin?.stringValue);
+      set("pf-github",   f.github?.stringValue);
+      set("pf-badge",    f.badge?.stringValue);
+    } catch {}
+  }
+  window.loadProfile = loadProfile;
+
+  window.saveProfile = async function() {
+    const get = id => document.getElementById(id)?.value.trim() || "";
+    const status = document.getElementById("profile-status");
+    status.innerHTML = `<p style="color:var(--text-muted);margin-top:10px">Kaydediliyor...</p>`;
+    try {
+      const res = await fetch(FB_BASE + "/settings/profile", {
+        method: "PATCH",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ fields: {
+          name:     { stringValue: get("pf-name") },
+          title:    { stringValue: get("pf-title") },
+          desc:     { stringValue: get("pf-desc") },
+          email:    { stringValue: get("pf-email") },
+          phone:    { stringValue: get("pf-phone") },
+          linkedin: { stringValue: get("pf-linkedin") },
+          github:   { stringValue: get("pf-github") },
+          badge:    { stringValue: get("pf-badge") },
+        }})
+      });
+      if (!res.ok) throw new Error("Firestore hatası");
+      status.innerHTML = `<p style="color:#22c55e;margin-top:10px">✅ Bilgiler güncellendi!</p>`;
+      setTimeout(() => status.innerHTML = "", 3000);
+    } catch(e) {
+      status.innerHTML = `<p style="color:#ef4444;margin-top:10px">❌ Hata: ${e.message}</p>`;
+    }
   };
 </script>
 </content>

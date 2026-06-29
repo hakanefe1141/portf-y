@@ -89,16 +89,16 @@ import Layout from "../layouts/Layout.astro";
           </a>
         </div>
         <div class="hero-socials">
-          <a href="mailto:hakanefe1141@gmail.com" aria-label="Email" title="E-posta">
+          <a id="social-email" href="mailto:hakanefe1141@gmail.com" aria-label="Email" title="E-posta">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </a>
-          <a href="tel:+905522861141" aria-label="Telefon" title="+0 552 286 11 41">
+          <a id="social-phone" href="tel:+905522861141" aria-label="Telefon" title="+0 552 286 11 41">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           </a>
-          <a href="https://linkedin.com/in/hakan-efe" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <a id="social-linkedin" href="https://linkedin.com/in/hakan-efe" target="_blank" rel="noopener" aria-label="LinkedIn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
           </a>
-          <a href="https://github.com/hakanefe1141" target="_blank" rel="noopener" aria-label="GitHub">
+          <a id="social-github" href="https://github.com/hakanefe1141" target="_blank" rel="noopener" aria-label="GitHub">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
           </a>
         </div>
@@ -304,6 +304,27 @@ import Layout from "../layouts/Layout.astro";
             const link = document.getElementById("cv-download-link");
             if (link) { link.href = url; link.removeAttribute("download"); link.target = "_blank"; }
           }
+        }
+      } catch {}
+
+      // Profil bilgilerini Firestore'dan güncelle
+      try {
+        const pfRes = await fetch("https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents/settings/profile");
+        if (pfRes.ok) {
+          const pf = (await pfRes.json()).fields || {};
+          const setText = (id, val) => { const el = document.getElementById(id); if (el && val) el.textContent = val; };
+          const setHref = (id, val) => { const el = document.getElementById(id); if (el && val) el.href = val; };
+          setText("hero-title-text", pf.title?.stringValue);
+          setText("hero-desc-text",  pf.desc?.stringValue);
+          setText("hero-badge-text", pf.badge?.stringValue);
+          if (pf.email?.stringValue) {
+            setHref("social-email", "mailto:" + pf.email.stringValue);
+          }
+          if (pf.phone?.stringValue) {
+            setHref("social-phone", "tel:" + pf.phone.stringValue);
+          }
+          setHref("social-linkedin", pf.linkedin?.stringValue);
+          setHref("social-github",   pf.github?.stringValue);
         }
       } catch {}
     })();
