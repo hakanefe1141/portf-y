@@ -53,6 +53,7 @@ import Layout from "../layouts/Layout.astro";
         <button onclick="showTab('tab-feedback')" class="admin-tab" id="btn-feedback">💬 Yorumlar</button>
         <button onclick="showTab('tab-cv')" class="admin-tab" id="btn-cv">📄 CV</button>
         <button onclick="showTab('tab-exp')" class="admin-tab" id="btn-exp">💼 Deneyim</button>
+        <button onclick="showTab('tab-ref')" class="admin-tab" id="btn-ref">👥 Referanslar</button>
       </div>
       <button onclick="adminLogout()" class="logout-btn">Çıkış</button>
     </header>
@@ -146,6 +147,34 @@ import Layout from "../layouts/Layout.astro";
           </div>
 
           <div id="exp-list"><p class="loading-p">Yükleniyor...</p></div>
+        </div>
+      </div>
+
+      <!-- REFERANSLAR YÖNETİMİ -->
+      <div id="tab-ref" class="admin-tab-content" style="display:none">
+        <div class="admin-card">
+          <div class="card-header">
+            <h2>👥 Referanslar</h2>
+            <button onclick="toggleRefForm()" class="refresh-btn" id="add-ref-btn">+ Yeni Ekle</button>
+          </div>
+
+          <!-- Yeni referans formu -->
+          <div id="ref-form" style="display:none" class="exp-form-wrap">
+            <input type="text" id="ref-name" placeholder="Ad Soyad *" />
+            <input type="text" id="ref-title" placeholder="Ünvan / Pozisyon *" />
+            <input type="text" id="ref-org" placeholder="Kurum / Şirket" />
+            <input type="text" id="ref-relation" placeholder="İlişki (örn: Doğrudan yöneticim, Çalışma arkadaşım)" />
+            <input type="text" id="ref-phone" placeholder="Telefon (sadece admin görebilir)" />
+            <input type="email" id="ref-email" placeholder="E-posta (sadece admin görebilir)" />
+            <textarea id="ref-note" rows="3" placeholder="Not (opsiyonel)"></textarea>
+            <div class="form-footer">
+              <button onclick="toggleRefForm()" class="cancel-btn">İptal</button>
+              <button onclick="saveReference()" class="upload-btn">💾 Kaydet</button>
+            </div>
+            <div id="ref-save-status"></div>
+          </div>
+
+          <div id="ref-list"><p class="loading-p">Yükleniyor...</p></div>
         </div>
       </div>
 
@@ -297,6 +326,15 @@ import Layout from "../layouts/Layout.astro";
   .exp-item-title { font-weight:700; font-size:0.9rem; }
   .exp-item-company { font-size:0.82rem; color:var(--accent-light); margin:2px 0; }
   .exp-item-date { font-size:0.75rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; }
+
+  /* REFERANSLAR */
+  .ref-item { display:flex; justify-content:space-between; align-items:flex-start; padding:16px 0; border-bottom:1px solid var(--border); gap:12px; }
+  .ref-item:last-child { border-bottom:none; }
+  .ref-item-name { font-weight:700; font-size:0.95rem; }
+  .ref-item-title { font-size:0.83rem; color:var(--accent-light); margin:2px 0; }
+  .ref-item-rel { font-size:0.78rem; color:var(--text-muted); font-style:italic; margin-top:2px; }
+  .ref-item-contact { font-size:0.78rem; color:var(--text-muted); font-family:"JetBrains Mono",monospace; margin-top:4px; }
+  .ref-item-note { font-size:0.78rem; color:var(--text-dim); margin-top:4px; }
 
   @media (max-width:640px) {
     .admin-tabs { gap:2px; flex-wrap:wrap; }
@@ -459,12 +497,13 @@ import Layout from "../layouts/Layout.astro";
     document.querySelectorAll(".admin-tab-content").forEach(t => t.style.display = "none");
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.remove("active"));
     document.getElementById(id).style.display = "block";
-    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback","tab-cv":"btn-cv","tab-exp":"btn-exp"};
+    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback","tab-cv":"btn-cv","tab-exp":"btn-exp","tab-ref":"btn-ref"};
     document.getElementById(map[id]).classList.add("active");
     if (id === "tab-posts")    loadPosts();
     if (id === "tab-feedback") loadFeedback();
     if (id === "tab-cv")       loadCVInfo();
     if (id === "tab-exp")      loadExperiences();
+    if (id === "tab-ref")      loadReferences();
   };
 
   document.getElementById("post-body")?.addEventListener("input", function() {
@@ -739,6 +778,101 @@ import Layout from "../layouts/Layout.astro";
     if (!confirm("Bu deneyimi silmek istediğinden emin misin?")) return;
     await fetch(FB_BASE + "/experience/" + id, { method:"DELETE" });
     loadExperiences();
+  };
+
+  // ─── Referans Yönetimi ────────────────────────────────────
+  window.toggleRefForm = function() {
+    const form = document.getElementById("ref-form");
+    const btn  = document.getElementById("add-ref-btn");
+    const visible = form.style.display !== "none";
+    form.style.display = visible ? "none" : "block";
+    btn.textContent = visible ? "+ Yeni Ekle" : "İptal";
+    if (!visible) {
+      ["ref-name","ref-title","ref-org","ref-relation","ref-phone","ref-email","ref-note"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      document.getElementById("ref-save-status").innerHTML = "";
+    }
+  };
+
+  window.saveReference = async function() {
+    const name  = document.getElementById("ref-name").value.trim();
+    const title = document.getElementById("ref-title").value.trim();
+    if (!name || !title) { alert("Ad soyad ve ünvan zorunlu!"); return; }
+    const org      = document.getElementById("ref-org").value.trim();
+    const relation = document.getElementById("ref-relation").value.trim();
+    const phone    = document.getElementById("ref-phone").value.trim();
+    const email    = document.getElementById("ref-email").value.trim();
+    const note     = document.getElementById("ref-note").value.trim();
+    const status   = document.getElementById("ref-save-status");
+    status.innerHTML = "";
+    try {
+      await fetch(FB_BASE + "/references", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ fields: {
+          name:      { stringValue: name },
+          title:     { stringValue: title },
+          org:       { stringValue: org },
+          relation:  { stringValue: relation },
+          phone:     { stringValue: phone },
+          email:     { stringValue: email },
+          note:      { stringValue: note },
+          createdAt: { stringValue: new Date().toISOString() },
+        }})
+      });
+      status.innerHTML = `<p style="color:#22c55e;margin-top:8px">✅ Kaydedildi!</p>`;
+      setTimeout(() => { toggleRefForm(); loadReferences(); }, 800);
+    } catch(e) {
+      status.innerHTML = `<p style="color:#ef4444;margin-top:8px">❌ Hata: ${e.message}</p>`;
+    }
+  };
+
+  async function loadReferences() {
+    const list = document.getElementById("ref-list");
+    list.innerHTML = "<p class='loading-p'>Yükleniyor...</p>";
+    try {
+      const res = await fetch(
+        "https://firestore.googleapis.com/v1/projects/hakan-efe-portfolyo/databases/(default)/documents:runQuery",
+        { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ structuredQuery: {
+            from:[{collectionId:"references"}],
+            orderBy:[{field:{fieldPath:"createdAt"},direction:"DESCENDING"}], limit:20
+          }})
+        }
+      );
+      const rows = await res.json();
+      const docs = rows.filter(r => r.document).map(r => r.document);
+      if (!docs.length) { list.innerHTML = "<p class='loading-p'>Henüz referans eklenmedi.</p>"; return; }
+      list.innerHTML = docs.map(doc => {
+        const f  = doc.fields;
+        const id = doc.name.split("/").pop();
+        const contact = [
+          f.phone?.stringValue ? `📞 ${f.phone.stringValue}` : "",
+          f.email?.stringValue ? `✉️ ${f.email.stringValue}` : "",
+        ].filter(Boolean).join("  |  ");
+        return `<div class="ref-item">
+          <div>
+            <div class="ref-item-name">${f.name?.stringValue || ""}</div>
+            <div class="ref-item-title">${f.title?.stringValue || ""}${f.org?.stringValue ? ` · ${f.org.stringValue}` : ""}</div>
+            ${f.relation?.stringValue ? `<div class="ref-item-rel">${f.relation.stringValue}</div>` : ""}
+            ${contact ? `<div class="ref-item-contact">${contact}</div>` : ""}
+            ${f.note?.stringValue ? `<div class="ref-item-note">${f.note.stringValue}</div>` : ""}
+          </div>
+          <button class="delete-btn" onclick="deleteReference('${id}')">🗑 Sil</button>
+        </div>`;
+      }).join("");
+    } catch(e) {
+      list.innerHTML = `<p style='color:#ef4444'>Hata: ${e.message}</p>`;
+    }
+  }
+  window.loadReferences = loadReferences;
+
+  window.deleteReference = async function(id) {
+    if (!confirm("Bu referansı silmek istediğinden emin misin?")) return;
+    await fetch(FB_BASE + "/references/" + id, { method:"DELETE" });
+    loadReferences();
   };
 </script>
 </content>
