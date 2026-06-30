@@ -19,5 +19,8 @@ service cloud.firestore {
     match /verifications/{doc} {
       allow read, write: if true;
     }
+    match /certificates/{doc} {
+      allow read, write: if true;
+    }
   }
 }

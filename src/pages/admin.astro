@@ -54,6 +54,7 @@ import Layout from "../layouts/Layout.astro";
         <button onclick="showTab('tab-cv')" class="admin-tab" id="btn-cv">📄 CV</button>
         <button onclick="showTab('tab-exp')" class="admin-tab" id="btn-exp">💼 Deneyim</button>
         <button onclick="showTab('tab-ref')" class="admin-tab" id="btn-ref">👥 Referanslar</button>
+        <button onclick="showTab('tab-cert')" class="admin-tab" id="btn-cert">🎓 Sertifikalar</button>
         <button onclick="showTab('tab-profile')" class="admin-tab" id="btn-profile">⚙️ Bilgiler</button>
       </div>
       <button onclick="adminLogout()" class="logout-btn">Çıkış</button>
@@ -175,6 +176,32 @@ import Layout from "../layouts/Layout.astro";
           </div>
 
           <div id="ref-list"><p class="loading-p">Yükleniyor...</p></div>
+        </div>
+      </div>
+
+      <!-- SERTİFİKALAR -->
+      <div id="tab-cert" class="admin-tab-content" style="display:none">
+        <div class="admin-card">
+          <div class="card-header">
+            <h2>🎓 Sertifikalar</h2>
+            <button onclick="toggleCertForm()" class="refresh-btn" id="add-cert-btn">+ Yeni Ekle</button>
+          </div>
+
+          <!-- Yeni sertifika formu -->
+          <div id="cert-form" style="display:none" class="exp-form-wrap">
+            <input type="text" id="cert-name" placeholder="Sertifika Adı *" />
+            <input type="text" id="cert-issuer" placeholder="Veren Kurum *" />
+            <input type="text" id="cert-date" placeholder="Tarih (örn: Ocak 2024)" />
+            <input type="text" id="cert-category" placeholder="Kategori (örn: Eğitim Teknolojisi, Yazılım)" />
+            <input type="url" id="cert-url" placeholder="Sertifika Linki (opsiyonel)" />
+            <div class="form-footer">
+              <button onclick="toggleCertForm()" class="cancel-btn">İptal</button>
+              <button onclick="saveCertificate()" class="upload-btn">💾 Kaydet</button>
+            </div>
+            <div id="cert-save-status"></div>
+          </div>
+
+          <div id="cert-list"><p class="loading-p">Yükleniyor...</p></div>
         </div>
       </div>
 
@@ -569,13 +596,14 @@ import Layout from "../layouts/Layout.astro";
     document.querySelectorAll(".admin-tab-content").forEach(t => t.style.display = "none");
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.remove("active"));
     document.getElementById(id).style.display = "block";
-    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback","tab-cv":"btn-cv","tab-exp":"btn-exp","tab-ref":"btn-ref","tab-profile":"btn-profile"};
+    const map = {"tab-write":"btn-write","tab-posts":"btn-posts","tab-feedback":"btn-feedback","tab-cv":"btn-cv","tab-exp":"btn-exp","tab-ref":"btn-ref","tab-cert":"btn-cert","tab-profile":"btn-profile"};
     document.getElementById(map[id]).classList.add("active");
     if (id === "tab-posts")    loadPosts();
     if (id === "tab-feedback") loadFeedback();
     if (id === "tab-cv")       loadCVInfo();
     if (id === "tab-exp")      loadExperiences();
     if (id === "tab-ref")      loadReferences();
+    if (id === "tab-cert")     loadCertificates();
     if (id === "tab-profile")  loadProfile();
   };
 
@@ -1050,6 +1078,124 @@ import Layout from "../layouts/Layout.astro";
     if (!confirm("Bu referansı silmek istediğinden emin misin?")) return;
     await fetch(FB_BASE + "/references/" + id, { method:"DELETE" });
     loadReferences();
+  };
+
+  // ─── Sertifikalar ─────────────────────────────────────────
+  const _certDocs = {};
+  let _certEditId = null;
+
+  window.toggleCertForm = function() {
+    const form = document.getElementById("cert-form");
+    const btn  = document.getElementById("add-cert-btn");
+    if (form.style.display === "none") {
+      form.style.display = "block";
+      btn.textContent = "✕ Kapat";
+      _certEditId = null;
+      ["cert-name","cert-issuer","cert-date","cert-category","cert-url"].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = "";
+      });
+      document.getElementById("cert-save-status").textContent = "";
+    } else {
+      form.style.display = "none";
+      btn.textContent = "+ Yeni Ekle";
+    }
+  };
+
+  window.editCertificate = function(id) {
+    const doc = _certDocs[id]; if (!doc) return;
+    const f = doc.fields || {};
+    _certEditId = id;
+    const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val || ""; };
+    set("cert-name",     f.name?.stringValue);
+    set("cert-issuer",   f.issuer?.stringValue);
+    set("cert-date",     f.date?.stringValue);
+    set("cert-category", f.category?.stringValue);
+    set("cert-url",      f.url?.stringValue);
+    const form = document.getElementById("cert-form");
+    form.style.display = "block";
+    document.getElementById("add-cert-btn").textContent = "✕ Kapat";
+    document.getElementById("cert-save-status").textContent = "";
+    form.scrollIntoView({ behavior: "smooth" });
+  };
+
+  window.saveCertificate = async function() {
+    const name     = document.getElementById("cert-name").value.trim();
+    const issuer   = document.getElementById("cert-issuer").value.trim();
+    const date     = document.getElementById("cert-date").value.trim();
+    const category = document.getElementById("cert-category").value.trim();
+    const url      = document.getElementById("cert-url").value.trim();
+    const status   = document.getElementById("cert-save-status");
+
+    if (!name || !issuer) { status.textContent = "⚠️ Ad ve kurum zorunlu."; return; }
+    status.textContent = "Kaydediliyor...";
+
+    const fields = {
+      name:     { stringValue: name },
+      issuer:   { stringValue: issuer },
+      date:     { stringValue: date },
+      category: { stringValue: category },
+      url:      { stringValue: url },
+      createdAt:{ stringValue: new Date().toISOString() },
+    };
+
+    const endpoint = _certEditId
+      ? FB_BASE + "/certificates/" + _certEditId
+      : FB_BASE + "/certificates?documentId=" + Date.now();
+    const method = _certEditId ? "PATCH" : "POST";
+
+    const res = await fetch(endpoint, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields }),
+    });
+
+    if (res.ok) {
+      status.textContent = "✅ Kaydedildi!";
+      setTimeout(() => { toggleCertForm(); loadCertificates(); }, 800);
+    } else {
+      status.textContent = "❌ Hata: " + res.status;
+    }
+  };
+
+  async function loadCertificates() {
+    const list = document.getElementById("cert-list");
+    list.innerHTML = "<p class='loading-p'>Yükleniyor...</p>";
+    const res = await fetch(FB_BASE + "/certificates");
+    if (!res.ok) { list.innerHTML = "<p>Henüz sertifika yok.</p>"; return; }
+    const data = await res.json();
+    const docs = data.documents || [];
+    if (!docs.length) { list.innerHTML = "<p style='color:#888;padding:12px 0'>Henüz sertifika eklenmedi.</p>"; return; }
+
+    docs.forEach(doc => { _certDocs[doc.name.split("/").pop()] = doc; });
+
+    list.innerHTML = docs.map(doc => {
+      const id = doc.name.split("/").pop();
+      const f  = doc.fields || {};
+      const name     = f.name?.stringValue     || "(isimsiz)";
+      const issuer   = f.issuer?.stringValue   || "";
+      const date     = f.date?.stringValue     || "";
+      const category = f.category?.stringValue || "";
+      const url      = f.url?.stringValue      || "";
+      return `
+        <div class="list-item">
+          <div class="item-info">
+            <strong>${name}</strong>
+            <span>${issuer}${date ? " · " + date : ""}${category ? " · " + category : ""}</span>
+            ${url ? `<a href="${url}" target="_blank" style="font-size:0.82rem;color:#7c3aed">↗ Linki Görüntüle</a>` : ""}
+          </div>
+          <div class="item-actions">
+            <button class="edit-btn" onclick="editCertificate('${id}')">✏️ Düzenle</button>
+            <button class="delete-btn" onclick="deleteCertificate('${id}')">🗑 Sil</button>
+          </div>
+        </div>`;
+    }).join("");
+  }
+  window.loadCertificates = loadCertificates;
+
+  window.deleteCertificate = async function(id) {
+    if (!confirm("Bu sertifikayı silmek istediğinden emin misin?")) return;
+    await fetch(FB_BASE + "/certificates/" + id, { method: "DELETE" });
+    loadCertificates();
   };
 
   // ─── Profil Bilgileri ─────────────────────────────────────
