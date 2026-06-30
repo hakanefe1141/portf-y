@@ -3612,12 +3612,7 @@ import Layout from "../layouts/Layout.astro";
 
   // ── 2. ZİYARETÇİ SAYACI ──────────────────────────────────
   const BASE = 1247;
-  let count = parseInt(localStorage.getItem("vc_count") || "0");
-  if (!localStorage.getItem("vc_visited")) {
-    count = BASE + Math.floor(Math.random() * 80);
-    localStorage.setItem("vc_count", String(count));
-    localStorage.setItem("vc_visited", "1");
-  }
+  const count = BASE + Math.floor(Math.random() * 200);
   const vcEl = document.getElementById("visitor-count");
   let vcCur = count - 30;
   const vcTimer = setInterval(() => {
