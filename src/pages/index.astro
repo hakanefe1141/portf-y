@@ -531,14 +531,9 @@ import Layout from "../layouts/Layout.astro";
           const cat     = f.category?.stringValue || "";
           const initials = issuer.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2) || "🎓";
           return `<div class="cert-card">
-            <div class="cert-icon">${initials}</div>
             <div class="cert-body">
               <div class="cert-name">${name}</div>
-              <div class="cert-issuer">${issuer}</div>
-              ${date ? `<div class="cert-date">${date}</div>` : ""}
-              ${cat  ? `<span class="cert-cat-tag">${cat}</span>` : ""}
             </div>
-            ${url ? `<a href="${url}" target="_blank" rel="noopener" class="cert-link" title="Sertifikayı Görüntüle">↗</a>` : ""}
           </div>`;
         }).join("");
       } catch {}
