@@ -746,7 +746,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- E-ÖĞRENİM MODÜLÜ -->
   <section id="modul" class="reveal">
     <div class="container">
-      <h2 class="section-title">İnteraktif Modül</h2>
+      <h2 class="section-title" id="section-modul-title">İnteraktif Modül</h2>
       <p class="modul-subtitle">Eğitim Teknolojisi nedir? 4 ekranda öğren.</p>
       <div id="elearn-box">
         <div class="elearn-topbar">
@@ -946,7 +946,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- BLOG -->
   <section id="blog" class="reveal">
     <div class="container">
-      <h2 class="section-title">Blog</h2>
+      <h2 class="section-title" id="section-blog-title">Blog</h2>
 
       <div id="blog-box">
         <div id="blog-track">
@@ -1087,7 +1087,7 @@ import Layout from "../layouts/Layout.astro";
   <!-- GERİ BİLDİRİM FORMU -->
   <section id="feedback" class="reveal">
     <div class="container">
-      <h2 class="section-title">Geri Bildirim</h2>
+      <h2 class="section-title" id="section-feedback-title">Geri Bildirim</h2>
       <div class="feedback-wrap">
         <p class="feedback-desc">Bu portföy hakkında ne düşünüyorsunuz? Görüşlerinizi paylaşın.</p>
         <form id="feedback-form" onsubmit="submitFeedback(event)">
@@ -4131,6 +4131,8 @@ import Layout from "../layouts/Layout.astro";
       "nav-projeler": "Projeler",
       "nav-modul": "Modül",
       "nav-yetenekler": "Yetenekler",
+      "nav-sertifikalar": "Sertifikalar",
+      "nav-blog": "Blog",
       "nav-iletisim": "İletişim",
       "hero-badge": "Açık Pozisyonlara Müsait",
       "hero-greeting": "Merhaba, ben",
@@ -4144,8 +4146,12 @@ import Layout from "../layouts/Layout.astro";
       "section-edu": "Eğitim",
       "section-proj": "Projeler",
       "section-skills": "Beceriler",
+      "section-cert": "Sertifikalar",
+      "section-modul": "İnteraktif Modül",
+      "section-blog": "Blog",
       "section-ref": "Referanslar",
       "section-contact": "İletişim",
+      "section-feedback": "Geri Bildirim",
       "about-p1": "Marmara Üniversitesi Atatürk Eğitim Fakültesi'nde Bilgisayar ve Öğretim Teknolojileri Eğitimi bölümünü tamamladım. Şu anda aynı alanda tezli yüksek lisans eğitimime devam etmekteyim.",
       "about-p2": "Üniversite hayatım boyunca Marmara Üniversitesi'nin farklı birimlerinde teknik destek, bilgi işlem ve uzaktan eğitim alanlarında yarı zamanlı olarak görev aldım.",
       "about-p3": "Articulate Storyline/Rise, H5P, Camtasia ve çeşitli LMS platformları kullanarak e-öğrenme içerikleri geliştiriyor; eğitim teknolojilerinin kurumsal öğrenme süreçlerine entegrasyonu üzerine çalışıyorum.",
@@ -4160,6 +4166,8 @@ import Layout from "../layouts/Layout.astro";
       "nav-projeler": "Projects",
       "nav-modul": "Module",
       "nav-yetenekler": "Skills",
+      "nav-sertifikalar": "Certificates",
+      "nav-blog": "Blog",
       "nav-iletisim": "Contact",
       "hero-badge": "Open to Opportunities",
       "hero-greeting": "Hi, I'm",
@@ -4173,8 +4181,12 @@ import Layout from "../layouts/Layout.astro";
       "section-edu": "Education",
       "section-proj": "Projects",
       "section-skills": "Skills",
+      "section-cert": "Certificates",
+      "section-modul": "Interactive Module",
+      "section-blog": "Blog",
       "section-ref": "References",
       "section-contact": "Contact",
+      "section-feedback": "Feedback",
       "about-p1": "I completed my undergraduate degree in Computer Education and Instructional Technology (CEIT) at Marmara University, Atatürk Faculty of Education. I am currently pursuing a thesis-based master's degree in the same field.",
       "about-p2": "Throughout my university years, I worked part-time in various units of Marmara University in technical support, IT, and distance education fields.",
       "about-p3": "I develop e-learning content using Articulate Storyline/Rise, H5P, Camtasia and various LMS platforms, and work on integrating educational technologies into corporate learning processes.",
@@ -4197,6 +4209,8 @@ import Layout from "../layouts/Layout.astro";
     set("nav-projeler-link", t["nav-projeler"]);
     set("nav-modul-link", t["nav-modul"]);
     set("nav-yetenekler-link", t["nav-yetenekler"]);
+    set("nav-sertifikalar-link", t["nav-sertifikalar"]);
+    set("nav-blog-link", t["nav-blog"]);
     set("nav-iletisim-link", t["nav-iletisim"]);
     set("hero-badge-text", t["hero-badge"]);
     set("hero-greeting-text", t["hero-greeting"]);
@@ -4210,8 +4224,12 @@ import Layout from "../layouts/Layout.astro";
     set("section-edu-title", t["section-edu"]);
     set("section-proj-title", t["section-proj"]);
     set("section-skills-title", t["section-skills"]);
+    set("section-cert-title", t["section-cert"]);
+    set("section-modul-title", t["section-modul"]);
+    set("section-blog-title", t["section-blog"]);
     set("section-ref-title", t["section-ref"]);
     set("section-contact-title", t["section-contact"]);
+    set("section-feedback-title", t["section-feedback"]);
     set("about-p1-text", t["about-p1"]);
     set("about-p2-text", t["about-p2"]);
     set("about-p3-text", t["about-p3"]);
